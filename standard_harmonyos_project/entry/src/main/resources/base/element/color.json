@@ -1,0 +1,16 @@
+{
+  "string": [
+    {
+      "name": "start_window_background",
+      "value": "#FFFFFF"
+    },
+    {
+      "name": "primary_color",
+      "value": "#FF6B9D"
+    },
+    {
+      "name": "secondary_color",
+      "value": "#FFB6C1"
+    }
+  ]
+}

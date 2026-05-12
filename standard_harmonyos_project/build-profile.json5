@@ -1,0 +1,26 @@
+{
+  "app": {
+    "compileSdkVersion": 11,
+    "buildToolsVersion": "4.1.0.4",
+    "products": [
+      {
+        "name": "default",
+        "signingConfig": "debug"
+      }
+    ]
+  },
+  "modules": [
+    {
+      "name": "entry",
+      "srcPath": "./entry",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
+    }
+  ]
+}
