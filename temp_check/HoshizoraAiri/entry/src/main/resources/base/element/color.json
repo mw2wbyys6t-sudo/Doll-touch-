@@ -1,0 +1,40 @@
+{
+  "color": [
+    {
+      "name": "start_window_background",
+      "value": "#FFFFFF"
+    },
+    {
+      "name": "primary_pink",
+      "value": "#FFB6C1"
+    },
+    {
+      "name": "primary_purple",
+      "value": "#DDA0DD"
+    },
+    {
+      "name": "primary_dark_purple",
+      "value": "#8B5CF6"
+    },
+    {
+      "name": "primary_red",
+      "value": "#E91E63"
+    },
+    {
+      "name": "secondary_blue",
+      "value": "#667EEA"
+    },
+    {
+      "name": "secondary_purple",
+      "value": "#764BA2"
+    },
+    {
+      "name": "primary_color",
+      "value": "#FF6B9D"
+    },
+    {
+      "name": "secondary_color",
+      "value": "#FFB6C1"
+    }
+  ]
+}
