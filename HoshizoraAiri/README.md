@@ -1,37 +1,50 @@
 # 星空爱莉 AI助手 - 鸿蒙应用
 
-## 📱 项目概述
+## 项目概述
 
 基于星空爱莉角色设定的鸿蒙（HarmonyOS）AI助手应用，包含聊天交互、数据持久化、深色模式和推送通知功能。
 
-## 📁 项目结构
+## 项目结构
 
 ```
-ohos_airi/
+HoshizoraAiri/
 ├── package.json                    # 项目配置
 ├── build-profile.json5            # 构建配置
-├── hvigor-config.json             # Hvigor配置
+├── hvigor-config.json5            # Hvigor配置
+├── hvigorfile.ts                  # 构建脚本
 └── entry/                         # 主入口模块
     ├── package.json
+    ├── oh-package.json5
+    ├── build-profile.json5
+    ├── hvigorfile.ts
     └── src/main/
         ├── ets/
         │   ├── ability/
         │   │   └── EntryAbility.ets      # 应用入口
         │   ├── components/
-        │   │   ├── ActionBtn.ets         # 快捷功能按钮
-        │   │   ├── BottomNav.ets         # 底部导航
-        │   │   ├── MessageBubble.ets     # 消息气泡
-        │   │   └── TypingIndicator.ets   # 输入中指示器
+        │   │   └── DebugPanel.ets        # 调试面板
+        │   ├── core/
+        │   │   ├── Dispatcher.ets        # 事件分发器
+        │   │   ├── EmotionStore.ets     # 情绪存储
+        │   │   ├── EmotionalFSM.ets     # 情绪状态机
+        │   │   └── LifecycleManager.ets  # 生命周期管理
         │   ├── model/
-        │   │   └── MessageModel.ets      # 消息数据模型
+        │   │   └── MessageModel.ets     # 消息数据模型
         │   ├── pages/
-        │   │   └── Index.ets             # 主页面
+        │   │   └── Index.ets            # 主页面
         │   ├── utils/
-        │   │   ├── NotificationManager.ets # 推送通知管理
-        │   │   ├── PreferencesUtil.ets    # 数据持久化
-        │   │   └── ThemeManager.ets       # 主题管理
+        │   │   ├── BodyActionManager.ets    # 身体动作管理
+        │   │   ├── EmotionUnderstanding.ets # 情感理解
+        │   │   ├── ExpressionManager.ets    # 表情管理
+        │   │   ├── MemoryManager.ets        # 记忆管理
+        │   │   ├── NotificationManager.ets  # 推送通知管理
+        │   │   ├── PreferencesUtil.ets      # 数据持久化
+        │   │   ├── SpeechRecognitionManager.ets # 语音识别
+        │   │   ├── TextToSpeechManager.ets # 语音合成
+        │   │   ├── ThemeManager.ets        # 主题管理
+        │   │   └── ThinkingEngine.ets      # AI思考引擎
         │   └── viewmodel/
-        │       └── ChatViewModel.ets      # 聊天视图模型
+        │       └── ChatViewModel.ets       # 聊天视图模型
         ├── module.json5                   # 模块配置
         └── resources/
             └── base/
@@ -44,7 +57,7 @@ ohos_airi/
                     └── icon.png           # 应用图标
 ```
 
-## ✨ 功能特性
+## 功能特性
 
 ### 1. 聊天交互
 - 文字消息发送和接收
@@ -68,19 +81,19 @@ ohos_airi/
 - 自定义通知样式
 
 ### 5. 快捷功能
-- 📝 写文案
-- 📅 日程管理
-- 🖼️ 图片生成
-- 🎵 音乐推荐
+- 写文案
+- 日程管理
+- 图片生成
+- 音乐推荐
 
-## 🎨 设计风格
+## 设计风格
 
 - 粉色渐变主题（#ffb6c1 → #dda0dd）
 - 圆角卡片设计
 - 响应式布局
 - 符合星空爱莉偶像设定
 
-## 🛠️ 技术栈
+## 技术栈
 
 - **框架**: HarmonyOS NEXT
 - **语言**: TypeScript (ETS)
@@ -88,20 +101,17 @@ ohos_airi/
 - **构建工具**: Hvigor
 - **数据存储**: Preferences
 
-## 🚀 构建与运行
+## 构建与运行
 
 ### 环境要求
 
 - DevEco Studio 5.0+
-- HarmonyOS SDK 11+
+- HarmonyOS SDK 12+
 - Node.js 18+
 
 ### 构建命令
 
 ```bash
-# 安装依赖
-npm install
-
 # 构建HAP包
 npm run build:ohos
 
@@ -112,36 +122,30 @@ npm run clean
 ### 运行方式
 
 1. 打开 DevEco Studio
-2. 导入项目：File → Open → 选择 ohos_airi 目录
+2. 导入项目：File → Open → 选择 HoshizoraAiri 目录
 3. 连接鸿蒙设备或启动模拟器
 4. 点击运行按钮
 
-## 📋 权限配置
+## 权限配置
 
-在 `module.json5` 中配置以下权限：
+在 module.json5 中配置以下权限：
 
 ```json
-"requestPermissions": [
-  {
-    "name": "ohos.permission.INTERNET",
-    "reason": "用于网络请求"
-  },
-  {
-    "name": "ohos.permission.POST_NOTIFICATION",
-    "reason": "用于推送通知"
-  },
-  {
-    "name": "ohos.permission.READ_USER_STORAGE",
-    "reason": "用于读取存储"
-  },
-  {
-    "name": "ohos.permission.WRITE_USER_STORAGE",
-    "reason": "用于写入存储"
-  }
-]
+{
+  "requestPermissions": [
+    {
+      "name": "ohos.permission.INTERNET",
+      "reason": "用于网络请求"
+    },
+    {
+      "name": "ohos.permission.POST_NOTIFICATION",
+      "reason": "用于推送通知"
+    }
+  ]
+}
 ```
 
-## 📱 界面预览
+## 界面预览
 
 ### 主界面
 - 顶部导航栏（角色名称、设置按钮、主题切换）
@@ -155,57 +159,41 @@ npm run clean
 - 深色卡片（#2d2d44）
 - 粉色强调色保持不变
 
-## 🔧 开发说明
+## 开发说明
 
 ### 状态管理
 
-使用 `@ohos.arkui.observable` 进行响应式状态管理：
+使用 @ohos.arkui.observable 进行响应式状态管理：
 
 ```typescript
 @observable
 class ChatViewModel {
   messages: Message[] = [];
   isTyping: boolean = false;
-  // ...
 }
 ```
 
 ### 主题切换
 
 ```typescript
-// 获取当前主题
 const theme = ThemeManager.getCurrentTheme();
-
-// 设置主题
 await ThemeManager.setTheme('dark');
-
-// 订阅主题变化
-ThemeManager.addListener(() => {
-  // 更新UI
-});
 ```
 
 ### 数据持久化
 
 ```typescript
-// 存储数据
 await PreferencesUtil.putString('key', 'value');
-
-// 读取数据
 const value = await PreferencesUtil.getString('key', 'default');
 ```
 
 ### 推送通知
 
 ```typescript
-// 显示通知
 await NotificationManager.showNotification('标题', '内容');
-
-// 定时通知
-await NotificationManager.scheduleNotification('标题', '内容', timestamp);
 ```
 
-## 📝 待办事项
+## 待办事项
 
 - [ ] 语音输入功能
 - [ ] 真实AI后端集成
@@ -213,10 +201,10 @@ await NotificationManager.scheduleNotification('标题', '内容', timestamp);
 - [ ] 创作工具页面
 - [ ] 用户个人中心
 
-## 📄 许可证
+## 许可证
 
 MIT License
 
 ---
 
-**星空爱莉 AI助手** - 让每一天都充满魔法 ✨
+**星空爱莉 AI助手** - 让每一天都充满魔法
