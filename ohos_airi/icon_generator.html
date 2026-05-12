@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星空爱莉 APP 图标生成器</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 40px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        h1 {
+            color: #ffb6c1;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .icon-container {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+        
+        .icon-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .icon-label {
+            color: #dda0dd;
+            font-size: 14px;
+            text-align: center;
+        }
+        
+        canvas {
+            border-radius: 22%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+        
+        .download-btn {
+            background: linear-gradient(135deg, #ffb6c1, #dda0dd);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 20px;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 182, 193, 0.4);
+        }
+        
+        .app-name {
+            color: white;
+            font-size: 28px;
+            margin-top: 30px;
+            text-align: center;
+        }
+        
+        .app-slogan {
+            color: #dda0dd;
+            font-size: 16px;
+            margin-top: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎤 星空爱莉 APP 图标设计</h1>
+    
+    <div class="icon-container">
+        <div class="icon-wrapper">
+            <canvas id="icon1024" width="1024" height="1024"></canvas>
+            <span class="icon-label">1024x1024 (App Store)</span>
+        </div>
+        
+        <div class="icon-wrapper">
+            <canvas id="icon512" width="512" height="512"></canvas>
+            <span class="icon-label">512x512</span>
+        </div>
+        
+        <div class="icon-wrapper">
+            <canvas id="icon192" width="192" height="192"></canvas>
+            <span class="icon-label">192x192 (Android)</span>
+        </div>
+        
+        <div class="icon-wrapper">
+            <canvas id="icon180" width="180" height="180"></canvas>
+            <span class="icon-label">180x180 (iOS)</span>
+        </div>
+    </div>
+    
+    <button class="download-btn" onclick="downloadAllIcons()">下载所有图标</button>
+    
+    <div class="app-name">爱莉助手</div>
+    <div class="app-slogan">Airi Assistant - 让每一天都充满魔法 ✨</div>
+
+    <script>
+        function drawIcon(canvas, size) {
+            const ctx = canvas.getContext('2d');
+            const centerX = size / 2;
+            const centerY = size / 2;
+            
+            // 清除画布
+            ctx.clearRect(0, 0, size, size);
+            
+            // 创建渐变背景
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#FFB6C1');
+            gradient.addColorStop(0.3, '#FFC0CB');
+            gradient.addColorStop(0.6, '#DDA0DD');
+            gradient.addColorStop(1, '#D8BFD8');
+            
+            // 绘制圆角矩形背景
+            const cornerRadius = size * 0.22;
+            ctx.beginPath();
+            ctx.moveTo(cornerRadius, 0);
+            ctx.lineTo(size - cornerRadius, 0);
+            ctx.quadraticCurveTo(size, 0, size, cornerRadius);
+            ctx.lineTo(size, size - cornerRadius);
+            ctx.quadraticCurveTo(size, size, size - cornerRadius, size);
+            ctx.lineTo(cornerRadius, size);
+            ctx.quadraticCurveTo(0, size, 0, size - cornerRadius);
+            ctx.lineTo(0, cornerRadius);
+            ctx.quadraticCurveTo(0, 0, cornerRadius, 0);
+            ctx.closePath();
+            ctx.fillStyle = gradient;
+            ctx.fill();
+            
+            // 添加内发光效果
+            const innerGlow = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, size * 0.5);
+            innerGlow.addColorStop(0, 'rgba(255, 255, 255, 0.3)');
+            innerGlow.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            ctx.fillStyle = innerGlow;
+            ctx.fill();
+            
+            // 绘制星星装饰
+            const starPositions = [
+                { x: 0.15, y: 0.25, size: 0.08, rotation: 0 },
+                { x: 0.85, y: 0.2, size: 0.06, rotation: 45 },
+                { x: 0.2, y: 0.75, size: 0.05, rotation: 30 },
+                { x: 0.8, y: 0.8, size: 0.07, rotation: 60 },
+                { x: 0.12, y: 0.5, size: 0.04, rotation: 15 },
+                { x: 0.88, y: 0.5, size: 0.05, rotation: 75 }
+            ];
+            
+            starPositions.forEach(star => {
+                drawStar(ctx, 
+                    centerX + (star.x - 0.5) * size * 0.8, 
+                    centerY + (star.y - 0.5) * size * 0.8, 
+                    5, 
+                    star.size * size * 0.6, 
+                    star.size * size * 0.3, 
+                    star.rotation
+                );
+            });
+            
+            // 绘制麦克风主体
+            const micWidth = size * 0.35;
+            const micHeight = size * 0.5;
+            const micX = centerX - micWidth / 2;
+            const micY = centerY - micHeight / 2 + size * 0.05;
+            
+            // 麦克风头部（圆形）
+            const headRadius = micWidth * 0.6;
+            ctx.beginPath();
+            ctx.arc(centerX, micY + headRadius * 0.8, headRadius, 0, Math.PI * 2);
+            const micGradient = ctx.createRadialGradient(
+                centerX - headRadius * 0.3, 
+                micY + headRadius * 0.5, 
+                0,
+                centerX, 
+                micY + headRadius * 0.8, 
+                headRadius
+            );
+            micGradient.addColorStop(0, '#FFFFFF');
+            micGradient.addColorStop(0.5, '#F0F0F0');
+            micGradient.addColorStop(1, '#E0E0E0');
+            ctx.fillStyle = micGradient;
+            ctx.fill();
+            
+            // 麦克风网格纹理
+            ctx.strokeStyle = 'rgba(200, 200, 200, 0.5)';
+            ctx.lineWidth = size * 0.003;
+            for (let i = -3; i <= 3; i++) {
+                ctx.beginPath();
+                ctx.arc(centerX, micY + headRadius * 0.8, headRadius * 0.3 + Math.abs(i) * headRadius * 0.15, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+            
+            // 麦克风手柄
+            const handleWidth = micWidth * 0.4;
+            const handleHeight = micHeight * 0.6;
+            const handleX = centerX - handleWidth / 2;
+            const handleY = micY + headRadius * 1.2;
+            
+            ctx.beginPath();
+            ctx.roundRect(handleX, handleY, handleWidth, handleHeight, handleWidth * 0.2);
+            const handleGradient = ctx.createLinearGradient(handleX, handleY, handleX + handleWidth, handleY);
+            handleGradient.addColorStop(0, '#E8E8E8');
+            handleGradient.addColorStop(0.5, '#F5F5F5');
+            handleGradient.addColorStop(1, '#E0E0E0');
+            ctx.fillStyle = handleGradient;
+            ctx.fill();
+            
+            // 麦克风底部装饰环
+            ctx.beginPath();
+            ctx.roundRect(handleX - handleWidth * 0.05, handleY + handleHeight * 0.7, 
+                         handleWidth * 1.1, handleHeight * 0.15, handleWidth * 0.1);
+            ctx.fillStyle = '#DDA0DD';
+            ctx.fill();
+            
+            // 绘制音符装饰
+            drawMusicNote(ctx, centerX + size * 0.25, centerY - size * 0.15, size * 0.12);
+            
+            // 绘制爱心装饰
+            drawHeart(ctx, centerX - size * 0.22, centerY + size * 0.18, size * 0.08);
+            
+            // 添加整体高光
+            const highlight = ctx.createRadialGradient(
+                centerX - size * 0.2, 
+                centerY - size * 0.2, 
+                0,
+                centerX, 
+                centerY, 
+                size * 0.6
+            );
+            highlight.addColorStop(0, 'rgba(255, 255, 255, 0.4)');
+            highlight.addColorStop(0.5, 'rgba(255, 255, 255, 0.1)');
+            highlight.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            ctx.fillStyle = highlight;
+            ctx.fill();
+        }
+        
+        function drawStar(ctx, cx, cy, spikes, outerRadius, innerRadius, rotation) {
+            let rot = Math.PI / 2 * 3 + rotation * Math.PI / 180;
+            let x = cx;
+            let y = cy;
+            let step = Math.PI / spikes;
+            
+            ctx.beginPath();
+            ctx.moveTo(cx, cy - outerRadius);
+            for (let i = 0; i < spikes; i++) {
+                x = cx + Math.cos(rot) * outerRadius;
+                y = cy + Math.sin(rot) * outerRadius;
+                ctx.lineTo(x, y);
+                rot += step;
+                
+                x = cx + Math.cos(rot) * innerRadius;
+                y = cy + Math.sin(rot) * innerRadius;
+                ctx.lineTo(x, y);
+                rot += step;
+            }
+            ctx.lineTo(cx, cy - outerRadius);
+            ctx.closePath();
+            
+            const starGradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, outerRadius);
+            starGradient.addColorStop(0, '#FFFFFF');
+            starGradient.addColorStop(0.5, '#FFFACD');
+            starGradient.addColorStop(1, '#FFD700');
+            ctx.fillStyle = starGradient;
+            ctx.fill();
+        }
+        
+        function drawMusicNote(ctx, x, y, size) {
+            ctx.beginPath();
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            
+            // 音符头部
+            ctx.beginPath();
+            ctx.ellipse(x, y + size * 0.3, size * 0.25, size * 0.2, -0.3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 音符符干
+            ctx.beginPath();
+            ctx.moveTo(x + size * 0.15, y + size * 0.2);
+            ctx.lineTo(x + size * 0.15, y - size * 0.8);
+            ctx.lineWidth = size * 0.08;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.stroke();
+            
+            // 音符符尾
+            ctx.beginPath();
+            ctx.moveTo(x + size * 0.15, y - size * 0.8);
+            ctx.quadraticCurveTo(x + size * 0.5, y - size * 0.5, x + size * 0.4, y - size * 0.2);
+            ctx.stroke();
+        }
+        
+        function drawHeart(ctx, x, y, size) {
+            ctx.beginPath();
+            ctx.fillStyle = 'rgba(255, 182, 193, 0.9)';
+            
+            const topCurveHeight = size * 0.3;
+            ctx.moveTo(x, y + topCurveHeight);
+            
+            // 左上半圆
+            ctx.bezierCurveTo(
+                x, y, 
+                x - size / 2, y, 
+                x - size / 2, y + topCurveHeight
+            );
+            
+            // 左下半圆
+            ctx.bezierCurveTo(
+                x - size / 2, y + (size + topCurveHeight) / 2, 
+                x, y + (size + topCurveHeight) / 2, 
+                x, y + size
+            );
+            
+            // 右下半圆
+            ctx.bezierCurveTo(
+                x, y + (size + topCurveHeight) / 2, 
+                x + size / 2, y + (size + topCurveHeight) / 2, 
+                x + size / 2, y + topCurveHeight
+            );
+            
+            // 右上半圆
+            ctx.bezierCurveTo(
+                x + size / 2, y, 
+                x, y, 
+                x, y + topCurveHeight
+            );
+            
+            ctx.closePath();
+            ctx.fill();
+        }
+        
+        // 绘制所有图标
+        function drawAllIcons() {
+            drawIcon(document.getElementById('icon1024'), 1024);
+            drawIcon(document.getElementById('icon512'), 512);
+            drawIcon(document.getElementById('icon192'), 192);
+            drawIcon(document.getElementById('icon180'), 180);
+        }
+        
+        // 下载所有图标
+        function downloadAllIcons() {
+            const sizes = [
+                { id: 'icon1024', name: 'icon-1024x1024', size: 1024 },
+                { id: 'icon512', name: 'icon-512x512', size: 512 },
+                { id: 'icon192', name: 'icon-192x192', size: 192 },
+                { id: 'icon180', name: 'icon-180x180', size: 180 }
+            ];
+            
+            sizes.forEach(({ id, name }) => {
+                const canvas = document.getElementById(id);
+                const link = document.createElement('a');
+                link.download = `${name}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        }
+        
+        // 页面加载完成后绘制
+        window.onload = drawAllIcons;
+    </script>
+</body>
+</html>
