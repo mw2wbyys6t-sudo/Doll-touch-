@@ -39,7 +39,7 @@ ohos {
     }
 
     buildFeatures {
-        stageBased
+        stageBased = true
     }
 
     dependencies {
