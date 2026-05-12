@@ -6,8 +6,13 @@ import { MessageBubble } from '../components/MessageBubble';
 import { TypingIndicator } from '../components/TypingIndicator';
 import { ActionBtn } from '../components/ActionBtn';
 import { BottomNav } from '../components/BottomNav';
+import { CharacterAnimation } from '../components/CharacterAnimation';
+import { ExpressionManager } from '../utils/ExpressionManager';
+import { BodyActionManager } from '../utils/BodyActionManager';
 
 const chatViewModel = new ChatViewModel();
+const expressionManager = ExpressionManager.getInstance();
+const bodyActionManager = BodyActionManager.getInstance();
 
 @Entry
 @Component
@@ -106,103 +111,115 @@ struct Index {
       .width('100%')
       .backgroundColor('#ffb6c1')
 
-      Column({ space: 16 }) {
-        Scroll(this.scroller) {
-          Column({ space: 16 }) {
-            ForEach(chatViewModel.messages, (msg) => {
-              MessageBubble({ message: msg })
+      Stack({ alignContent: Alignment.TopCenter }) {
+        Column({ space: 16 }) {
+          CharacterAnimation()
+            .width(200)
+            .height(280)
+            .margin({ top: -60 })
+            .onClick(() => {
+              this.handleCharacterClick();
             })
-            
-            if (chatViewModel.isTyping) {
-              TypingIndicator()
+          
+          Scroll(this.scroller) {
+            Column({ space: 16 }) {
+              ForEach(chatViewModel.messages, (msg) => {
+                MessageBubble({ message: msg })
+              })
+              
+              if (chatViewModel.isTyping) {
+                TypingIndicator()
+              }
             }
+            .width('100%')
+            .padding({ top: 16, bottom: 16 })
           }
           .width('100%')
-          .padding({ top: 16, bottom: 16 })
+          .flexGrow(1)
+          .scrollable(ScrollDirection.Vertical)
+          .scrollBar(BarState.Off)
+
+          Row({ space: 8 }) {
+            ActionBtn({
+              icon: '📝',
+              label: '写文案',
+              onClick: () => chatViewModel.handleAction('write')
+            })
+            
+            ActionBtn({
+              icon: '📅',
+              label: '日程',
+              onClick: () => chatViewModel.handleAction('schedule')
+            })
+            
+            ActionBtn({
+              icon: '🖼️',
+              label: '图片',
+              onClick: () => chatViewModel.handleAction('image')
+            })
+            
+            ActionBtn({
+              icon: '🎵',
+              label: '音乐',
+              onClick: () => chatViewModel.handleAction('music')
+            })
+          }
+          .width('100%')
+          .padding({ left: 16, right: 16 })
+
+          Row({ space: 8 }) {
+            Button('😊')
+              .width(44)
+              .height(44)
+              .backgroundColor('#f5f5f5')
+              .borderRadius(22)
+              .fontSize(18)
+              .onClick(() => {
+                this.isEmojiOpen = !this.isEmojiOpen;
+              })
+            
+            TextInput({
+              placeholder: '和爱莉聊天…',
+              controller: this.inputController,
+              onSubmit: (value: string) => this.sendMessage(value)
+            })
+              .width('100%')
+              .height(44)
+              .backgroundColor(Color.Transparent)
+              .placeholderColor('#cccccc')
+              .fontColor(colors.textPrimary)
+              .fontSize(14)
+              .onChange((value: string) => {
+                this.inputText = value;
+              })
+            
+            Button('🎤')
+              .width(44)
+              .height(44)
+              .backgroundColor('#ffb6c1')
+              .borderRadius(22)
+              .fontSize(18)
+              .fontColor('#ffffff')
+              .onClick(() => {
+                promptAction.showToast({
+                  message: '语音输入功能开发中',
+                  duration: 2000
+                });
+              })
+          }
+          .width('100%')
+          .backgroundColor(colors.bgCard)
+          .padding(12)
+          .margin({ left: 16, right: 16 })
+          .borderRadius(25)
+          .shadow({ radius: 12, color: colors.shadow, offsetY: 2 })
         }
         .width('100%')
         .flexGrow(1)
-        .scrollable(ScrollDirection.Vertical)
-        .scrollBar(BarState.Off)
-
-        Row({ space: 8 }) {
-          ActionBtn({
-            icon: '📝',
-            label: '写文案',
-            onClick: () => chatViewModel.handleAction('write')
-          })
-          
-          ActionBtn({
-            icon: '📅',
-            label: '日程',
-            onClick: () => chatViewModel.handleAction('schedule')
-          })
-          
-          ActionBtn({
-            icon: '🖼️',
-            label: '图片',
-            onClick: () => chatViewModel.handleAction('image')
-          })
-          
-          ActionBtn({
-            icon: '🎵',
-            label: '音乐',
-            onClick: () => chatViewModel.handleAction('music')
-          })
-        }
-        .width('100%')
-        .padding({ left: 16, right: 16 })
-
-        Row({ space: 8 }) {
-          Button('😊')
-            .width(44)
-            .height(44)
-            .backgroundColor('#f5f5f5')
-            .borderRadius(22)
-            .fontSize(18)
-            .onClick(() => {
-              this.isEmojiOpen = !this.isEmojiOpen;
-            })
-          
-          TextInput({
-            placeholder: '和爱莉聊天…',
-            controller: this.inputController,
-            onSubmit: (value: string) => this.sendMessage(value)
-          })
-            .width('100%')
-            .height(44)
-            .backgroundColor(Color.Transparent)
-            .placeholderColor('#cccccc')
-            .fontColor(colors.textPrimary)
-            .fontSize(14)
-            .onChange((value: string) => {
-              this.inputText = value;
-            })
-          
-          Button('🎤')
-            .width(44)
-            .height(44)
-            .backgroundColor('#ffb6c1')
-            .borderRadius(22)
-            .fontSize(18)
-            .fontColor('#ffffff')
-            .onClick(() => {
-              promptAction.showToast({
-                message: '语音输入功能开发中',
-                duration: 2000
-              });
-            })
-        }
-        .width('100%')
-        .backgroundColor(colors.bgCard)
-        .padding(12)
-        .margin({ left: 16, right: 16 })
-        .borderRadius(25)
-        .shadow({ radius: 12, color: colors.shadow, offsetY: 2 })
+        .backgroundColor(colors.bg)
       }
       .width('100%')
       .flexGrow(1)
-      .backgroundColor(colors.bg)
 
       BottomNav({
         currentTab: chatViewModel.currentTab,
@@ -220,9 +237,20 @@ struct Index {
     await chatViewModel.init();
     this.currentTheme = ThemeManager.getCurrentTheme();
     
+    bodyActionManager.startIdleAnimation();
+    
+    setInterval(async () => {
+      await expressionManager.playBlink();
+    }, 3000 + Math.random() * 2000);
+    
     ThemeManager.addListener(() => {
       this.currentTheme = ThemeManager.getCurrentTheme();
     });
+  }
+
+  async handleCharacterClick(): Promise<void> {
+    await expressionManager.playExpression('happy');
+    await bodyActionManager.playWave();
   }
 
   async setTheme(theme: ThemeMode): Promise<void> {
@@ -246,12 +274,19 @@ struct Index {
 
   async sendMessage(value: string): Promise<void> {
     if (!value.trim()) return;
+    
+    await expressionManager.playExpression('excited');
     await chatViewModel.sendMessage(value);
+    
     this.inputText = '';
     this.inputController.clear();
     
     setTimeout(() => {
       this.scroller.scrollTo({ yOffset: 99999 });
     }, 100);
+
+    setTimeout(async () => {
+      await expressionManager.playExpression('happy');
+    }, 1000);
   }
 }
