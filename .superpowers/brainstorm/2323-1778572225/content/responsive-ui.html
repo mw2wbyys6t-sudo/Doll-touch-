@@ -1,0 +1,405 @@
+<h2>星空爱莉 - 响应式移动端界面设计</h2>
+<p class="subtitle">自适应各种移动端屏幕尺寸</p>
+
+<style>
+  :root {
+    --safe-area-inset-top: env(safe-area-inset-top);
+    --safe-area-inset-bottom: env(safe-area-inset-bottom);
+    --safe-area-inset-left: env(safe-area-inset-left);
+    --safe-area-inset-right: env(safe-area-inset-right);
+  }
+  
+  .responsive-container {
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+    border-radius: 30px;
+    overflow: hidden;
+    border: 4px solid #e0e0e0;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    background: white;
+  }
+  
+  .header {
+    background: linear-gradient(135deg, #ffb6c1 0%, #dda0dd 50%, #b19cd9 100%);
+    color: white;
+    padding: 1rem 1.25rem;
+    padding-top: calc(1rem + var(--safe-area-inset-top));
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .header-avatar {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+  }
+  
+  .header-title {
+    font-size: 1.125rem;
+    margin-left: 0.5rem;
+  }
+  
+  .main-content {
+    background: linear-gradient(180deg, #fff0f5 0%, #f3e5f5 100%);
+    padding: 1rem;
+    min-height: calc(100vh - 8rem - var(--safe-area-inset-top) - var(--safe-area-inset-bottom));
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .message-bubble {
+    background: white;
+    border-radius: 1.25rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    display: flex;
+    gap: 0.625rem;
+  }
+  
+  .message-bubble.user {
+    flex-direction: row-reverse;
+  }
+  
+  .avatar {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.875rem;
+  }
+  
+  .avatar.ai {
+    background: linear-gradient(135deg, #ffb6c1, #dda0dd);
+  }
+  
+  .avatar.user {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+  }
+  
+  .message-content {
+    flex: 1;
+  }
+  
+  .message-content.user {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 1rem 1rem 0.25rem 1rem;
+    padding: 0.75rem;
+  }
+  
+  .message-name {
+    color: #8b5cf6;
+    font-weight: bold;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .message-text {
+    color: #333;
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+  
+  .message-content.user .message-text {
+    color: white;
+  }
+  
+  .message-time {
+    color: #999;
+    font-size: 0.6875rem;
+    margin-top: 0.25rem;
+  }
+  
+  .input-bar {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: white;
+    border-radius: 1.5625rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    margin-top: auto;
+  }
+  
+  .input-btn {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.125rem;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  
+  .input-btn.emoji {
+    background: #f5f5f5;
+    color: #666;
+  }
+  
+  .input-btn.voice {
+    background: linear-gradient(135deg, #ffb6c1, #e91e63);
+    color: white;
+  }
+  
+  .input-field {
+    flex: 1;
+    padding: 0.75rem;
+    border: none;
+    outline: none;
+    font-size: 0.875rem;
+    background: transparent;
+  }
+  
+  .quick-actions {
+    display: flex;
+    gap: 0.625rem;
+    margin-top: 0.75rem;
+    justify-content: space-between;
+  }
+  
+  .action-item {
+    flex: 1;
+    text-align: center;
+    padding: 0.75rem 0.5rem;
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    cursor: pointer;
+  }
+  
+  .action-icon {
+    font-size: 1.375rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  .action-label {
+    font-size: 0.6875rem;
+    color: #666;
+  }
+  
+  .bottom-nav {
+    background: white;
+    padding: 0.5rem;
+    padding-bottom: calc(0.5rem + var(--safe-area-inset-bottom));
+    display: flex;
+    justify-content: space-around;
+    border-top: 1px solid #f0f0f0;
+  }
+  
+  .nav-item {
+    text-align: center;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    color: #999;
+    transition: color 0.2s;
+  }
+  
+  .nav-item.active {
+    color: #e91e63;
+  }
+  
+  .nav-icon {
+    font-size: 1.375rem;
+    margin-bottom: 0.125rem;
+  }
+  
+  .nav-label {
+    font-size: 0.625rem;
+  }
+  
+  @media (min-width: 320px) {
+    .header {
+      padding: 1rem 1rem;
+      padding-top: calc(1rem + var(--safe-area-inset-top));
+    }
+    
+    .main-content {
+      padding: 0.75rem;
+    }
+  }
+  
+  @media (min-width: 414px) {
+    .header {
+      padding: 1.125rem 1.25rem;
+      padding-top: calc(1.125rem + var(--safe-area-inset-top));
+    }
+    
+    .header-title {
+      font-size: 1.25rem;
+    }
+    
+    .main-content {
+      padding: 1rem;
+    }
+    
+    .message-text {
+      font-size: 0.9375rem;
+    }
+    
+    .input-field {
+      font-size: 0.9375rem;
+    }
+    
+    .action-icon {
+      font-size: 1.5rem;
+    }
+    
+    .nav-icon {
+      font-size: 1.5rem;
+    }
+  }
+  
+  @media (min-width: 480px) {
+    .header {
+      padding: 1.25rem 1.5rem;
+      padding-top: calc(1.25rem + var(--safe-area-inset-top));
+    }
+    
+    .header-avatar {
+      width: 2.5rem;
+      height: 2.5rem;
+      font-size: 1.125rem;
+    }
+    
+    .header-title {
+      font-size: 1.375rem;
+    }
+    
+    .avatar {
+      width: 2.5rem;
+      height: 2.5rem;
+      font-size: 1rem;
+    }
+    
+    .message-text {
+      font-size: 1rem;
+    }
+    
+    .input-btn {
+      width: 3rem;
+      height: 3rem;
+      font-size: 1.25rem;
+    }
+    
+    .input-field {
+      font-size: 1rem;
+    }
+    
+    .action-icon {
+      font-size: 1.625rem;
+    }
+    
+    .action-label {
+      font-size: 0.75rem;
+    }
+    
+    .nav-icon {
+      font-size: 1.625rem;
+    }
+    
+    .nav-label {
+      font-size: 0.6875rem;
+    }
+  }
+</style>
+
+<div class="responsive-container">
+  <div class="header">
+    <div style="display: flex; align-items: center;">
+      <div class="header-avatar">🎤</div>
+      <span class="header-title">星空爱莉</span>
+    </div>
+    <div style="display: flex; gap: 0.75rem;">
+      <span>✨</span>
+      <span>⚙️</span>
+    </div>
+  </div>
+  
+  <div class="main-content">
+    <div class="message-bubble">
+      <div class="avatar ai">🎤</div>
+      <div class="message-content">
+        <p class="message-name">爱莉</p>
+        <p class="message-text">みんなを笑顔にする！それが、私のアイドルの魔法だよっ☆</p>
+        <p class="message-time">刚刚</p>
+      </div>
+    </div>
+    
+    <div class="message-bubble user">
+      <div class="avatar user">👤</div>
+      <div class="message-content user">
+        <p class="message-text">今天想写一首关于星空的诗，能帮我想想灵感吗？</p>
+      </div>
+    </div>
+    
+    <div class="message-bubble">
+      <div class="avatar ai">🎤</div>
+      <div class="message-content">
+        <p class="message-name">爱莉</p>
+        <p class="message-text">星空をテーマに... 夜空に輝く星たち、流れ星の一瞬、月の光... そんなイメージで詩を作ってみませんか？</p>
+        <p class="message-time">刚刚</p>
+      </div>
+    </div>
+    
+    <div class="input-bar">
+      <button class="input-btn emoji">😊</button>
+      <input class="input-field" placeholder="和爱莉聊天...">
+      <button class="input-btn voice">🎤</button>
+    </div>
+    
+    <div class="quick-actions">
+      <div class="action-item">
+        <div class="action-icon">📝</div>
+        <span class="action-label">写文案</span>
+      </div>
+      <div class="action-item">
+        <div class="action-icon">📅</div>
+        <span class="action-label">日程</span>
+      </div>
+      <div class="action-item">
+        <div class="action-icon">🖼️</div>
+        <span class="action-label">图片</span>
+      </div>
+      <div class="action-item">
+        <div class="action-icon">🎵</div>
+        <span class="action-label">音乐</span>
+      </div>
+    </div>
+  </div>
+  
+  <div class="bottom-nav">
+    <div class="nav-item active">
+      <div class="nav-icon">💬</div>
+      <span class="nav-label">聊天</span>
+    </div>
+    <div class="nav-item">
+      <div class="nav-icon">📋</div>
+      <span class="nav-label">任务</span>
+    </div>
+    <div class="nav-item">
+      <div class="nav-icon">🎨</div>
+      <span class="nav-label">创作</span>
+    </div>
+    <div class="nav-item">
+      <div class="nav-icon">👤</div>
+      <span class="nav-label">我的</span>
+    </div>
+  </div>
+</div>
+
+<p style="text-align: center; margin-top: 20px; color: #999; font-size: 14px;">
+  📱 响应式设计 | 支持 320px - 480px+ 屏幕尺寸 | 适配刘海屏/安全区域
+</p>
