@@ -1,0 +1,8 @@
+{
+  "name": "entry",
+  "version": "1.0.0",
+  "description": "星空爱莉 AI助手 - 主入口模块",
+  "main": "./src/main/ets/pages/Index.ets",
+  "dependencies": {},
+  "devDependencies": {}
+}

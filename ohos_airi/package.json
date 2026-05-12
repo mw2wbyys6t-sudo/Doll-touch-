@@ -1,0 +1,14 @@
+{
+  "name": "airi-ai-assistant",
+  "version": "1.0.0",
+  "description": "星空爱莉 AI助手 - 鸿蒙应用",
+  "scripts": {
+    "build:ohos": "hvigorw assembleHap",
+    "clean": "hvigorw clean"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@ohos/hvigor": "4.1.0",
+    "@ohos/hvigor-ohos-plugin": "4.1.0"
+  }
+}
