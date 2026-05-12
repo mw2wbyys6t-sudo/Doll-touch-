@@ -57,19 +57,49 @@ struct Index {
           }
         }
         .width('100%')
-        .padding({ top: 24 + env.safeAreaTop, left: 16, right: 16, bottom: 16 })
+        .padding({
+          top: px2vp(AppStorage.get<number>('safeAreaTop') || 0) + 24,
+          left: 16,
+          right: 16,
+          bottom: 16
+        })
         
         if (this.showThemeMenu) {
           Column({ space: 8 }) {
-            MenuItem({ content: '浅色模式', action: () => this.setTheme('light') })
-            MenuItem({ content: '深色模式', action: () => this.setTheme('dark') })
-            MenuItem({ content: '跟随系统', action: () => this.setTheme('system') })
+            Text('浅色模式')
+              .fontSize(14)
+              .fontColor('#333333')
+              .width('100%')
+              .padding({ top: 8, bottom: 8 })
+              .onClick(() => this.setTheme('light'))
+            
+            Divider()
+              .strokeWidth(0.5)
+              .color('#f0f0f0')
+            
+            Text('深色模式')
+              .fontSize(14)
+              .fontColor('#333333')
+              .width('100%')
+              .padding({ top: 8, bottom: 8 })
+              .onClick(() => this.setTheme('dark'))
+            
+            Divider()
+              .strokeWidth(0.5)
+              .color('#f0f0f0')
+            
+            Text('跟随系统')
+              .fontSize(14)
+              .fontColor('#333333')
+              .width('100%')
+              .padding({ top: 8, bottom: 8 })
+              .onClick(() => this.setTheme('system'))
           }
-          .width(120)
+          .width(140)
           .backgroundColor('#ffffff')
           .borderRadius(12)
           .padding(8)
-          .position({ right: 16, top: 60 + env.safeAreaTop })
+          .position({ right: 16, top: px2vp(AppStorage.get<number>('safeAreaTop') || 0) + 60 })
           .shadow({ radius: 12, color: 'rgba(0,0,0,0.2)', offsetY: 4 })
         }
       }

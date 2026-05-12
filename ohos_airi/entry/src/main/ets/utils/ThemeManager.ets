@@ -1,16 +1,24 @@
 import { PreferencesUtil } from './PreferencesUtil';
+import { ConfigurationConstant } from '@kit.ArkUI';
 
 export type ThemeMode = 'light' | 'dark' | 'system';
 
 export class ThemeManager {
   private static currentTheme: ThemeMode = 'light';
   private static listeners: Array<() => void> = [];
+  private static systemColorMode: ConfigurationConstant.ColorMode = ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT;
   
   private static readonly THEME_KEY = 'app_theme';
 
   static async init(): Promise<void> {
     const savedTheme = await PreferencesUtil.getString(this.THEME_KEY, 'light');
     this.currentTheme = savedTheme as ThemeMode || 'light';
+    
+    try {
+      this.systemColorMode = AppStorage.get<ConfigurationConstant.ColorMode>('colorMode') || ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT;
+    } catch (e) {
+      this.systemColorMode = ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT;
+    }
   }
 
   static getCurrentTheme(): ThemeMode {
@@ -32,7 +40,7 @@ export class ThemeManager {
 
   static isDarkMode(): boolean {
     if (this.currentTheme === 'system') {
-      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+      return this.systemColorMode === ConfigurationConstant.ColorMode.COLOR_MODE_DARK;
     }
     return this.currentTheme === 'dark';
   }
