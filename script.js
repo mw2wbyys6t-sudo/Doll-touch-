@@ -159,13 +159,31 @@ class AiriAI {
   toggleEmojiPicker() {
     const isHidden = this.emojiPicker.style.display === 'none';
     this.emojiPicker.style.display = isHidden ? 'block' : 'none';
+    this.emojiPicker.setAttribute('aria-hidden', !isHidden);
+    this.emojiPicker.previousElementSibling.querySelector('.emoji-btn').setAttribute('aria-expanded', isHidden);
     
     if (isHidden) {
-      this.emojiPicker.querySelectorAll('.emoji-grid span').forEach(emoji => {
+      const emojiGrid = this.emojiPicker.querySelector('.emoji-grid');
+      const emojis = emojiGrid.querySelectorAll('span');
+      
+      emojis.forEach(emoji => {
+        emoji.setAttribute('tabindex', '0');
+        emoji.setAttribute('role', 'option');
+        emoji.setAttribute('aria-selected', 'false');
+        
         emoji.onclick = () => {
           this.messageInput.value += emoji.textContent;
           this.emojiPicker.style.display = 'none';
+          this.emojiPicker.setAttribute('aria-hidden', 'true');
+          this.emojiPicker.previousElementSibling.querySelector('.emoji-btn').setAttribute('aria-expanded', 'false');
           this.messageInput.focus();
+        };
+        
+        emoji.onkeydown = (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            emoji.click();
+          }
         };
       });
     }
