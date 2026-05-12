@@ -1,281 +1,498 @@
-export type EmotionalState = 
-  | 'idle'
-  | 'happy'
-  | 'sad'
-  | 'shy'
-  | 'angry'
-  | 'surprised'
-  | 'excited'
-  | 'anxious'
-  | 'lonely'
-  | 'thinking'
-  | 'talking'
-  | 'listening'
-  | 'sleeping';
+/**
+ * EmotionalFSM - 情绪有限状态机
+ * HarmonyOS NEXT ArkTS 实现
+ * 管理角色情绪状态转换
+ */
 
-export interface EmotionalTransition {
-  from: EmotionalState | EmotionalState[];
-  to: EmotionalState;
-  condition?: () => boolean;
-  weight: number;
-  duration: number;
-  easing: 'easeIn' | 'easeOut' | 'easeInOut' | 'linear';
+import { EmotionStore, EmotionType } from './EmotionStore';
+import { Dispatcher } from './Dispatcher';
+
+// FSM 状态类型
+export enum FSMState {
+  IDLE = 'idle',
+  TALKING = 'talking',
+  THINKING = 'thinking',
+  HAPPY = 'happy',
+  SAD = 'sad',
+  ANGRY = 'angry',
+  EXCITED = 'excited',
+  SCARED = 'scared',
+  CONFUSED = 'confused',
+  SLEEPING = 'sleeping'
 }
 
-export interface EmotionalValue {
-  intensity: number;
-  decayRate: number;
-  priority: number;
-  timestamp: number;
+// 状态转换配置
+interface TransitionConfig {
+  from: FSMState;
+  to: FSMState;
+  condition?: (from: FSMState, to: FSMState, context?: Object) => boolean;
+  emotion?: EmotionType;
+  priority?: number;
 }
 
-export interface EmotionalStateSnapshot {
-  current: EmotionalState;
-  intensity: number;
-  previous: EmotionalState;
-  transitionProgress: number;
-  valueMap: Map<EmotionalState, EmotionalValue>;
+// 状态锁配置
+interface StateLock {
+  state: FSMState;
+  reason: string;
+  timeout: number;
+  startTime: number;
 }
 
+// 观察者类
+@Observed
 export class EmotionalFSM {
+  // 单例实例
   private static instance: EmotionalFSM | null = null;
-  private state: EmotionalState = 'idle';
-  private intensity: number = 0;
-  private previousState: EmotionalState = 'idle';
-  private transitionProgress: number = 1;
-  private valueMap: Map<EmotionalState, EmotionalValue> = new Map();
-  private isTransitioning: boolean = false;
-  private transitionTimer: number | null = null;
-  private decayTimer: number | null = null;
 
-  private readonly transitions: EmotionalTransition[] = [
-    { from: '*', to: 'happy', weight: 0.3, duration: 500, easing: 'easeOut' },
-    { from: ['sad', 'angry'], to: 'idle', weight: 0.5, duration: 800, easing: 'easeInOut' },
-    { from: ['idle', 'happy'], to: 'sad', weight: 0.2, duration: 600, easing: 'easeIn' },
-    { from: '*', to: 'talking', weight: 0.9, duration: 300, easing: 'easeOut' },
-    { from: 'talking', to: 'idle', weight: 0.8, duration: 400, easing: 'easeOut' },
-    { from: '*', to: 'listening', weight: 0.8, duration: 200, easing: 'linear' },
-    { from: 'listening', to: 'idle', weight: 0.7, duration: 300, easing: 'easeOut' },
-    { from: '*', to: 'thinking', weight: 0.6, duration: 400, easing: 'easeInOut' },
-    { from: 'thinking', to: 'idle', weight: 0.5, duration: 500, easing: 'easeOut' },
-    { from: '*', to: 'sleeping', weight: 0.1, duration: 1500, easing: 'easeInOut' },
-    { from: 'sleeping', to: 'idle', weight: 0.8, duration: 800, easing: 'easeOut' },
-  ];
+  // 当前状态
+  @Track
+  private _currentState: FSMState = FSMState.IDLE;
 
-  private readonly statePriorities: Map<EmotionalState, number> = new Map([
-    ['idle', 0],
-    ['talking', 100],
-    ['listening', 95],
-    ['thinking', 90],
-    ['happy', 70],
-    ['sad', 75],
-    ['shy', 60],
-    ['angry', 80],
-    ['surprised', 65],
-    ['excited', 72],
-    ['anxious', 78],
-    ['lonely', 68],
-    ['sleeping', 99],
-  ]);
+  // 上一个状态
+  @Track
+  private _previousState: FSMState = FSMState.IDLE;
 
-  private readonly stateDecayRates: Map<EmotionalState, number> = new Map([
-    ['idle', 0.01],
-    ['happy', 0.008],
-    ['sad', 0.005],
-    ['shy', 0.006],
-    ['angry', 0.007],
-    ['surprised', 0.015],
-    ['excited', 0.012],
-    ['anxious', 0.009],
-    ['lonely', 0.004],
-    ['thinking', 0.02],
-    ['talking', 0.0],
-    ['listening', 0.0],
-    ['sleeping', 0.0],
-  ]);
+  // 状态持续时间
+  @Track
+  private _stateDuration: number = 0;
 
+  // 状态进入时间戳
+  private _stateEnterTime: number = 0;
+
+  // 状态锁列表
+  @Track
+  private _activeLocks: StateLock[] = [];
+
+  // 状态历史记录
+  private _stateHistory: Array<{ state: FSMState; timestamp: number }> = [];
+
+  // 最大历史记录数
+  private readonly MAX_HISTORY_SIZE: number = 50;
+
+  // 状态转换配置
+  private _transitions: TransitionConfig[] = [];
+
+  // 状态持续时间监控定时器
+  private durationTimerId: number | null = null;
+
+  // 事件分发器
+  private dispatcher: Dispatcher;
+
+  // 情绪存储
+  private emotionStore: EmotionStore;
+
+  /**
+   * 获取单例实例
+   */
+  public static getInstance(): EmotionalFSM {
+    if (EmotionalFSM.instance === null) {
+      EmotionalFSM.instance = new EmotionalFSM();
+    }
+    return EmotionalFSM.instance;
+  }
+
+  /**
+   * 私有构造函数
+   */
   private constructor() {
-    this.init();
+    this.dispatcher = Dispatcher.getInstance();
+    this.emotionStore = EmotionStore.getInstance();
+    this.initializeTransitions();
+    this.startDurationMonitor();
   }
 
-  static getInstance(): EmotionalFSM {
-    if (!this.instance) {
-      this.instance = new EmotionalFSM();
-    }
-    return this.instance;
+  /**
+   * 初始化状态转换规则
+   */
+  private initializeTransitions(): void {
+    // 定义允许的状态转换
+    this._transitions = [
+      // 从 IDLE 可以转换到任何状态
+      { from: FSMState.IDLE, to: FSMState.TALKING, priority: 10 },
+      { from: FSMState.IDLE, to: FSMState.THINKING, priority: 10 },
+      { from: FSMState.IDLE, to: FSMState.HAPPY, priority: 10 },
+      { from: FSMState.IDLE, to: FSMState.SAD, priority: 10 },
+      { from: FSMState.IDLE, to: FSMState.ANGRY, priority: 10 },
+      { from: FSMState.IDLE, to: FSMState.EXCITED, priority: 10 },
+      { from: FSMState.IDLE, to: FSMState.SLEEPING, priority: 10 },
+
+      // 从 TALKING 可以转换到情绪状态或回到 IDLE
+      { from: FSMState.TALKING, to: FSMState.IDLE, priority: 8 },
+      { from: FSMState.TALKING, to: FSMState.HAPPY, priority: 9 },
+      { from: FSMState.TALKING, to: FSMState.SAD, priority: 9 },
+
+      // 从 THINKING 可以转换到情绪状态或回到 IDLE
+      { from: FSMState.THINKING, to: FSMState.IDLE, priority: 8 },
+      { from: FSMState.THINKING, to: FSMState.EXCITED, priority: 9 },
+      { from: FSMState.THINKING, to: FSMState.CONFUSED, priority: 9 },
+
+      // 情绪状态可以转换到其他情绪状态或回到 IDLE
+      { from: FSMState.HAPPY, to: FSMState.IDLE, priority: 7 },
+      { from: FSMState.HAPPY, to: FSMState.EXCITED, priority: 8 },
+
+      { from: FSMState.SAD, to: FSMState.IDLE, priority: 7 },
+      { from: FSMState.SAD, to: FSMState.SCARED, priority: 8 },
+
+      { from: FSMState.ANGRY, to: FSMState.IDLE, priority: 7 },
+      { from: FSMState.ANGRY, to: FSMState.TALKING, priority: 8 },
+
+      { from: FSMState.EXCITED, to: FSMState.IDLE, priority: 7 },
+      { from: FSMState.EXCITED, to: FSMState.HAPPY, priority: 8 },
+
+      { from: FSMState.SCARED, to: FSMState.IDLE, priority: 7 },
+      { from: FSMState.SCARED, to: FSMState.SAD, priority: 8 },
+
+      { from: FSMState.CONFUSED, to: FSMState.IDLE, priority: 7 },
+      { from: FSMState.CONFUSED, to: FSMState.THINKING, priority: 8 },
+
+      // 睡眠状态
+      { from: FSMState.SLEEPING, to: FSMState.IDLE, priority: 5 },
+
+      // 任何状态都可以紧急转换到睡眠（低优先级）
+      { from: FSMState.IDLE, to: FSMState.SLEEPING, priority: 1 },
+      { from: FSMState.TALKING, to: FSMState.SLEEPING, priority: 1 },
+      { from: FSMState.THINKING, to: FSMState.SLEEPING, priority: 1 },
+    ];
   }
 
-  init(): void {
-    for (const state of this.statePriorities.keys()) {
-      this.valueMap.set(state, {
-        intensity: 0,
-        decayRate: this.stateDecayRates.get(state) || 0.01,
-        priority: this.statePriorities.get(state) || 0,
-        timestamp: Date.now(),
+  /**
+   * 获取当前状态
+   */
+  public get currentState(): FSMState {
+    return this._currentState;
+  }
+
+  /**
+   * 获取上一个状态
+   */
+  public get previousState(): FSMState {
+    return this._previousState;
+  }
+
+  /**
+   * 获取状态持续时间
+   */
+  public get stateDuration(): number {
+    return this._stateDuration;
+  }
+
+  /**
+   * 获取活动锁
+   */
+  public get activeLocks(): StateLock[] {
+    return this._activeLocks;
+  }
+
+  /**
+   * 获取状态历史
+   */
+  public get stateHistory(): Array<{ state: FSMState; timestamp: number }> {
+    return this._stateHistory;
+  }
+
+  /**
+   * 转换到目标状态
+   * @param targetState 目标状态
+   * @param force 是否强制转换（可突破锁）
+   * @param context 转换上下文
+   */
+  public transitionTo(targetState: FSMState, force: boolean = false, context?: Object): boolean {
+    // 检查是否有锁
+    if (!force && this.hasActiveLock()) {
+      const lock = this._activeLocks[0];
+      console.info(`[EmotionalFSM] 状态转换被锁定: ${lock.reason}, 锁定状态: ${lock.state}`);
+
+      this.dispatcher.emit('fsm:transitionBlocked', {
+        from: this._currentState,
+        to: targetState,
+        reason: lock.reason
       });
-    }
-    this.valueMap.get('idle')!.intensity = 1;
-    this.startDecay();
-  }
 
-  getState(): EmotionalStateSnapshot {
-    return {
-      current: this.state,
-      intensity: this.intensity,
-      previous: this.previousState,
-      transitionProgress: this.transitionProgress,
-      valueMap: new Map(this.valueMap),
-    };
-  }
-
-  async triggerEmotion(emotion: EmotionalState, intensity: number = 0.8): Promise<void> {
-    const currentPriority = this.statePriorities.get(this.state) || 0;
-    const newPriority = this.statePriorities.get(emotion) || 0;
-
-    if (this.isTransitioning) {
-      if (newPriority > currentPriority + 20) {
-        console.log('高优先级情绪强制切换');
-      } else {
-        console.log('状态正在过渡，拒绝低优先级情绪');
-        return;
-      }
-    }
-
-    if (emotion === this.state) {
-      const currentValue = this.valueMap.get(this.state)!;
-      currentValue.intensity = Math.min(1, currentValue.intensity + intensity * 0.3);
-      this.intensity = Math.min(1, this.intensity + intensity * 0.2);
-      return;
-    }
-
-    if (!this.canTransition(this.state, emotion)) {
-      console.log(`无法从 ${this.state} 过渡到 ${emotion}`);
-      return;
-    }
-
-    await this.performTransition(emotion, intensity);
-  }
-
-  private canTransition(from: EmotionalState, to: EmotionalState): boolean {
-    if (from === to) return false;
-
-    if (from === 'sleeping' && !['idle'].includes(to)) {
       return false;
     }
 
-    if (to === 'sleeping' && ['talking', 'listening'].includes(from)) {
+    // 检查是否允许转换
+    if (!this.canTransition(this._currentState, targetState)) {
+      console.warn(`[EmotionalFSM] 不允许的状态转换: ${this._currentState} -> ${targetState}`);
+
+      this.dispatcher.emit('fsm:transitionInvalid', {
+        from: this._currentState,
+        to: targetState
+      });
+
       return false;
     }
+
+    // 执行转换
+    const oldState = this._currentState;
+    this._previousState = oldState;
+    this._currentState = targetState;
+    this._stateEnterTime = Date.now();
+    this._stateDuration = 0;
+
+    // 添加到历史记录
+    this.addToHistory(targetState);
+
+    // 根据状态设置情绪
+    this.syncEmotionWithState(targetState);
+
+    // 发送事件
+    this.dispatcher.emit('fsm:stateChanged', {
+      from: oldState,
+      to: targetState,
+      context: context
+    });
+
+    console.info(`[EmotionalFSM] 状态转换: ${oldState} -> ${targetState}`);
 
     return true;
   }
 
-  private async performTransition(target: EmotionalState, intensity: number): Promise<void> {
-    this.isTransitioning = true;
-    this.previousState = this.state;
-    this.transitionProgress = 0;
-
-    const transition = this.findTransition(this.previousState, target);
-
-    return new Promise((resolve) => {
-      const duration = transition?.duration || 500;
-      const startTime = Date.now();
-      const startIntensity = this.intensity;
-      const targetValue = this.valueMap.get(target)!;
-      targetValue.intensity = intensity;
-      targetValue.timestamp = Date.now();
-
-      const animate = () => {
-        const elapsed = Date.now() - startTime;
-        const progress = Math.min(1, elapsed / duration);
-
-        this.transitionProgress = this.applyEasing(progress, transition?.easing || 'easeOut');
-
-        if (transition?.easing === 'easeOut') {
-          this.intensity = startIntensity * (1 - this.transitionProgress) + intensity * this.transitionProgress;
-        } else {
-          this.intensity = intensity;
-        }
-
-        if (progress >= 0.5 && this.state !== target) {
-          this.state = target;
-        }
-
-        if (progress < 1) {
-          requestAnimationFrame(animate);
-        } else {
-          this.state = target;
-          this.transitionProgress = 1;
-          this.isTransitioning = false;
-          resolve();
-        }
-      };
-
-      animate();
-    });
-  }
-
-  private findTransition(from: EmotionalState, to: EmotionalState): EmotionalTransition | null {
-    return this.transitions.find(t => {
-      if (t.from === '*') return t.to === to;
-      if (Array.isArray(t.from)) return t.from.includes(from) && t.to === to;
-      return t.from === from && t.to === to;
-    }) || null;
-  }
-
-  private applyEasing(value: number, easing: string): number {
-    switch (easing) {
-      case 'easeIn':
-        return value * value;
-      case 'easeOut':
-        return value * (2 - value);
-      case 'easeInOut':
-        return value < 0.5 ? 2 * value * value : 1 - Math.pow(-2 * value + 2, 2) / 2;
-      case 'linear':
-      default:
-        return value;
-    }
-  }
-
-  private startDecay(): void {
-    if (this.decayTimer) {
-      clearInterval(this.decayTimer);
+  /**
+   * 检查是否可以从一个状态转换到另一个状态
+   */
+  public canTransition(from: FSMState, to: FSMState): boolean {
+    // 相同状态不需要转换
+    if (from === to) {
+      return false;
     }
 
-    this.decayTimer = setInterval(() => {
-      for (const [state, value] of this.valueMap) {
-        if (state !== this.state) {
-          value.intensity = Math.max(0, value.intensity - value.decayRate);
+    // 查找转换规则
+    for (const transition of this._transitions) {
+      if (transition.from === from && transition.to === to) {
+        // 如果有条件，检查条件
+        if (transition.condition) {
+          return transition.condition(from, to);
         }
+        return true;
       }
+    }
 
-      if (this.state !== 'idle' && !this.isTransitioning) {
-        const currentValue = this.valueMap.get(this.state)!;
-        currentValue.intensity = Math.max(0, currentValue.intensity - currentValue.decayRate * 0.5);
-        
-        if (currentValue.intensity < 0.05) {
-          this.triggerEmotion('idle', 1);
-        }
+    return false;
+  }
+
+  /**
+   * 获取可转换的目标状态列表
+   */
+  public getAvailableTransitions(): FSMState[] {
+    const available: FSMState[] = [];
+
+    for (const transition of this._transitions) {
+      if (transition.from === this._currentState) {
+        available.push(transition.to);
+      }
+    }
+
+    return available;
+  }
+
+  /**
+   * 添加状态锁
+   * @param state 锁定的状态
+   * @param reason 锁定原因
+   * @param timeout 超时时间（毫秒）
+   */
+  public addLock(state: FSMState, reason: string, timeout: number = 0): void {
+    const lock: StateLock = {
+      state: state,
+      reason: reason,
+      timeout: timeout,
+      startTime: Date.now()
+    };
+
+    this._activeLocks.push(lock);
+
+    console.info(`[EmotionalFSM] 添加状态锁: ${state}, 原因: ${reason}, 超时: ${timeout}ms`);
+
+    this.dispatcher.emit('fsm:lockAdded', {
+      state: state,
+      reason: reason,
+      timeout: timeout
+    });
+
+    // 如果设置了超时
+    if (timeout > 0) {
+      setTimeout(() => {
+        this.removeLock(state);
+      }, timeout);
+    }
+  }
+
+  /**
+   * 移除状态锁
+   * @param state 要移除锁的状态（不传则移除所有）
+   */
+  public removeLock(state?: FSMState): void {
+    if (state !== undefined) {
+      const index = this._activeLocks.findIndex(lock => lock.state === state);
+      if (index !== -1) {
+        const removed = this._activeLocks.splice(index, 1)[0];
+        console.info(`[EmotionalFSM] 移除状态锁: ${removed.state}, 原因: ${removed.reason}`);
+
+        this.dispatcher.emit('fsm:lockRemoved', {
+          state: removed.state,
+          reason: removed.reason
+        });
+      }
+    } else {
+      // 移除所有锁
+      const count = this._activeLocks.length;
+      this._activeLocks = [];
+      console.info(`[EmotionalFSM] 移除所有状态锁, 数量: ${count}`);
+
+      this.dispatcher.emit('fsm:lockRemoved', {
+        count: count
+      });
+    }
+  }
+
+  /**
+   * 检查是否有活动锁
+   */
+  public hasActiveLock(): boolean {
+    // 清理过期锁
+    this.cleanupExpiredLocks();
+    return this._activeLocks.length > 0;
+  }
+
+  /**
+   * 清理过期的锁
+   */
+  private cleanupExpiredLocks(): void {
+    const now = Date.now();
+    const expired = this._activeLocks.filter(
+      lock => lock.timeout > 0 && now - lock.startTime > lock.timeout
+    );
+
+    for (const lock of expired) {
+      const index = this._activeLocks.findIndex(l => l.state === lock.state);
+      if (index !== -1) {
+        this._activeLocks.splice(index, 1);
+        console.info(`[EmotionalFSM] 自动移除过期锁: ${lock.state}`);
+      }
+    }
+  }
+
+  /**
+   * 添加到状态历史
+   */
+  private addToHistory(state: FSMState): void {
+    this._stateHistory.push({
+      state: state,
+      timestamp: Date.now()
+    });
+
+    // 限制历史记录数量
+    if (this._stateHistory.length > this.MAX_HISTORY_SIZE) {
+      this._stateHistory.shift();
+    }
+  }
+
+  /**
+   * 同步情绪和状态
+   */
+  private syncEmotionWithState(state: FSMState): void {
+    let emotion: EmotionType = EmotionType.NEUTRAL;
+    let priority: number = 50;
+
+    switch (state) {
+      case FSMState.IDLE:
+        emotion = EmotionType.IDLE;
+        priority = 50;
+        break;
+      case FSMState.TALKING:
+        emotion = EmotionType.NEUTRAL;
+        priority = 30;
+        break;
+      case FSMState.THINKING:
+        emotion = EmotionType.CONFUSED;
+        priority = 40;
+        break;
+      case FSMState.HAPPY:
+        emotion = EmotionType.HAPPY;
+        priority = 80;
+        break;
+      case FSMState.SAD:
+        emotion = EmotionType.SAD;
+        priority = 80;
+        break;
+      case FSMState.ANGRY:
+        emotion = EmotionType.ANGRY;
+        priority = 90;
+        break;
+      case FSMState.EXCITED:
+        emotion = EmotionType.EXCITED;
+        priority = 90;
+        break;
+      case FSMState.SCARED:
+        emotion = EmotionType.FEARFUL;
+        priority = 80;
+        break;
+      case FSMState.CONFUSED:
+        emotion = EmotionType.CONFUSED;
+        priority = 60;
+        break;
+      case FSMState.SLEEPING:
+        emotion = EmotionType.TIRED;
+        priority = 100;
+        break;
+    }
+
+    // 设置情绪（强制）
+    this.emotionStore.setEmotion(emotion, priority, true);
+  }
+
+  /**
+   * 开始持续时间监控
+   */
+  private startDurationMonitor(): void {
+    if (this.durationTimerId !== null) {
+      clearInterval(this.durationTimerId);
+    }
+
+    this.durationTimerId = setInterval(() => {
+      if (this._stateEnterTime > 0) {
+        this._stateDuration = Date.now() - this._stateEnterTime;
       }
     }, 100) as unknown as number;
   }
 
-  async stop(): Promise<void> {
-    if (this.decayTimer) {
-      clearInterval(this.decayTimer);
-      this.decayTimer = null;
-    }
-    if (this.transitionTimer) {
-      clearTimeout(this.transitionTimer);
-      this.transitionTimer = null;
-    }
+  /**
+   * 重置到 IDLE 状态
+   */
+  public resetToIdle(): void {
+    this.transitionTo(FSMState.IDLE, true);
+    this.removeLock();
+    this._stateHistory = [];
   }
 
-  getEmotionPriority(emotion: EmotionalState): number {
-    return this.statePriorities.get(emotion) || 0;
+  /**
+   * 获取状态信息摘要
+   */
+  public getStateSummary(): Object {
+    return {
+      currentState: this._currentState,
+      previousState: this._previousState,
+      stateDuration: this._stateDuration,
+      activeLocks: this._activeLocks,
+      historyLength: this._stateHistory.length
+    };
   }
 
-  getCurrentPriority(): number {
-    return this.statePriorities.get(this.state) || 0;
+  /**
+   * 销毁（用于测试或完全清理）
+   */
+  public destroy(): void {
+    if (this.durationTimerId !== null) {
+      clearInterval(this.durationTimerId);
+      this.durationTimerId = null;
+    }
+
+    this._activeLocks = [];
+    this._stateHistory = [];
+    EmotionalFSM.instance = null;
   }
 }
+
+// 导出单例快捷访问
+export const emotionalFSM = EmotionalFSM.getInstance();
