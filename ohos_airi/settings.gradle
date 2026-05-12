@@ -1,0 +1,2 @@
+rootProject.name = 'airi-ai-assistant'
+include ':entry'
