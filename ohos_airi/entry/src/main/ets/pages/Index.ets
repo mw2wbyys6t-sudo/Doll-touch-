@@ -9,10 +9,15 @@ import { BottomNav } from '../components/BottomNav';
 import { CharacterAnimation } from '../components/CharacterAnimation';
 import { ExpressionManager } from '../utils/ExpressionManager';
 import { BodyActionManager } from '../utils/BodyActionManager';
+import { LifecycleManager } from '../core/LifecycleManager';
+
+// 特性开关：启用 LifecycleManager
+const ENABLE_LIFECYCLE_MANAGER = true;
 
 const chatViewModel = new ChatViewModel();
 const expressionManager = ExpressionManager.getInstance();
 const bodyActionManager = BodyActionManager.getInstance();
+const lifecycleManager = LifecycleManager.getInstance();
 
 @Entry
 @Component
@@ -232,20 +237,80 @@ struct Index {
     .onAppear(() => this.onAppear())
   }
 
+  // 页面生命周期回调 ID
+  private blinkTimerId: number | null = null;
+  private themeListener: (() => void) | null = null;
+
   async onAppear(): Promise<void> {
     await ThemeManager.init();
     await chatViewModel.init();
     this.currentTheme = ThemeManager.getCurrentTheme();
     
+    // 并行接入 LifecycleManager - 注册页面生命周期
+    if (ENABLE_LIFECYCLE_MANAGER) {
+      try {
+        // 注册页面回调
+        lifecycleManager.registerPage('Index', 
+          () => {
+            console.log('Index 页面 onAppear 回调');
+            // 从睡眠状态唤醒
+            lifecycleManager.markUserActivity();
+          },
+          () => {
+            console.log('Index 页面 onDisappear 回调');
+          }
+        );
+        
+        // 通知 LifecycleManager 页面出现
+        lifecycleManager.onAppear('Index');
+        console.log('LifecycleManager 已注册 Index 页面');
+      } catch (error) {
+        console.error('LifecycleManager 注册页面失败:', error);
+      }
+    }
+    
+    // 原有业务逻辑保持不变
     bodyActionManager.startIdleAnimation();
     
-    setInterval(async () => {
+    // 修复定时器泄漏 - 保存 timerId 以便清理
+    this.blinkTimerId = setInterval(async () => {
       await expressionManager.playBlink();
-    }, 3000 + Math.random() * 2000);
+    }, 3000 + Math.random() * 2000) as unknown as number;
     
-    ThemeManager.addListener(() => {
+    // 保存监听器引用以便清理
+    this.themeListener = ThemeManager.addListener(() => {
       this.currentTheme = ThemeManager.getCurrentTheme();
     });
+  }
+
+  aboutToDisappear(): void {
+    console.log('Index 页面 aboutToDisappear - 开始清理资源');
+    
+    // 并行接入 LifecycleManager - 通知页面消失
+    if (ENABLE_LIFECYCLE_MANAGER) {
+      try {
+        lifecycleManager.onDisappear('Index');
+        console.log('LifecycleManager 已处理 Index 页面消失');
+      } catch (error) {
+        console.error('LifecycleManager 处理页面消失失败:', error);
+      }
+    }
+    
+    // 修复定时器泄漏 - 清理眨眼定时器
+    if (this.blinkTimerId) {
+      clearInterval(this.blinkTimerId);
+      this.blinkTimerId = null;
+      console.log('Index 页面：眨眼定时器已清理');
+    }
+    
+    // 修复监听器泄漏 - 移除主题监听器
+    if (this.themeListener) {
+      ThemeManager.removeListener(this.themeListener);
+      this.themeListener = null;
+      console.log('Index 页面：主题监听器已清理');
+    }
+    
+    console.log('Index 页面：资源清理完成');
   }
 
   async handleCharacterClick(): Promise<void> {
