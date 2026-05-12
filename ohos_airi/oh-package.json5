@@ -1,6 +1,13 @@
 {
-  "dependencies": {
-    "@ohos/hvigor": "4.1.0",
-    "@ohos/hvigor-ohos-plugin": "4.1.0"
+  "name": "ohos_airi",
+  "version": "1.0.0",
+  "description": "星空爱莉 - HarmonyOS NEXT AI二次元偶像助手",
+  "main": "",
+  "author": "",
+  "license": "",
+  "dependencies": {},
+  "devDependencies": {
+    "@ohos/hvigor": "5.0.2",
+    "@ohos/hvigor-ohos-plugin": "5.0.2"
   }
 }

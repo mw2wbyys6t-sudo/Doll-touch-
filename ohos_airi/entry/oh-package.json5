@@ -1,6 +1,10 @@
 {
-  "dependencies": {
-    "@ohos/hvigor": "4.1.0",
-    "@ohos/hvigor-ohos-plugin": "4.1.0"
-  }
+  "name": "entry",
+  "version": "1.0.0",
+  "description": "星空爱莉主模块",
+  "main": "",
+  "author": "",
+  "license": "",
+  "dependencies": {},
+  "devDependencies": {}
 }
