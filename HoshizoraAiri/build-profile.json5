@@ -1,9 +1,11 @@
 {
   "app": {
+    "signingConfigs": [],
     "products": [
       {
         "name": "default",
-        "signingConfig": "debug"
+        "signingConfig": "default",
+        "runtimeOS": "HarmonyOS"
       }
     ]
   },
