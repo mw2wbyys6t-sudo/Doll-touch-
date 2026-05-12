@@ -1,11 +1,12 @@
 {
   "app": {
-    "compileSdkVersion": 11,
-    "buildToolsVersion": "4.1.0.4",
     "products": [
       {
         "name": "default",
-        "signingConfig": "debug"
+        "signingConfig": "debug",
+        "compileSdkVersion": 12,
+        "compatibleSdkVersion": 12,
+        "runtimeOS": "HarmonyOS"
       }
     ]
   },

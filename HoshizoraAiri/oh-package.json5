@@ -1,5 +1,5 @@
 {
-  "name": "ohos_airi",
+  "name": "HoshizoraAiri",
   "version": "1.0.0",
   "description": "星空爱莉 - HarmonyOS NEXT AI二次元偶像助手",
   "main": "",
@@ -7,7 +7,7 @@
   "license": "",
   "dependencies": {},
   "devDependencies": {
-    "@ohos/hvigor": "5.0.2",
-    "@ohos/hvigor-ohos-plugin": "5.0.2"
+    "@ohos/hvigor": "5.0.3",
+    "@ohos/hvigor-ohos-plugin": "5.0.3"
   }
 }
