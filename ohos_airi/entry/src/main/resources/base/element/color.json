@@ -1,32 +1,40 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <color name="primary_pink">#ffb6c1</color>
-    <color name="primary_purple">#dda0dd</color>
-    <color name="primary_dark_purple">#8b5cf6</color>
-    <color name="primary_red">#e91e63</color>
-    <color name="secondary_blue">#667eea</color>
-    <color name="secondary_purple">#764ba2</color>
-    
-    <color name="bg_light">#f3e5f5</color>
-    <color name="bg_light_gradient">#fff0f5</color>
-    <color name="bg_card">#ffffff</color>
-    
-    <color name="text_primary">#333333</color>
-    <color name="text_secondary">#666666</color>
-    <color name="text_tertiary">#999999</color>
-    <color name="text_white">#ffffff</color>
-    
-    <color name="border_light">#f0f0f0</color>
-    <color name="shadow_light">rgba(0, 0, 0, 0.08)</color>
-    
-    <color name="bg_dark">#1a1a2e</color>
-    <color name="bg_dark_card">#2d2d44</color>
-    <color name="bg_dark_gradient">#16213e</color>
-    
-    <color name="text_dark_primary">#ffffff</color>
-    <color name="text_dark_secondary">#b0b0b0</color>
-    <color name="text_dark_tertiary">#808080</color>
-    
-    <color name="border_dark">#3d3d5c</color>
-    <color name="shadow_dark">rgba(0, 0, 0, 0.3)</color>
-</resources>
+{
+  "color": [
+    {
+      "name": "start_window_background",
+      "value": "#FFFFFF"
+    },
+    {
+      "name": "primary_pink",
+      "value": "#FFB6C1"
+    },
+    {
+      "name": "primary_purple",
+      "value": "#DDA0DD"
+    },
+    {
+      "name": "primary_dark_purple",
+      "value": "#8B5CF6"
+    },
+    {
+      "name": "primary_red",
+      "value": "#E91E63"
+    },
+    {
+      "name": "secondary_blue",
+      "value": "#667EEA"
+    },
+    {
+      "name": "secondary_purple",
+      "value": "#764BA2"
+    },
+    {
+      "name": "primary_color",
+      "value": "#FF6B9D"
+    },
+    {
+      "name": "secondary_color",
+      "value": "#FFB6C1"
+    }
+  ]
+}

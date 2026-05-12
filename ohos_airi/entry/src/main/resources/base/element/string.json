@@ -1,19 +1,72 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="app_name">星空爱莉</string>
-    <string name="module_desc">星空爱莉 AI助手 - 让每一天都充满魔法</string>
-    <string name="ability_desc">EntryAbility</string>
-    <string name="hello_message">みんなを笑顔にする！それが、私のアイドルの魔法だよっ☆</string>
-    <string name="chat_placeholder">和爱莉聊天…</string>
-    <string name="action_write">写文案</string>
-    <string name="action_schedule">日程</string>
-    <string name="action_image">图片</string>
-    <string name="action_music">音乐</string>
-    <string name="nav_chat">聊天</string>
-    <string name="nav_tasks">任务</string>
-    <string name="nav_create">创作</string>
-    <string name="nav_profile">我的</string>
-    <string name="voice_label">语音输入</string>
-    <string name="emoji_label">选择表情</string>
-    <string name="typing_message">爱莉正在输入…</string>
-</resources>
+{
+  "string": [
+    {
+      "name": "app_name",
+      "value": "星空爱莉"
+    },
+    {
+      "name": "module_desc",
+      "value": "星空爱莉 AI助手 - 让每一天都充满魔法"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "EntryAbility"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "星空爱莉"
+    },
+    {
+      "name": "hello_message",
+      "value": "みんなを笑顔にする！それが、私のアイドルの魔法だよっ☆"
+    },
+    {
+      "name": "chat_placeholder",
+      "value": "和爱莉聊天…"
+    },
+    {
+      "name": "action_write",
+      "value": "写文案"
+    },
+    {
+      "name": "action_schedule",
+      "value": "日程"
+    },
+    {
+      "name": "action_image",
+      "value": "图片"
+    },
+    {
+      "name": "action_music",
+      "value": "音乐"
+    },
+    {
+      "name": "nav_chat",
+      "value": "聊天"
+    },
+    {
+      "name": "nav_tasks",
+      "value": "任务"
+    },
+    {
+      "name": "nav_create",
+      "value": "创作"
+    },
+    {
+      "name": "nav_profile",
+      "value": "我的"
+    },
+    {
+      "name": "voice_label",
+      "value": "语音输入"
+    },
+    {
+      "name": "emoji_label",
+      "value": "选择表情"
+    },
+    {
+      "name": "typing_message",
+      "value": "爱莉正在输入…"
+    }
+  ]
+}

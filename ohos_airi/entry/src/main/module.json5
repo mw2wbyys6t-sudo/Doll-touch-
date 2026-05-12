@@ -1,7 +1,7 @@
 {
   "module": {
     "name": "entry",
-    "type": "application",
+    "type": "entry",
     "description": "$string:module_desc",
     "mainElement": "EntryAbility",
     "deviceTypes": [
@@ -27,28 +27,24 @@
     "abilities": [
       {
         "name": "EntryAbility",
-        "srcEntrance": "./ets/ability/EntryAbility.ets",
-        "description": "$string:ability_desc",
+        "srcEntry": "./ets/ability/EntryAbility.ets",
+        "description": "$string:EntryAbility_desc",
         "icon": "$media:icon",
-        "label": "$string:app_name",
-        "type": "page",
-        "launchType": "standard"
+        "label": "$string:EntryAbility_label",
+        "startWindowIcon": "$media:icon",
+        "startWindowBackground": "$color:start_window_background",
+        "exported": true,
+        "skills": [
+          {
+            "entities": [
+              "entity.system.home"
+            ],
+            "actions": [
+              "action.system.home"
+            ]
+          }
+        ]
       }
-    ],
-    "extensionAbilities": [],
-    "metaData": {
-      "customizeData": [
-        {
-          "name": "hwc-theme",
-          "value": "androidhwext:style/Theme.Emui.Light.NoTitleBar"
-        }
-      ]
-    },
-    "configChanges": [
-      "locale",
-      "layoutDirection",
-      "fontScale",
-      "orientation"
     ]
   }
 }
