@@ -1,6 +1,14 @@
 {
-  "dependencies": {
-    "@ohos/hvigor": "4.1.0",
-    "@ohos/hvigor-ohos-plugin": "4.1.0"
-  }
+  "name": "hoshizora_airi",
+  "version": "1.0.0",
+  "description": "Hoshizora Airi - AI Assistant for HarmonyOS NEXT",
+  "main": "",
+  "author": "",
+  "license": "",
+  "dependencies": {},
+  "devDependencies": {
+    "@ohos/hvigor": "5.0.3",
+    "@ohos/hvigor-ohos-plugin": "5.0.3"
+  },
+  "modelVersion": "5.0.0"
 }

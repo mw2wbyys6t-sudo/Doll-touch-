@@ -1,6 +1,11 @@
 {
-  "dependencies": {
-    "@ohos/hvigor": "4.1.0",
-    "@ohos/hvigor-ohos-plugin": "4.1.0"
-  }
+  "name": "entry",
+  "version": "1.0.0",
+  "description": "Hoshizora Airi Entry Module",
+  "main": "",
+  "author": "",
+  "license": "",
+  "dependencies": {},
+  "devDependencies": {},
+  "modelVersion": "5.0.0"
 }

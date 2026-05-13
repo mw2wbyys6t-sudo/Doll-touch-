@@ -1,7 +1,0 @@
-{
-  "name": "hvigor",
-  "version": "4.1.0",
-  "plugins": [
-    "@ohos/hvigor-ohos-plugin"
-  ]
-}
