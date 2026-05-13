@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">星空爱莉</string>
+    <string name="module_desc">星空爱莉 AI助手 - 让每一天都充满魔法</string>
+    <string name="ability_desc">EntryAbility</string>
+    <string name="hello_message">みんなを笑顔にする！それが、私のアイドルの魔法だよっ☆</string>
+    <string name="chat_placeholder">和爱莉聊天…</string>
+    <string name="action_write">写文案</string>
+    <string name="action_schedule">日程</string>
+    <string name="action_image">图片</string>
+    <string name="action_music">音乐</string>
+    <string name="nav_chat">聊天</string>
+    <string name="nav_tasks">任务</string>
+    <string name="nav_create">创作</string>
+    <string name="nav_profile">我的</string>
+    <string name="voice_label">语音输入</string>
+    <string name="emoji_label">选择表情</string>
+    <string name="typing_message">爱莉正在输入…</string>
+</resources>

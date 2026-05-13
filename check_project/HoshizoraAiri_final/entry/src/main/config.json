@@ -1,0 +1,10 @@
+{
+  "app": {
+    "compileSdkVersion": 11,
+    "buildToolsVersion": "4.1.0.4",
+    "minSdkVersion": 9,
+    "targetSdkVersion": 11,
+    "stageMode": true,
+    "distributionOnline": false
+  }
+}
