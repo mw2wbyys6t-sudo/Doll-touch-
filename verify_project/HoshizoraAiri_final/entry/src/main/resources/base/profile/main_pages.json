@@ -1,0 +1,31 @@
+{
+  "pages": [
+    {
+      "id": "pages/Index",
+      "name": "Index",
+      "page": "pages/Index.ets",
+      "window": {
+        "designWidth": 375,
+        "autoDesignWidth": true,
+        "backgroundColor": "#f3e5f5",
+        "navigationBar": false,
+        "statusBarColor": "#ffb6c1",
+        "statusBarFontColor": "#ffffff"
+      }
+    }
+  ],
+  "pageGroups": [],
+  "abilities": [
+    {
+      "name": "EntryAbility",
+      "src": "./ability/EntryAbility.ets",
+      "pages": [
+        "pages/Index"
+      ],
+      "window": {
+        "designWidth": 375,
+        "autoDesignWidth": true
+      }
+    }
+  ]
+}
