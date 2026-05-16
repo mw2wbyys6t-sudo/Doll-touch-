@@ -1,0 +1,11 @@
+{
+  "name": "hoshizora_airi",
+  "version": "1.0.0",
+  "description": "Hoshizora Airi - AI Assistant for HarmonyOS NEXT",
+  "main": "",
+  "author": "",
+  "license": "",
+  "dependencies": {},
+  "devDependencies": {},
+  "modelVersion": "5.0.0"
+}
