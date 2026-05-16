@@ -1,6 +1,8 @@
 {
   "apiType": "stageMode",
   "buildOption": {},
+  "compatibleSdkVersion": "5.0.0(12)",
+  "targetSdkVersion": "5.0.0(12)",
   "targets": [
     {
       "name": "default",

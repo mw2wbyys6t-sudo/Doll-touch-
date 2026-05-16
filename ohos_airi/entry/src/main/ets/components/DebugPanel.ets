@@ -58,7 +58,7 @@ function getEmotionColor(emotion: EmotionType): string {
       return '#FF1493';
     case EmotionType.ANXIOUS:
       return '#FFA500';
-    case EmotionType.SHYY:
+    case EmotionType.SHY:
       return '#FF69B4';
     case EmotionType.EMBARRASSED:
       return '#DA70D6';

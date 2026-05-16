@@ -16,12 +16,6 @@
       },
       {
         "name": "ohos.permission.POST_NOTIFICATION"
-      },
-      {
-        "name": "ohos.permission.RECEIVE_NOTIFICATION"
-      },
-      {
-        "name": "ohos.permission.NOTIFICATION_CONTROLLER"
       }
     ],
     "abilities": [

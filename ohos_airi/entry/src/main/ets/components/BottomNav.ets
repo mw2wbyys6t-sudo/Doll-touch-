@@ -33,8 +33,8 @@ struct TabItem {
 
 @Component
 export struct BottomNav {
-  currentTab: string;
-  onTabChange: (tab: string) => void;
+  @Prop currentTab: string = '';
+  @Prop onTabChange: (tab: string) => void = () => {};
 
   build() {
     const colors = ThemeManager.getThemeColors();

@@ -48,7 +48,7 @@ export class MemoryManager {
 
   async init(): Promise<void> {
     try {
-      const profile = await PreferencesUtil.get('userProfile');
+      const profile = await PreferencesUtil.getObject<UserProfile>('userProfile');
       if (profile) {
         this.userProfile = profile as UserProfile;
       } else {
@@ -61,17 +61,17 @@ export class MemoryManager {
         };
       }
 
-      const shortMemory = await PreferencesUtil.get('shortTermMemory');
+      const shortMemory = await PreferencesUtil.getObject<MemoryItem[]>('shortTermMemory');
       if (shortMemory) {
         this.shortTermMemory = shortMemory as MemoryItem[];
       }
 
-      const longMemory = await PreferencesUtil.get('longTermMemory');
+      const longMemory = await PreferencesUtil.getObject<MemoryItem[]>('longTermMemory');
       if (longMemory) {
         this.longTermMemory = longMemory as MemoryItem[];
       }
 
-      const importantMemory = await PreferencesUtil.get('importantMemory');
+      const importantMemory = await PreferencesUtil.getObject<MemoryItem[]>('importantMemory');
       if (importantMemory) {
         this.importantMemory = importantMemory as MemoryItem[];
       }
@@ -231,9 +231,9 @@ export class MemoryManager {
 
   private async saveMemory(): Promise<void> {
     try {
-      await PreferencesUtil.put('shortTermMemory', this.shortTermMemory);
-      await PreferencesUtil.put('longTermMemory', this.longTermMemory);
-      await PreferencesUtil.put('importantMemory', this.importantMemory);
+      await PreferencesUtil.putObject('shortTermMemory', this.shortTermMemory);
+      await PreferencesUtil.putObject('longTermMemory', this.longTermMemory);
+      await PreferencesUtil.putObject('importantMemory', this.importantMemory);
     } catch (error) {
       console.error('Failed to save memory:', error);
     }
@@ -242,7 +242,7 @@ export class MemoryManager {
   private async saveProfile(): Promise<void> {
     try {
       if (this.userProfile) {
-        await PreferencesUtil.put('userProfile', this.userProfile);
+        await PreferencesUtil.putObject('userProfile', this.userProfile);
       }
     } catch (error) {
       console.error('Failed to save profile:', error);

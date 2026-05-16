@@ -1,5 +1,3 @@
-import animator from '@ohos.animator';
-
 export type BodyActionType = 'wave' | 'dance' | 'idle_sway' | 'jump' | 'sit' | 'stand' | 'point';
 
 export interface BodyParams {

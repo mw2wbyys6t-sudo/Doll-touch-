@@ -1,4 +1,4 @@
-import { NotificationRequest, NotificationSlot, NotificationConstant } from '@kit.NotificationKit';
+import { notificationManager, NotificationRequest, NotificationSlot, NotificationConstant } from '@kit.NotificationKit';
 
 export class NotificationManager {
   private static isInitialized = false;

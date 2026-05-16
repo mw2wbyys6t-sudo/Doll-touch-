@@ -8,7 +8,7 @@ interface ActionBtnProps {
 
 @Component
 export struct ActionBtn {
-  props: ActionBtnProps;
+  @Prop props: ActionBtnProps = { icon: '', label: '', onClick: () => {} };
 
   build() {
     const colors = ThemeManager.getThemeColors();

@@ -1,5 +1,5 @@
 @Component
-struct CharacterAnimation {
+export struct CharacterAnimation {
   @StorageProp('eyeOpen') eyeOpen: number = 1.0;
   @StorageProp('eyeBrowY') eyeBrowY: number = 0.0;
   @StorageProp('mouthOpen') mouthOpen: number = 0.2;
