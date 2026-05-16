@@ -39,28 +39,23 @@ interface StateLock {
 }
 
 // 观察者类
-@Observed
 export class EmotionalFSM {
   // 单例实例
   private static instance: EmotionalFSM | null = null;
 
   // 当前状态
-  @Track
   private _currentState: FSMState = FSMState.IDLE;
 
   // 上一个状态
-  @Track
   private _previousState: FSMState = FSMState.IDLE;
 
   // 状态持续时间
-  @Track
   private _stateDuration: number = 0;
 
   // 状态进入时间戳
   private _stateEnterTime: number = 0;
 
   // 状态锁列表
-  @Track
   private _activeLocks: StateLock[] = [];
 
   // 状态历史记录

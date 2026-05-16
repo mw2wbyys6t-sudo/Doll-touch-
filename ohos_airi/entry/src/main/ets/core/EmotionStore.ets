@@ -42,17 +42,14 @@ interface EmotionState {
 }
 
 // 观察者类
-@Observed
 export class EmotionStore {
   // 单例实例
   private static instance: EmotionStore | null = null;
 
   // 当前主要情绪
-  @Track
   private _currentEmotion: EmotionType = EmotionType.IDLE;
 
   // 情绪权重映射
-  @Track
   private _emotionWeights: Map<EmotionType, number> = new Map();
 
   // 情绪最大权重
@@ -71,11 +68,9 @@ export class EmotionStore {
   private _isDecaying: boolean = false;
 
   // 是否被锁定
-  @Track
   private _isLocked: boolean = false;
 
   // 锁定原因
-  @Track
   private _lockReason: string = '';
 
   // 事件分发器

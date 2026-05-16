@@ -47,7 +47,6 @@ interface PageInfo {
 }
 
 // 观察者类
-@Observed
 export class LifecycleManager {
   // 单例实例
   private static instance: LifecycleManager | null = null;
@@ -59,19 +58,15 @@ export class LifecycleManager {
   private fsm: EmotionalFSM;
 
   // 应用是否在前台
-  @Track
   private _isInForeground: boolean = true;
 
   // 应用是否已初始化
-  @Track
   private _isInitialized: boolean = false;
 
   // 注册的资源列表
-  @Track
   private _registeredResources: ResourceInfo[] = [];
 
   // 注册的页面列表
-  @Track
   private _registeredPages: Map<string, PageInfo> = new Map();
 
   // 空闲超时时间（毫秒）
@@ -87,11 +82,9 @@ export class LifecycleManager {
   private _isUserActivityLocked: boolean = false;
 
   // 睡眠状态
-  @Track
   private _isSleeping: boolean = false;
 
   // 睡眠模式
-  @Track
   private _sleepModeEnabled: boolean = true;
 
   // 睡眠超时时间（毫秒）

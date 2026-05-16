@@ -1,4 +1,3 @@
-import animator from '@ohos.animator';
 import { BusinessError } from '@kit.BasicServicesKit';
 
 export type ExpressionType = 'idle' | 'happy' | 'sad' | 'surprised' | 'angry' | 'shy' | 'excited' | 'sleepy';
