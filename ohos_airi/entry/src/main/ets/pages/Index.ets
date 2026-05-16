@@ -1,5 +1,4 @@
 import { promptAction } from '@kit.ArkUI';
-import { observe } from '@ohos.arkui.observable';
 import { ChatViewModel } from '../viewmodel/ChatViewModel';
 import { ThemeManager, ThemeMode } from '../utils/ThemeManager';
 import { MessageBubble } from '../components/MessageBubble';

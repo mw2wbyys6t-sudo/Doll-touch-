@@ -1,4 +1,3 @@
-@Entry
 @Component
 struct CharacterAnimation {
   @StorageProp('eyeOpen') eyeOpen: number = 1.0;

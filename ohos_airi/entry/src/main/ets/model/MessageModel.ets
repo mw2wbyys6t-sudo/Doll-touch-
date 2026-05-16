@@ -1,9 +1,20 @@
-export interface Message {
-  id: string;
-  content: string;
-  sender: 'ai' | 'user';
-  timestamp: number;
-  type: 'text' | 'voice' | 'image';
+import { Observed } from '@kit.ArkUI';
+
+@Observed
+export class Message {
+  id: string = '';
+  content: string = '';
+  sender: 'ai' | 'user' = 'ai';
+  timestamp: number = 0;
+  type: 'text' | 'voice' | 'image' = 'text';
+
+  constructor(content: string = '', sender: 'ai' | 'user' = 'ai', type: 'text' | 'voice' | 'image' = 'text') {
+    this.id = Date.now().toString(36) + Math.random().toString(36).substr(2);
+    this.content = content;
+    this.sender = sender;
+    this.timestamp = Date.now();
+    this.type = type;
+  }
 }
 
 export interface ChatSession {
@@ -19,13 +30,7 @@ export class MessageModel {
   }
 
   static createMessage(content: string, sender: 'ai' | 'user', type: 'text' | 'voice' | 'image' = 'text'): Message {
-    return {
-      id: this.createId(),
-      content,
-      sender,
-      timestamp: Date.now(),
-      type
-    };
+    return new Message(content, sender, type);
   }
 
   static formatTime(timestamp: number): string {

@@ -3,7 +3,7 @@ import { ThemeManager } from '../utils/ThemeManager';
 
 @Component
 export struct MessageBubble {
-  message: Message;
+  @ObjectLink message: Message;
 
   build() {
     const colors = ThemeManager.getThemeColors();

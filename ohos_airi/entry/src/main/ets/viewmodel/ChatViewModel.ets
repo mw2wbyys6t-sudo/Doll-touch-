@@ -1,4 +1,3 @@
-import { Observable, Decorator } from '@ohos.arkui.observable';
 import { MessageModel, Message } from '../model/MessageModel';
 import { PreferencesUtil } from '../utils/PreferencesUtil';
 import { NotificationManager } from '../utils/NotificationManager';
@@ -6,9 +5,6 @@ import { MemoryManager } from '../utils/MemoryManager';
 import { EmotionUnderstanding } from '../utils/EmotionUnderstanding';
 import { ThinkingEngine } from '../utils/ThinkingEngine';
 
-const { observable, observe } = Decorator;
-
-@observable
 export class ChatViewModel {
   messages: Message[] = [];
   isTyping: boolean = false;
