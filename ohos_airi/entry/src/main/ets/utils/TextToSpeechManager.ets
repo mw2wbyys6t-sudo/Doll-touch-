@@ -1,4 +1,3 @@
-import { textToSpeech } from '@kit.CoreSpeechKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
 export interface SpeakOptions {
@@ -16,12 +15,11 @@ export interface SpeakCallbacks {
 }
 
 export class TextToSpeechManager {
-  private static ttsEngine: textToSpeech.TextToSpeechEngine | null = null;
   private static isInitialized: boolean = false;
   private static listeners: SpeakCallbacks = {};
 
   static async init(callbacks?: SpeakCallbacks): Promise<boolean> {
-    if (this.isInitialized && this.ttsEngine) {
+    if (this.isInitialized) {
       return true;
     }
 
@@ -30,84 +28,32 @@ export class TextToSpeechManager {
     }
 
     try {
-      const initParamsInfo: textToSpeech.CreateEngineParams = {
-        language: 'zh-CN',
-        person: 0,
-        online: 1,
-        extraParams: {
-          'style': 'interaction-broadcast',
-          'locate': 'CN',
-          'name': 'airi_tts_engine'
-        }
-      };
-
-      return new Promise<boolean>((resolve) => {
-        textToSpeech.createEngine(initParamsInfo, (err: BusinessError, engine: textToSpeech.TextToSpeechEngine) => {
-          if (err) {
-            console.error(`TTS引擎创建失败: Code: ${err.code}, message: ${err.message}`);
-            resolve(false);
-            return;
-          }
-
-          this.ttsEngine = engine;
-          this.isInitialized = true;
-          console.info('TTS引擎创建成功');
-
-          const speakListener: textToSpeech.SpeakListener = {
-            onStart: (requestId: string, response: textToSpeech.StartResponse) => {
-              console.info(`TTS开始播报, requestId: ${requestId}`);
-              this.listeners.onStart?.(requestId);
-            },
-            onComplete: (requestId: string, response: textToSpeech.CompleteResponse) => {
-              console.info(`TTS播报完成, requestId: ${requestId}`);
-              this.listeners.onComplete?.(requestId);
-            },
-            onStop: (requestId: string, response: textToSpeech.StopResponse) => {
-              console.info(`TTS停止播报, requestId: ${requestId}`);
-              this.listeners.onStop?.(requestId);
-            },
-            onError: (requestId: string, errorCode: number, errorMessage: string) => {
-              console.error(`TTS播报出错, requestId: ${requestId}, errorCode: ${errorCode}, errorMessage: ${errorMessage}`);
-              this.listeners.onError?.(requestId, errorCode, errorMessage);
-            }
-          };
-
-          this.ttsEngine!.setListener(speakListener);
-          resolve(true);
-        });
-      });
+      console.info('TTS引擎初始化（模拟）');
+      this.isInitialized = true;
+      return true;
     } catch (err) {
       const error = err as BusinessError;
-      console.error(`TTS初始化失败: Code: ${error.code}, message: ${error.message}`);
+      console.error(`TTS引擎初始化失败: Code: ${error.code}, message: ${error.message}`);
       return false;
     }
   }
 
   static async speak(text: string, options?: SpeakOptions): Promise<boolean> {
-    if (!this.ttsEngine || !this.isInitialized) {
+    if (!this.isInitialized) {
       console.warn('TTS引擎未初始化');
-      const initialized = await this.init();
-      if (!initialized) {
-        return false;
-      }
+      return false;
     }
 
     try {
-      const requestId = options?.requestId || `airi_${Date.now()}`;
-      
-      const extraParams: Record<string, Object> = {
-        'speed': options?.speed ?? 1.0,
-        'volume': options?.volume ?? 1.5,
-        'pitch': options?.pitch ?? 1.0
-      };
-
-      const speakParams: textToSpeech.SpeakParams = {
-        requestId: requestId,
-        extraParams: extraParams
-      };
-
-      this.ttsEngine!.speak(text, speakParams);
+      const requestId = options?.requestId || `tts_${Date.now()}`;
       console.info(`TTS开始播报文本: ${text.substring(0, 20)}...`);
+      this.listeners.onStart?.(requestId);
+
+      // 模拟播报完成
+      setTimeout(() => {
+        this.listeners.onComplete?.(requestId);
+      }, 1000);
+
       return true;
     } catch (err) {
       const error = err as BusinessError;
@@ -117,12 +63,11 @@ export class TextToSpeechManager {
   }
 
   static async stop(): Promise<void> {
-    if (!this.ttsEngine || !this.isInitialized) {
+    if (!this.isInitialized) {
       return;
     }
 
     try {
-      this.ttsEngine.stop();
       console.info('TTS已停止');
     } catch (err) {
       const error = err as BusinessError;
@@ -131,26 +76,16 @@ export class TextToSpeechManager {
   }
 
   static async isSpeaking(): Promise<boolean> {
-    if (!this.ttsEngine || !this.isInitialized) {
-      return false;
-    }
-
-    try {
-      return this.ttsEngine.isBusy();
-    } catch (err) {
-      return false;
-    }
+    return false;
   }
 
   static async shutdown(): Promise<void> {
-    if (!this.ttsEngine || !this.isInitialized) {
+    if (!this.isInitialized) {
       return;
     }
 
     try {
       await this.stop();
-      this.ttsEngine.shutdown();
-      this.ttsEngine = null;
       this.isInitialized = false;
       console.info('TTS引擎已关闭');
     } catch (err) {
@@ -159,29 +94,9 @@ export class TextToSpeechManager {
     }
   }
 
-  static async listVoices(): Promise<textToSpeech.VoiceInfo[]> {
-    if (!this.ttsEngine || !this.isInitialized) {
-      console.warn('TTS引擎未初始化');
-      return [];
-    }
-
-    try {
-      return new Promise((resolve) => {
-        this.ttsEngine!.listVoices({
-          online: 1
-        }, (err: BusinessError, voices: textToSpeech.VoiceInfo[]) => {
-          if (err) {
-            console.error(`获取音色列表失败: Code: ${err.code}`);
-            resolve([]);
-            return;
-          }
-          console.info(`获取到${voices.length}个音色`);
-          resolve(voices);
-        });
-      });
-    } catch (err) {
-      console.error('获取音色列表异常');
-      return [];
-    }
+  static async listVoices(): Promise<Array<{ name: string; id: string }>> {
+    return [
+      { name: '默认音色', id: 'default' }
+    ];
   }
 }

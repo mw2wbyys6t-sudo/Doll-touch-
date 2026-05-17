@@ -133,19 +133,19 @@ export class ChatViewModel {
 
   async generateResponse(text: string): Promise<string> {
     const lowerText = text.toLowerCase();
-    
-    if (lowerText.includes('你好') || lowerText.includes('hi') || lowerText.includes('hello') || lowerText.includes('こんにちは')) {
+
+    if (lowerText.indexOf('你好') !== -1 || lowerText.indexOf('hi') !== -1 || lowerText.indexOf('hello') !== -1 || lowerText.indexOf('こんにちは') !== -1) {
       return this.getRandomResponse('greeting');
     }
-    
-    if (lowerText.includes('谢谢') || lowerText.includes('ありがとう') || lowerText.includes('thank')) {
+
+    if (lowerText.indexOf('谢谢') !== -1 || lowerText.indexOf('ありがとう') !== -1 || lowerText.indexOf('thank') !== -1) {
       return this.getRandomResponse('thanks');
     }
-    
-    if (lowerText.includes('写') || lowerText.includes('创作') || lowerText.includes('画') || lowerText.includes('诗') || lowerText.includes('文案')) {
+
+    if (lowerText.indexOf('写') !== -1 || lowerText.indexOf('创作') !== -1 || lowerText.indexOf('画') !== -1 || lowerText.indexOf('诗') !== -1 || lowerText.indexOf('文案') !== -1) {
       return this.getRandomResponse('creative');
     }
-    
+
     return this.getRandomResponse('default');
   }
 

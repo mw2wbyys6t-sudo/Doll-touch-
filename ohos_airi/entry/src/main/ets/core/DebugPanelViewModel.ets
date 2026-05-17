@@ -20,14 +20,11 @@ interface DebugPanelConfig {
 }
 
 // 观察者类
-@Observed
 export class DebugPanelViewModel {
   // 调试面板可见性
-  @Track
   private _isVisible: boolean = false;
 
   // 调试面板配置
-  @Track
   private _config: DebugPanelConfig = {
     visible: true,
     opacity: 0.9,
@@ -38,44 +35,33 @@ export class DebugPanelViewModel {
   };
 
   // 当前状态
-  @Track
   private _currentState: FSMState = FSMState.IDLE;
 
   // 当前情绪
-  @Track
   private _currentEmotion: EmotionType = EmotionType.IDLE;
 
   // 情绪权重列表
-  @Track
   private _emotionWeights: Array<{ emotion: string; weight: number }> = [];
 
   // 活动锁列表
-  @Track
   private _activeLocks: Array<{ state: string; reason: string; timeout: number }> = [];
 
   // 应用状态
-  @Track
   private _isInForeground: boolean = true;
 
-  @Track
   private _isSleeping: boolean = false;
 
-  @Track
   private _isInitialized: boolean = false;
 
   // 资源统计
-  @Track
   private _resourceCount: number = 0;
 
-  @Track
   private _pageCount: number = 0;
 
   // FPS 信息
-  @Track
   private _fps: number = 60;
 
   // 内存信息（模拟）
-  @Track
   private _memoryUsage: string = '0 MB';
 
   // 事件分发器

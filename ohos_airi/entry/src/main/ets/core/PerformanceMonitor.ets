@@ -1,3 +1,5 @@
+import { AppStorage } from '@kit.ArkUI';
+
 export interface PerformanceMetrics {
   fps: number;
   memoryUsage: number;
@@ -12,6 +14,28 @@ export interface Alert {
   message: string;
   timestamp: number;
   data?: any;
+}
+
+// 兼容 HarmonyOS NEXT 的 requestAnimationFrame 替代实现
+let rafId = 0;
+type FrameRequestCallback = (timestamp: number) => void;
+const rafCallbacks = new Map<number, FrameRequestCallback>();
+
+function requestAnimationFrame(callback: FrameRequestCallback): number {
+  const id = ++rafId;
+  rafCallbacks.set(id, callback);
+  setTimeout(() => {
+    const cb = rafCallbacks.get(id);
+    if (cb) {
+      rafCallbacks.delete(id);
+      cb(Date.now());
+    }
+  }, 16);
+  return id;
+}
+
+function cancelAnimationFrame(id: number): void {
+  rafCallbacks.delete(id);
 }
 
 export class PerformanceMonitor {
@@ -103,7 +127,7 @@ export class PerformanceMonitor {
     let totalSize = 0;
     try {
       const heap = JSON.stringify(AppStorage);
-      totalSize = new Blob([heap]).size / 1024 / 1024;
+      totalSize = heap.length / 1024 / 1024;
     } catch {
       totalSize = 50;
     }

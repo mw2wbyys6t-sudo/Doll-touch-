@@ -248,20 +248,13 @@ struct Index {
     // 并行接入 LifecycleManager - 注册页面生命周期
     if (ENABLE_LIFECYCLE_MANAGER) {
       try {
-        // 注册页面回调
-        lifecycleManager.registerPage('Index', 
-          () => {
-            console.log('Index 页面 onAppear 回调');
-            // 从睡眠状态唤醒
-            lifecycleManager.markUserActivity();
-          },
-          () => {
-            console.log('Index 页面 onDisappear 回调');
-          }
-        );
-        
         // 通知 LifecycleManager 页面出现
-        lifecycleManager.onAppear('Index');
+        lifecycleManager.onAppear('Index', () => {
+          console.log('Index 页面 onAppear 回调');
+          lifecycleManager.markUserActivity();
+        }, () => {
+          console.log('Index 页面 onDisappear 回调');
+        });
         console.log('LifecycleManager 已注册 Index 页面');
       } catch (error) {
         console.error('LifecycleManager 注册页面失败:', error);
@@ -277,7 +270,7 @@ struct Index {
     }, 3000 + Math.random() * 2000) as unknown as number;
     
     // 保存监听器引用以便清理
-    this.themeListener = ThemeManager.addListener(() => {
+    ThemeManager.addListener(() => {
       this.currentTheme = ThemeManager.getCurrentTheme();
     });
   }

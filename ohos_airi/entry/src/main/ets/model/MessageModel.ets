@@ -1,6 +1,3 @@
-import { Observed } from '@kit.ArkUI';
-
-@Observed
 export class Message {
   id: string = '';
   content: string = '';
@@ -9,7 +6,7 @@ export class Message {
   type: 'text' | 'voice' | 'image' = 'text';
 
   constructor(content: string = '', sender: 'ai' | 'user' = 'ai', type: 'text' | 'voice' | 'image' = 'text') {
-    this.id = Date.now().toString(36) + Math.random().toString(36).substr(2);
+    this.id = Date.now().toString(36) + Math.random().toString(36).substring(2);
     this.content = content;
     this.sender = sender;
     this.timestamp = Date.now();
@@ -26,7 +23,7 @@ export interface ChatSession {
 
 export class MessageModel {
   static createId(): string {
-    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    return Date.now().toString(36) + Math.random().toString(36).substring(2);
   }
 
   static createMessage(content: string, sender: 'ai' | 'user', type: 'text' | 'voice' | 'image' = 'text'): Message {
@@ -35,15 +32,19 @@ export class MessageModel {
 
   static formatTime(timestamp: number): string {
     const date = new Date(timestamp);
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const h = date.getHours();
+    const m = date.getMinutes();
+    const hours = h < 10 ? '0' + h.toString() : h.toString();
+    const minutes = m < 10 ? '0' + m.toString() : m.toString();
     return `${hours}:${minutes}`;
   }
 
   static formatDate(timestamp: number): string {
     const date = new Date(timestamp);
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const day = date.getDate().toString().padStart(2, '0');
+    const mon = date.getMonth() + 1;
+    const d = date.getDate();
+    const month = mon < 10 ? '0' + mon.toString() : mon.toString();
+    const day = d < 10 ? '0' + d.toString() : d.toString();
     return `${month}-${day}`;
   }
 }

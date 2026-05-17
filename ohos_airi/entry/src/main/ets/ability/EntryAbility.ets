@@ -1,5 +1,6 @@
 import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+import { window } from '@kit.ArkUI';
 import { PreferencesUtil } from '../utils/PreferencesUtil';
 import { NotificationManager } from '../utils/NotificationManager';
 import { LifecycleManager } from '../core/LifecycleManager';
@@ -25,7 +26,7 @@ export default class EntryAbility extends UIAbility {
       }
     }
     
-    this.setShowOnLockScreen(true);
+    // setShowOnLockScreen not available in HarmonyOS NEXT, skip
   }
 
   onDestroy() {

@@ -1,4 +1,6 @@
 import { notificationManager, NotificationRequest, NotificationSlot, NotificationConstant } from '@kit.NotificationKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { Context } from '@kit.AbilityKit';
 
 export class NotificationManager {
   private static isInitialized = false;

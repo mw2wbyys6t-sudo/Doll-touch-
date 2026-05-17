@@ -7,9 +7,9 @@
 import {
   DebugPanelViewModel,
   debugPanelViewModel
-} from './DebugPanelViewModel';
-import { FSMState } from './EmotionalFSM';
-import { EmotionType } from './EmotionStore';
+} from '../core/DebugPanelViewModel';
+import { FSMState } from '../core/EmotionalFSM';
+import { EmotionType } from '../core/EmotionStore';
 
 // 状态颜色映射
 function getStateColor(state: FSMState): string {

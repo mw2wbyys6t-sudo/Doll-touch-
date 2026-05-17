@@ -1,7 +1,7 @@
 import { preferences } from '@kit.ArkData';
-import { Preference } from '@kit.ArkData';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { EmotionalState } from './EmotionalFSM';
+import { UIAbilityContext } from '@kit.AbilityKit';
 
 export type MemoryType = 'short_term' | 'long_term' | 'important' | 'emotional';
 
@@ -34,7 +34,7 @@ export interface UserPreferences {
 
 export class MemoryManager {
   private static instance: MemoryManager | null = null;
-  private preferences: Preference | null = null;
+  private dataPreferences: preferences.Preferences | null = null;
   private isInitialized: boolean = false;
 
   private readonly SHORT_TERM_KEY = 'short_term_memory';
@@ -69,13 +69,13 @@ export class MemoryManager {
     return this.instance;
   }
 
-  async init(context: Context): Promise<boolean> {
+  async init(context: UIAbilityContext): Promise<boolean> {
     if (this.isInitialized) {
       return true;
     }
 
     try {
-      this.preferences = await preferences.getPreferences(context, 'airi_memory');
+      this.dataPreferences = await preferences.getPreferences(context, 'airi_memory');
       await this.loadFromStorage();
       this.isInitialized = true;
       return true;
@@ -86,9 +86,7 @@ export class MemoryManager {
   }
 
   private async loadFromStorage(): Promise<void> {
-    if (!this.preferences) {
-      return;
-    }
+    if (!this.dataPreferences) return;
 
     try {
       this.shortTermMemory = await this.loadMemoryArray(this.SHORT_TERM_KEY);
@@ -102,8 +100,8 @@ export class MemoryManager {
   }
 
   private async loadMemoryArray(key: string): Promise<Memory[]> {
-    if (!this.preferences) return [];
-    const data = await this.preferences.get(key, '[]');
+    if (!this.dataPreferences) return [];
+    const data = await this.dataPreferences.get(key, '[]');
     try {
       return JSON.parse(data as string);
     } catch {
@@ -112,8 +110,8 @@ export class MemoryManager {
   }
 
   private async loadEmotionalMemory(): Promise<EmotionalMemory[]> {
-    if (!this.preferences) return [];
-    const data = await this.preferences.get(this.EMOTIONAL_KEY, '[]');
+    if (!this.dataPreferences) return [];
+    const data = await this.dataPreferences.get(this.EMOTIONAL_KEY, '[]');
     try {
       return JSON.parse(data as string);
     } catch {
@@ -122,11 +120,11 @@ export class MemoryManager {
   }
 
   private async loadPreferences(): Promise<UserPreferences> {
-    if (!this.preferences) {
+    if (!this.dataPreferences) {
       return { ...this.userPreferences };
     }
-    const data = await this.preferences.get(this.USER_PREF_KEY, '');
-    if (!data) {
+    const data = await this.dataPreferences.get(this.USER_PREF_KEY, '');
+    if (data) {
       try {
         return JSON.parse(data as string);
       } catch {
@@ -226,25 +224,27 @@ export class MemoryManager {
 
     const searchTypes = types || ['short_term', 'long_term', 'important'];
 
-    if (searchTypes.includes('short_term')) {
+    if (searchTypes.indexOf('short_term') !== -1) {
       memories.push(...this.shortTermMemory);
     }
-    if (searchTypes.includes('long_term')) {
+    if (searchTypes.indexOf('long_term') !== -1) {
       memories.push(...this.longTermMemory);
     }
-    if (searchTypes.includes('important')) {
+    if (searchTypes.indexOf('important') !== -1) {
       memories.push(...this.importantMemory);
     }
 
     if (query) {
+      const queryLower = query.toLowerCase();
       memories = memories.filter(m =>
-        m.content.toLowerCase().includes(query.toLowerCase()) ||
-        (m.tags && m.tags.some(t => t.toLowerCase().includes(query.toLowerCase()))
+        m.content.toLowerCase().indexOf(queryLower) !== -1 ||
+        (m.tags && m.tags.some(t => t.toLowerCase().indexOf(queryLower) !== -1))
       );
     }
 
     memories.sort((a, b) => {
-      if (b.importance - a.importance);
+      const importanceDiff = b.importance - a.importance;
+      if (importanceDiff !== 0) return importanceDiff;
       return b.timestamp - a.timestamp;
     });
 
@@ -292,8 +292,8 @@ export class MemoryManager {
 
   async savePreferences(prefs: Partial<UserPreferences>): Promise<void> {
     this.userPreferences = { ...this.userPreferences, ...prefs };
-    await this.preferences?.put(this.USER_PREF_KEY, JSON.stringify(this.userPreferences));
-    await this.preferences?.flush();
+    await this.dataPreferences?.put(this.USER_PREF_KEY, JSON.stringify(this.userPreferences));
+    await this.dataPreferences?.flush();
   }
 
   getPreferences(): UserPreferences {
@@ -301,32 +301,17 @@ export class MemoryManager {
   }
 
   private async saveMemoryArray(key: string, memories: Memory[]): Promise<void> {
-    await this.preferences?.put(key, JSON.stringify(memories));
-    await this.preferences?.flush();
+    await this.dataPreferences?.put(key, JSON.stringify(memories));
+    await this.dataPreferences?.flush();
   }
 
   private async saveEmotionalMemory(): Promise<void> {
-    await this.preferences?.put(this.EMOTIONAL_KEY, JSON.stringify(this.emotionalMemory));
-    await this.preferences?.flush();
+    await this.dataPreferences?.put(this.EMOTIONAL_KEY, JSON.stringify(this.emotionalMemory));
+    await this.dataPreferences?.flush();
   }
 
   async clearMemory(type?: MemoryType): Promise<void> {
     if (!type) {
-      switch (type) {
-        case 'short_term':
-          this.shortTermMemory = [];
-          await this.saveMemoryArray(this.SHORT_TERM_KEY, []);
-          break;
-        case 'long_term':
-          this.longTermMemory = [];
-          await this.saveMemoryArray(this.LONG_TERM_KEY, []);
-          break;
-        case 'important':
-          this.importantMemory = [];
-          await this.saveMemoryArray(this.IMPORTANT_KEY, []);
-          break;
-      }
-    } else {
       this.shortTermMemory = [];
       this.longTermMemory = [];
       this.importantMemory = [];
@@ -335,6 +320,26 @@ export class MemoryManager {
       await this.saveMemoryArray(this.LONG_TERM_KEY, []);
       await this.saveMemoryArray(this.IMPORTANT_KEY, []);
       await this.saveEmotionalMemory();
+      return;
+    }
+
+    switch (type) {
+      case 'short_term':
+        this.shortTermMemory = [];
+        await this.saveMemoryArray(this.SHORT_TERM_KEY, []);
+        break;
+      case 'long_term':
+        this.longTermMemory = [];
+        await this.saveMemoryArray(this.LONG_TERM_KEY, []);
+        break;
+      case 'important':
+        this.importantMemory = [];
+        await this.saveMemoryArray(this.IMPORTANT_KEY, []);
+        break;
+      case 'emotional':
+        this.emotionalMemory = [];
+        await this.saveEmotionalMemory();
+        break;
     }
   }
 

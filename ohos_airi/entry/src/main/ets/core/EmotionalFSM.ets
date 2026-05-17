@@ -7,6 +7,26 @@
 import { EmotionStore, EmotionType } from './EmotionStore';
 import { Dispatcher } from './Dispatcher';
 
+// 情绪状态字符串类型（用于外部接口）
+export type EmotionalState =
+  | 'idle'
+  | 'talking'
+  | 'thinking'
+  | 'happy'
+  | 'sad'
+  | 'angry'
+  | 'excited'
+  | 'scared'
+  | 'confused'
+  | 'sleeping'
+  | 'shy'
+  | 'surprised'
+  | 'neutral'
+  | 'tired'
+  | 'fearful'
+  | 'curious'
+  | 'loving';
+
 // FSM 状态类型
 export enum FSMState {
   IDLE = 'idle',

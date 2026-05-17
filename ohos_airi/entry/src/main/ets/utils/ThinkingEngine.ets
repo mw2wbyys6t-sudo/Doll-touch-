@@ -85,7 +85,7 @@ export class ThinkingEngine {
       timestamp: Date.now(),
       emotion: emotionAnalysis.emotion,
       intensity: emotionAnalysis.intensity,
-      trigger: context.userMessage.substring(0, 50)
+      trigger: context.userMessage.slice(0, 50)
     });
 
     this.interactionCount++;
@@ -108,7 +108,7 @@ export class ThinkingEngine {
     const thoughts: string[] = [];
 
     if (memoryContext) {
-      thoughts.push(`[记忆检索] 发现相关记忆: ${memoryContext.substring(0, 100)}...`);
+      thoughts.push(`[记忆检索] 发现相关记忆: ${memoryContext.slice(0, 100)}...`);
     }
 
     if (profileSummary) {
@@ -129,8 +129,8 @@ export class ThinkingEngine {
 
   private extractKeywords(text: string): string[] {
     const stopWords = ['的', '了', '是', '在', '我', '你', '他', '她', '它', '和', '与', '或', '的', '了'];
-    const words = text.split(/[\s,.!?，。！？、]+/).filter(w => 
-      w.length > 1 && !stopWords.includes(w)
+    const words = text.split(/[\s,.!?，。！？、]+/).filter(w =>
+      w.length > 1 && stopWords.indexOf(w) === -1
     );
     
     const wordCount: Record<string, number> = {};
@@ -149,7 +149,7 @@ export class ThinkingEngine {
       return 'respond';
     }
 
-    if (context.userMessage.includes('?') || context.userMessage.includes('？')) {
+    if (context.userMessage.indexOf('?') !== -1 || context.userMessage.indexOf('？') !== -1) {
       if (emotionAnalysis.intensity < 0.5) {
         return 'suggest';
       }
@@ -179,7 +179,7 @@ export class ThinkingEngine {
         .map(m => m.content)
         .join(' ');
 
-      if (topics.includes('喜欢') || topics.includes('感兴趣')) {
+      if (topics.indexOf('喜欢') !== -1 || topics.indexOf('感兴趣') !== -1) {
         insights.push('用户似乎对某些话题特别感兴趣，可以继续深入探讨');
       }
     }
@@ -228,7 +228,7 @@ export class ThinkingEngine {
       if (relevantMemories.length > 0) {
         response += `${empatheticStart} `;
         const memory = relevantMemories[0];
-        response += `我记得之前你提到过「${memory.content.substring(0, 50)}...」，是不是这个呢？`;
+        response += `我记得之前你提到过「${memory.content.slice(0, 50)}...」，是不是这个呢？`;
         return response;
       }
     }

@@ -9,25 +9,25 @@ interface TabItemProps {
 
 @Component
 struct TabItem {
-  props: TabItemProps;
+  @Prop props: TabItemProps = { icon: '', label: '', isActive: false, onClick: () => {} };
 
   build() {
-    const colors = ThemeManager.getThemeColors();
-
-    Button({ type: ButtonType.Normal }) {
-      Column({ space: 2 }) {
-        Text(this.props.icon)
-          .fontSize(22)
-        
-        Text(this.props.label)
-          .fontSize(10)
-      }
+    Column() {
+      Image(this.props.icon)
+        .width(24)
+        .height(24)
+        .fillColor(this.props.isActive ? '#FF69B4' : '#999999');
+      Text(this.props.label)
+        .fontSize(12)
+        .fontColor(this.props.isActive ? '#FF69B4' : '#999999')
+        .margin({ top: 4 });
     }
-    .width('100%')
-    .height(56)
-    .backgroundColor(Color.Transparent)
-    .fontColor(this.props.isActive ? '#e91e63' : colors.textSecondary)
-    .onClick(() => this.props.onClick())
+    .width('25%')
+    .height('100%')
+    .justifyContent(FlexAlign.Center)
+    .onClick(() => {
+      this.props.onClick();
+    });
   }
 }
 

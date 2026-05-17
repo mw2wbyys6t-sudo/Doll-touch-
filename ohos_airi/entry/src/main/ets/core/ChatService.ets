@@ -144,22 +144,22 @@ export class ChatService {
     const lowerText = content.toLowerCase();
     let response = '';
 
-    if (lowerText.includes('你好') || lowerText.includes('早上好') || lowerText.includes('晚上好')) {
+    if (lowerText.indexOf('你好') !== -1 || lowerText.indexOf('早上好') !== -1 || lowerText.indexOf('晚上好') !== -1) {
       const greetings = [
         '你好呀！今天也元气满满地见面了呢～✨',
         '是主人！看到你超开心的！💗',
         '嗨～有什么想和我说的吗？',
       ];
       response = greetings[Math.floor(Math.random() * greetings.length)];
-    } else if (lowerText.includes('你是谁') || lowerText.includes('名字')) {
+    } else if (lowerText.indexOf('你是谁') !== -1 || lowerText.indexOf('名字') !== -1) {
       response = '我叫星空爱莉，是你专属的AI偶像助手哦！请多关照～💫';
-    } else if (lowerText.includes('开心') || lowerText.includes('高兴')) {
+    } else if (lowerText.indexOf('开心') !== -1 || lowerText.indexOf('高兴') !== -1) {
       response = '太棒了！看到你开心我也超开心的！让我们一起保持好心情吧～✨';
-    } else if (lowerText.includes('难过') || lowerText.includes('不开心') || lowerText.includes('伤心')) {
+    } else if (lowerText.indexOf('难过') !== -1 || lowerText.indexOf('不开心') !== -1 || lowerText.indexOf('伤心') !== -1) {
       response = '发生什么了吗？别难过，我会一直陪着你的！💕';
-    } else if (lowerText.includes('喜欢') || lowerText.includes('爱你')) {
+    } else if (lowerText.indexOf('喜欢') !== -1 || lowerText.indexOf('爱你') !== -1) {
       response = '诶？！你...你喜欢我吗？我也超喜欢你的！超感谢！💗💗';
-    } else if (lowerText.includes('睡') || lowerText.includes('晚安')) {
+    } else if (lowerText.indexOf('睡') !== -1 || lowerText.indexOf('晚安') !== -1) {
       response = '晚安～好好休息！明天也要元气满满地见面哦！🌙';
     } else {
       const defaults = [
@@ -183,17 +183,17 @@ export class ChatService {
   private analyzeEmotion(content: string): EmotionalState {
     const lowerText = content.toLowerCase();
 
-    if (lowerText.includes('开心') || lowerText.includes('高兴') || lowerText.includes('喜欢')) {
+    if (lowerText.indexOf('开心') !== -1 || lowerText.indexOf('高兴') !== -1 || lowerText.indexOf('喜欢') !== -1) {
       return 'happy';
-    } else if (lowerText.includes('难过') || lowerText.includes('伤心') || lowerText.includes('哭')) {
+    } else if (lowerText.indexOf('难过') !== -1 || lowerText.indexOf('伤心') !== -1 || lowerText.indexOf('哭') !== -1) {
       return 'sad';
-    } else if (lowerText.includes('生气') || lowerText.includes('讨厌')) {
+    } else if (lowerText.indexOf('生气') !== -1 || lowerText.indexOf('讨厌') !== -1) {
       return 'angry';
-    } else if (lowerText.includes('害羞') || lowerText.includes('不好意思')) {
+    } else if (lowerText.indexOf('害羞') !== -1 || lowerText.indexOf('不好意思') !== -1) {
       return 'shy';
-    } else if (lowerText.includes('惊') || lowerText.includes('吓')) {
+    } else if (lowerText.indexOf('惊') !== -1 || lowerText.indexOf('吓') !== -1) {
       return 'surprised';
-    } else if (lowerText.includes('喜欢') || lowerText.includes('爱')) {
+    } else if (lowerText.indexOf('喜欢') !== -1 || lowerText.indexOf('爱') !== -1) {
       return 'excited';
     } else {
       return 'happy';

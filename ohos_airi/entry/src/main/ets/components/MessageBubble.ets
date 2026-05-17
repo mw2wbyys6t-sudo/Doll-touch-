@@ -3,7 +3,7 @@ import { ThemeManager } from '../utils/ThemeManager';
 
 @Component
 export struct MessageBubble {
-  @ObjectLink message: Message;
+  @Prop message: Message = new Message();
 
   build() {
     const colors = ThemeManager.getThemeColors();
@@ -16,7 +16,7 @@ export struct MessageBubble {
           .fontWeight(FontWeight.Bold)
           .fontSize(14)
       }
-      
+
       Text(this.message.content)
         .fontColor(isAI ? colors.textPrimary : '#ffffff')
         .fontSize(14)
@@ -42,8 +42,10 @@ export struct MessageBubble {
 
   private formatTime(timestamp: number): string {
     const date = new Date(timestamp);
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const h = date.getHours();
+    const m = date.getMinutes();
+    const hours = h < 10 ? '0' + h.toString() : h.toString();
+    const minutes = m < 10 ? '0' + m.toString() : m.toString();
     return `${hours}:${minutes}`;
   }
 }

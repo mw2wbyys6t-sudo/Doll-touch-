@@ -393,7 +393,7 @@ export class LifecycleManager {
   private cleanupPageResources(pageName: string): void {
     // 清理定时器
     const timers = this._registeredResources.filter(
-      r => r.type === ResourceType.TIMER && r.id.startsWith(`timer_${pageName}_`)
+      r => r.type === ResourceType.TIMER && r.id.indexOf(`timer_${pageName}_`) === 0
     );
     for (const timer of timers) {
       this.unregisterResource(timer.id);
@@ -401,7 +401,7 @@ export class LifecycleManager {
 
     // 清理监听器
     const listeners = this._registeredResources.filter(
-      r => r.type === ResourceType.LISTENER && r.id.startsWith(`listener_${pageName}_`)
+      r => r.type === ResourceType.LISTENER && r.id.indexOf(`listener_${pageName}_`) === 0
     );
     for (const listener of listeners) {
       this.unregisterResource(listener.id);
@@ -445,10 +445,10 @@ export class LifecycleManager {
     for (const timer of timers) {
       try {
         // 尝试清除定时器
-        if (timer.id.startsWith('interval_')) {
+        if (timer.id.indexOf('interval_') === 0) {
           const timerId = parseInt(timer.id.replace('interval_', ''));
           clearInterval(timerId);
-        } else if (timer.id.startsWith('timeout_')) {
+        } else if (timer.id.indexOf('timeout_') === 0) {
           const timerId = parseInt(timer.id.replace('timeout_', ''));
           clearTimeout(timerId);
         }

@@ -84,7 +84,7 @@ export class MemoryManager {
 
   addMemory(content: string, type: 'short_term' | 'long_term' | 'important', emotion?: string, tags?: string[]): MemoryItem {
     const memory: MemoryItem = {
-      id: `mem_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `mem_${Date.now()}_${Math.random().toString(36).substring(2)}`,
       type,
       content,
       timestamp: Date.now(),
@@ -122,7 +122,7 @@ export class MemoryManager {
 
     const keywords = ['喜欢', '讨厌', '想要', '需要', '重要', '生日', '纪念日', '承诺'];
     keywords.forEach(keyword => {
-      if (content.includes(keyword)) {
+      if (content.indexOf(keyword) !== -1) {
         importance += 0.1;
       }
     });
@@ -168,10 +168,10 @@ export class MemoryManager {
 
     const scored = allMemories.map(memory => {
       let score = 0;
-      if (memory.content.toLowerCase().includes(queryLower)) {
+      if (memory.content.toLowerCase().indexOf(queryLower) !== -1) {
         score += 0.5;
       }
-      if (memory.tags?.some(tag => tag.toLowerCase().includes(queryLower))) {
+      if (memory.tags?.some(tag => tag.toLowerCase().indexOf(queryLower) !== -1)) {
         score += 0.3;
       }
 
@@ -194,7 +194,7 @@ export class MemoryManager {
 
   getRelevantContext(currentTopic: string, limit: number = 5): string {
     const memories = this.shortTermMemory.filter(
-      m => m.content.includes(currentTopic) || m.tags?.some(t => t.includes(currentTopic))
+      m => m.content.indexOf(currentTopic) !== -1 || m.tags?.some(t => t.indexOf(currentTopic) !== -1)
     ).slice(0, limit);
 
     if (memories.length === 0) {

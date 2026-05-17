@@ -1,4 +1,5 @@
 import { PreferencesUtil } from './PreferencesUtil';
+import { AppStorage } from '@kit.ArkUI';
 import { ConfigurationConstant } from '@kit.ArkUI';
 
 export type ThemeMode = 'light' | 'dark' | 'system';
@@ -46,7 +47,7 @@ export class ThemeManager {
   }
 
   static addListener(listener: () => void): void {
-    if (!this.listeners.includes(listener)) {
+    if (this.listeners.indexOf(listener) === -1) {
       this.listeners.push(listener);
     }
   }

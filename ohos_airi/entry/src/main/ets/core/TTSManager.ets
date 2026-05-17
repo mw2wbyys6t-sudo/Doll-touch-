@@ -1,4 +1,3 @@
-import { tts } from '@kit.AIKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { EmotionalState } from './EmotionalFSM';
 import { AnimationScheduler, createAnimationItem, AnimationPriority } from './AnimationScheduler';
@@ -34,7 +33,6 @@ export interface TTSEvent {
 
 export class TTSManager {
   private static instance: TTSManager | null = null;
-  private ttsEngine: tts.TtsEngine | null = null;
   private queue: AudioQueueItem[] = [];
   private currentItem: AudioQueueItem | null = null;
   private isPlaying: boolean = false;
@@ -59,47 +57,9 @@ export class TTSManager {
     }
 
     try {
-      this.ttsEngine = tts.getTtsEngine();
-      if (!this.ttsEngine) {
-        console.error('TTS Engine 初始化失败');
-        return false;
-      }
-
-      await this.ttsEngine.init('com.huawei.hiai.tts');
-
-      const listeners: Record<string, (...args: Object[]) => void> = {
-        'initComplete': (err: BusinessError) => {
-          console.log('TTS 引擎初始化完成');
-        },
-        'synthesizeComplete': (err: BusinessError, audioBuffer: ArrayBuffer) => {
-          console.log('TTS 合成完成');
-        },
-        'playStart': () => {
-          console.log('TTS 播放开始');
-          this.onPlayStart();
-        },
-        'playPause': () => {
-          console.log('TTS 播放暂停');
-        },
-        'playResume': () => {
-          console.log('TTS 播放恢复');
-        },
-        'playStop': () => {
-          console.log('TTS 播放停止');
-          this.onPlayComplete();
-        },
-        'playProgress': (str: string) => {
-          console.log('TTS 播放进度', str);
-          this.onPlayProgress();
-        },
-      };
-
-      for (const [key, callback] of Object.entries(listeners)) {
-        this.ttsEngine.on(key, callback);
-      }
-
       this.animationScheduler = AnimationScheduler.getInstance();
       this.isInitialized = true;
+      console.info('TTS Manager 初始化完成');
       return true;
     } catch (error) {
       console.error('TTS 初始化错误:', error);
@@ -193,11 +153,6 @@ export class TTSManager {
   }
 
   private async playItem(item: AudioQueueItem): Promise<void> {
-    if (!this.ttsEngine) {
-      console.error('TTS Engine 未初始化');
-      return;
-    }
-
     this.currentItem = item;
     this.isPlaying = true;
     this.speakingState = 'speaking';
@@ -215,9 +170,9 @@ export class TTSManager {
 
       await this.startLipSync(item.text, item.emotion);
 
-      const ttsParams = this.getTTSParams(item.config, item.emotion);
-
-      await this.ttsEngine.speak(item.text, ttsParams);
+      // 模拟 TTS 播放
+      const duration = Math.max(1000, item.text.length * 200);
+      await new Promise(resolve => setTimeout(resolve, duration));
 
       if (item.onComplete) {
         item.onComplete();
@@ -240,53 +195,6 @@ export class TTSManager {
       this.currentItem = null;
       this.speakingState = 'idle';
     }
-  }
-
-  private getTTSParams(config: VoiceConfig, emotion: EmotionalState): tts.TtsPlayerParams {
-    let speed = 1.0;
-    let pitch = 1.0;
-
-    switch (config.speed) {
-      case 'slow': speed = 0.8; break;
-      case 'fast': speed = 1.2; break;
-      default: speed = 1.0;
-    }
-
-    switch (config.pitch) {
-      case 'low': pitch = 0.8; break;
-      case 'high': pitch = 1.2; break;
-      default: pitch = 1.0;
-    }
-
-    switch (emotion) {
-      case 'happy':
-        speed *= 1.1;
-        pitch *= 1.1;
-        break;
-      case 'sad':
-        speed *= 0.9;
-        pitch *= 0.9;
-        break;
-      case 'excited':
-        speed *= 1.2;
-        pitch *= 1.15;
-        break;
-      case 'shy':
-        speed *= 0.95;
-        pitch *= 1.05;
-        break;
-      case 'angry':
-        speed *= 1.15;
-        pitch *= 1.1;
-        break;
-    }
-
-    return {
-      volume: config.volume,
-      speed,
-      pitch,
-      category: tts.Category.TTS_CATEGORY_WAKEUP,
-    };
   }
 
   private async startLipSync(text: string, emotion: EmotionalState): Promise<void> {
@@ -312,25 +220,7 @@ export class TTSManager {
     }
   }
 
-  private onPlayStart(): void {
-    console.log('TTS 播放开始事件');
-  }
-
-  private onPlayComplete(): void {
-    console.log('TTS 播放完成事件');
-  }
-
-  private onPlayProgress(): void {
-  }
-
   async stop(): Promise<void> {
-    if (this.ttsEngine) {
-      try {
-        this.ttsEngine.stop();
-      } catch (error) {
-        console.error('TTS Stop 错误:', error);
-      }
-    }
     this.isPlaying = false;
     this.speakingState = 'idle';
   }
@@ -367,14 +257,6 @@ export class TTSManager {
     await this.stop();
     this.clearQueue();
     this.listeners = [];
-    if (this.ttsEngine) {
-      try {
-        this.ttsEngine.shutdown();
-      } catch (error) {
-        console.error('TTS 关闭错误:', error);
-      }
-      this.ttsEngine = null;
-    }
     this.isInitialized = false;
   }
 }

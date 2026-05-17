@@ -1,5 +1,27 @@
 import { EmotionalState, EmotionalFSM } from './EmotionalFSM';
 
+// 兼容 HarmonyOS NEXT 的 requestAnimationFrame 替代实现
+let rafId = 0;
+type FrameRequestCallback = (timestamp: number) => void;
+const rafCallbacks = new Map<number, FrameRequestCallback>();
+
+function requestAnimationFrame(callback: FrameRequestCallback): number {
+  const id = ++rafId;
+  rafCallbacks.set(id, callback);
+  setTimeout(() => {
+    const cb = rafCallbacks.get(id);
+    if (cb) {
+      rafCallbacks.delete(id);
+      cb(Date.now());
+    }
+  }, 16);
+  return id;
+}
+
+function cancelAnimationFrame(id: number): void {
+  rafCallbacks.delete(id);
+}
+
 export type AnimationType = 'expression' | 'motion' | 'lip_sync' | 'idle';
 
 export interface AnimationQueueItem {
@@ -113,12 +135,12 @@ export class AnimationScheduler {
 
   private isLocked(item: AnimationQueueItem): boolean {
     const fsm = EmotionalFSM.getInstance();
-    const state = fsm.getState().current;
+    const state = fsm.currentState;
 
-    if (state === 'talking' && this.TALKING_LOCKED.includes(item.name)) {
+    if (state === 'talking' && this.TALKING_LOCKED.indexOf(item.name) !== -1) {
       return true;
     }
-    if (state === 'thinking' && this.THINKING_LOCKED.includes(item.name)) {
+    if (state === 'thinking' && this.THINKING_LOCKED.indexOf(item.name) !== -1) {
       return true;
     }
     return false;
@@ -288,8 +310,8 @@ export class AnimationScheduler {
 
     const blink = () => {
       const fsm = EmotionalFSM.getInstance();
-      const state = fsm.getState().current;
-      
+      const state = fsm.currentState;
+
       if (state !== 'talking' && state !== 'thinking' && !this.isPlaying) {
         this.enqueue({
           id: 'blink_' + Date.now(),

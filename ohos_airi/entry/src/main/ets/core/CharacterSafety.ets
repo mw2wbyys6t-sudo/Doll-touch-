@@ -1,4 +1,3 @@
-import { Preference, preferences } from '@kit.ArkData';
 import { BusinessError } from '@kit.BasicServicesKit';
 
 export interface SafetyCheckResult {
@@ -98,7 +97,7 @@ export class CharacterSafety {
     }
 
     for (const topic of this.SENSITIVE_TOPICS) {
-      if (input.includes(topic)) {
+      if (input.indexOf(topic) !== -1) {
         return {
           safe: false,
           reason: 'sensitive_topic',
@@ -113,7 +112,7 @@ export class CharacterSafety {
   checkOutput(output: string): string {
     let filtered = output;
 
-    if (!filtered.includes('爱莉')) {
+    if (filtered.indexOf('爱莉') === -1) {
       if (Math.random() < 0.2) {
         const suffix = this.CHARACTER_CONFIG.responseSuffix[Math.floor(Math.random() * this.CHARACTER_CONFIG.responseSuffix.length)];
         filtered = filtered + suffix;
