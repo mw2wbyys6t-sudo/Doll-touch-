@@ -5,6 +5,7 @@ import { TTSManager } from './TTSManager';
 import { CharacterSafety } from './CharacterSafety';
 import { EventDispatcher } from './EventDispatcher';
 import { MemoryManager } from './MemoryManager';
+import { AppStorage } from '@kit.ArkUI';
 
 export class ChatService {
   private static instance: ChatService | null = null;

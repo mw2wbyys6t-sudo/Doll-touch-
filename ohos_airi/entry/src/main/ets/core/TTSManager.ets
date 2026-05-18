@@ -223,6 +223,8 @@ export class TTSManager {
   async stop(): Promise<void> {
     this.isPlaying = false;
     this.speakingState = 'idle';
+    this.currentItem = null;
+    this.notifyListeners({ type: 'interrupt' });
   }
 
   clearQueue(): void {

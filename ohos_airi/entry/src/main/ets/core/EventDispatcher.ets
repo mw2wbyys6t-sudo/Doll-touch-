@@ -135,15 +135,15 @@ export class EventDispatcher {
 }
 
 export class EventFactory {
-  static chatMessageReceived(text: string, type: 'user' | 'assistant'): EventType {
+  static chatMessageReceived(_text: string, _type: 'user' | 'assistant'): EventType {
     return 'CHAT_MESSAGE_RECEIVED';
   }
 
-  static emotionChanged(emotion: EmotionalState, intensity: number): EventType {
+  static emotionChanged(_emotion: EmotionalState, _intensity: number): EventType {
     return 'EMOTION_CHANGED';
   }
 
-  static ttsStarted(text: string): EventType {
+  static ttsStarted(_text: string): EventType {
     return 'TTS_STARTED';
   }
 
@@ -151,7 +151,7 @@ export class EventFactory {
     return 'TTS_COMPLETED';
   }
 
-  static userInteracted(interactionType: string): EventType {
+  static userInteracted(_interactionType: string): EventType {
     return 'USER_INTERACTED';
   }
 
@@ -163,15 +163,15 @@ export class EventFactory {
     return 'APP_FOREGROUND';
   }
 
-  static pageAppeared(page: string): EventType {
+  static pageAppeared(_page: string): EventType {
     return 'PAGE_APPEARED';
   }
 
-  static pageDisappeared(page: string): EventType {
+  static pageDisappeared(_page: string): EventType {
     return 'PAGE_DISAPPEARED';
   }
 
-  static errorOccurred(error: string, source?: string): EventType {
+  static errorOccurred(_error: string, _source?: string): EventType {
     return 'ERROR_OCCURRED';
   }
 }

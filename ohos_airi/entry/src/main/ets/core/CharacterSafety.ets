@@ -43,7 +43,7 @@ export class CharacterSafety {
   private readonly CHARACTER_CONFIG: CharacterDef = {
     name: '星空爱莉',
     fullName: 'ほしぞら あいり',
-    age: 17,
+    age: 16,
     personality: [
       '元气满满',
       '温柔体贴',

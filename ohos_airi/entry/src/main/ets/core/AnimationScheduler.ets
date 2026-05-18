@@ -70,9 +70,9 @@ export class AnimationScheduler {
     blinkProgress: 0,
   };
 
-  private idleTimer: number | null = null;
-  private blinkTimer: number | null = null;
-  private playingAnimationFrame: number | null = null;
+  private idleTimer: number = -1;
+  private blinkTimer: number = -1;
+  private playingAnimationFrame: number = -1;
   private queueLock: boolean = false;
 
   private readonly TALKING_LOCKED: string[] = ['idle', 'sleeping', 'wave'];
@@ -281,7 +281,7 @@ export class AnimationScheduler {
   }
 
   startIdleLoop(): void {
-    if (this.idleTimer) {
+    if (this.idleTimer !== -1) {
       clearInterval(this.idleTimer);
     }
 
@@ -298,14 +298,14 @@ export class AnimationScheduler {
           timestamp: Date.now(),
         });
       }
-    }, 3000) as unknown as number;
+    }, 3000);
 
     this.startBlinkLoop();
   }
 
   private startBlinkLoop(): void {
-    if (this.blinkTimer) {
-      clearInterval(this.blinkTimer);
+    if (this.blinkTimer !== -1) {
+      clearTimeout(this.blinkTimer);
     }
 
     const blink = () => {
@@ -328,7 +328,7 @@ export class AnimationScheduler {
       }
 
       const nextBlink = 3000 + Math.random() * 3000;
-      this.blinkTimer = setTimeout(blink, nextBlink) as unknown as number;
+      this.blinkTimer = setTimeout(blink, nextBlink);
     };
 
     blink();
@@ -343,13 +343,13 @@ export class AnimationScheduler {
   }
 
   async stop(): Promise<void> {
-    if (this.idleTimer) {
+    if (this.idleTimer !== -1) {
       clearInterval(this.idleTimer);
-      this.idleTimer = null;
+      this.idleTimer = -1;
     }
-    if (this.blinkTimer) {
+    if (this.blinkTimer !== -1) {
       clearTimeout(this.blinkTimer);
-      this.blinkTimer = null;
+      this.blinkTimer = -1;
     }
     this.stopAnimation();
     this.queue = [];

@@ -4,6 +4,7 @@
  * 实时显示系统状态信息
  */
 
+import { AppStorage } from '@kit.ArkUI';
 import { Dispatcher } from './Dispatcher';
 import { EmotionStore, EmotionType } from './EmotionStore';
 import { EmotionalFSM, FSMState } from './EmotionalFSM';

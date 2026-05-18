@@ -243,11 +243,12 @@ export class ThinkingEngine {
       response += await this.generateReflection();
     }
 
+    const keywords = this.extractKeywords(context.userMessage).join(', ');
     this.memoryManager.addMemory(
       context.userMessage,
       'short_term',
       emotionAnalysis.emotion,
-      this.extractKeywords(context.userMessage)
+      keywords
     );
 
     return response;
