@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Background: clean 2-stop gradient -->
+    <radialGradient id="bg" cx="48%" cy="45%" r="72%">
+      <stop offset="0%" stop-color="#2a1045"/>
+      <stop offset="55%" stop-color="#120524"/>
+      <stop offset="100%" stop-color="#080212"/>
+    </radialGradient>
+
+    <!-- Character face gradient -->
+    <radialGradient id="face" cx="46%" cy="42%" r="58%">
+      <stop offset="0%" stop-color="#FFF5F7"/>
+      <stop offset="55%" stop-color="#FFE8EC"/>
+      <stop offset="100%" stop-color="#F5D0D8"/>
+    </radialGradient>
+
+    <!-- Hair gradient - pink family only -->
+    <linearGradient id="hair" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFB6D5"/>
+      <stop offset="35%" stop-color="#FF69B4"/>
+      <stop offset="70%" stop-color="#FF1493"/>
+      <stop offset="100%" stop-color="#DB1179"/>
+    </linearGradient>
+
+    <!-- Eye gradient - purple-pink with cyan sparkle -->
+    <radialGradient id="eye" cx="44%" cy="40%" r="52%">
+      <stop offset="0%" stop-color="#E066FF"/>
+      <stop offset="30%" stop-color="#D94EFF"/>
+      <stop offset="65%" stop-color="#FF69C8"/>
+      <stop offset="100%" stop-color="#C41EE0"/>
+    </radialGradient>
+
+    <!-- Pupil -->
+    <radialGradient id="pupil" cx="50%" cy="48%" r="48%">
+      <stop offset="0%" stop-color="#2D0A3D"/>
+      <stop offset="75%" stop-color="#14051E"/>
+      <stop offset="100%" stop-color="#0A0112"/>
+    </radialGradient>
+
+    <!-- Speech bubble fill -->
+    <linearGradient id="bubbleFill" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#F0E6FA" stop-opacity="0.90"/>
+    </linearGradient>
+
+    <!-- Glow behind character -->
+    <radialGradient id="charGlow" cx="50%" cy="48%" r="45%">
+      <stop offset="0%" stop-color="#FF69B4" stop-opacity="0.35"/>
+      <stop offset="55%" stop-color="#FF1493" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#FF1493" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Subtle ambient glow for star -->
+    <filter id="starGlow">
+      <feGaussianBlur stdDeviation="3" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    
+    <filter id="softBlur">
+      <feGaussianBlur stdDeviation="20"/>
+    </filter>
+  </defs>
+
+  <!-- ==================== LAYER 1: Background ==================== -->
+  <rect width="1024" height="1024" fill="url(#bg)" rx="180"/>
+
+  <!-- Ambient glow spot behind character -->
+  <ellipse cx="512" cy="480" rx="340" ry="320" fill="url(#charGlow)" filter="url(#softBlur)"/>
+
+  <!-- A few key stars only (not 250!) -->
+  <g fill="#FFFFFF">
+    <!-- Bright cross stars - max 6 -->
+    <g opacity="0.92"><circle cx="130" cy="140" r="3.5"/>
+      <line x1="121" y1="140" x2="139" y2="140" stroke="#fff" stroke-width="1.2" opacity="0.7"/>
+      <line x1="130" y1="131" x2="130" y2="149" stroke="#fff" stroke-width="1.2" opacity="0.7"/></g>
+    <g opacity="0.88"><circle cx="880" cy="110" r="3.2"/>
+      <line x1="872" y1="110" x2="888" y2="110" stroke="#fff" stroke-width="1.2" opacity="0.65"/>
+      <line x1="880" y1="102" x2="880" y2="118" stroke="#fff" stroke-width="1.2" opacity="0.65"/></g>
+    <g opacity="0.90"><circle cx="260" cy="85" r="3.8"/>
+      <line x1="250" y1="85" x2="270" y2="85" stroke="#fff" stroke-width="1.2" opacity="0.7"/>
+      <line x1="260" y1="75" x2="260" y2="95" stroke="#fff" stroke-width="1.2" opacity="0.7"/></g>
+    <g opacity="0.85"><circle cx="780" cy="170" r="3.0"/>
+      <line x1="772" y1="170" x2="788" y2="170" stroke="#fff" stroke-width="1.2" opacity="0.6"/>
+      <line x1="780" y1="162" x2="780" y2="178" stroke="#fff" stroke-width="1.2" opacity="0.6"/></g>
+    <g opacity="0.87"><circle cx="150" cy="750" r="3.4"/>
+      <line x1="141" y1="750" x2="159" y2="750" stroke="#fff" stroke-width="1.2" opacity="0.68"/>
+      <line x1="150" y1="741" x2="150" y2="759" stroke="#fff" stroke-width="1.2" opacity="0.68"/></g>
+    <g opacity="0.83"><circle cx="900" cy="800" r="3.1"/>
+      <line x1="892" y1="800" x2="908" y2="800" stroke="#fff" stroke-width="1.2" opacity="0.58"/>
+      <line x1="900" y1="792" x2="900" y2="808" stroke="#fff" stroke-width="1.2" opacity="0.58"/></g>
+
+    <!-- Small dot stars - just ~20, not 250 -->
+    <circle cx="80" cy="280" r="1.6" opacity="0.5"/>
+    <circle cx="200" cy="200" r="1.9" opacity="0.56"/>
+    <circle cx="400" cy="120" r="1.4" opacity="0.44"/>
+    <circle cx="650" cy="95" r="1.7" opacity="0.52"/>
+    <circle cx="950" cy="200" r="1.5" opacity="0.48"/>
+    <circle cx="960" cy="350" r="1.8" opacity="0.54"/>
+    <circle cx="70" cy="500" r="1.5" opacity="0.46"/>
+    <circle cx="220" cy="550" r="1.7" opacity="0.53"/>
+    <circle cx="850" cy="520" r="1.6" opacity="0.50"/>
+    <circle cx="960" cy="500" r="1.4" opacity="0.44"/>
+    <circle cx="80" cy="680" r="1.8" opacity="0.55"/>
+    <circle cx="280" cy="860" r="1.5" opacity="0.48"/>
+    <circle cx="720" cy="880" r="1.7" opacity="0.52"/>
+    <circle cx="900" cy="860" r="1.4" opacity="0.45"/>
+    <circle cx="180" cy="920" r="1.6" opacity="0.50"/>
+    <circle cx="480" cy="940" r="1.9" opacity="0.57"/>
+    <circle cx="700" cy="950" r="1.5" opacity="0.47"/>
+    <circle cx="920" cy="930" r="1.8" opacity="0.54"/>
+    <circle cx="350" cy="160" r="1.3" opacity="0.42"/>
+    <circle cx="580" cy="130" r="1.6" opacity="0.49"/>
+  </g>
+
+  <!-- ==================== LAYER 2: SPEECH BUBBLE (30% - Chat/AI Symbol) ==================== -->
+  <!-- Main bubble shape - thick stroke for 48px visibility -->
+  <g transform="translate(620, 520)">
+    <!-- Bubble body: rounded rect rotated slightly for dynamism -->
+    <rect x="0" y="0" width="320" height="240" rx="50" ry="50"
+          fill="url(#bubbleFill)" 
+          stroke="#FFFFFF" stroke-width="10" 
+          transform="rotate(6)"
+          filter="drop-shadow(0 8px 24px rgba(255,45,149,0.25))"/>
+    
+    <!-- Three dots inside bubble (typing/chat indicator) - universal chat symbol -->
+    <circle cx="115" cy="125" r="18" fill="#FF69B4" opacity="0.85" transform="rotate(6)"/>
+    <circle cx="165" cy="125" r="18" fill="#FF69B4" opacity="0.70" transform="rotate(6)"/>
+    <circle cx="215" cy="125" r="18" fill="#FF69B4" opacity="0.50" transform="rotate(6)"/>
+    
+    <!-- Tiny sparkle on bubble -->
+    <circle cx="265" cy="55" r="4" fill="#00F0FF" opacity="0.7" transform="rotate(6)"/>
+  </g>
+
+  <!-- Bubble tail pointing toward character -->
+  <path d="M600,640 Q570,680 540,660 Q570,650 600,660 Z" 
+        fill="url(#bubbleFill)" stroke="#FFFFFF" stroke-width="8" stroke-linejoin="round"/>
+
+  <!-- ==================== LAYER 3: CHARACTER FACE (60% - Dominant Element) ==================== -->
+  <g transform="translate(512, 500)">
+    
+    <!-- Hair back layers (soft, behind face) -->
+    <ellipse cx="0" cy="-50" rx="230" ry="210" fill="url(#hair)" opacity="0.22"/>
+    <ellipse cx="0" cy="-38" rx="245" ry="222" fill="url(#hair)" opacity="0.17"/>
+    <ellipse cx="0" cy="-25" rx="260" ry="234" fill="url(#hair)" opacity="0.12"/>
+
+    <!-- === FACE SHAPE (BIG - 55% of canvas) === -->
+    <ellipse cx="0" cy="0" rx="135" rY="165" fill="url(#face)"/>
+
+    <!-- === EYES (HUGE - key recognition feature) === -->
+    <!-- Left eye -->
+    <g transform="translate(-62, -12)">
+      <!-- Eye outer glow -->
+      <ellipse cx="0" cy="0" rx="48" rY="66" fill="#FF69FF" opacity="0.18"/>
+      <!-- Eye main body -->
+      <ellipse cx="0" cy="0" rx="40" rY="55" fill="url(#eye)"/>
+      <!-- Pupil -->
+      <ellipse cx="2" cy="6" rx="18" rY="25" fill="url(#pupil)"/>
+      <!-- HIGHLIGHTS (critical for anime look) -->
+      <ellipse cx="-10" cy="-16" rx="13" rY="17" fill="#FFFFFF" opacity="0.96" transform="rotate(-12)"/>
+      <ellipse cx="12" cy="14" rx="6.5" rY="8" fill="#FFFFFF" opacity="0.74" transform="rotate(10)"/>
+      <ellipse cx="-3" cy="22" rx="4" rY="5" fill="#FFFFFF" opacity="0.48"/>
+    </g>
+
+    <!-- Right eye -->
+    <g transform="translate(62, -12)">
+      <ellipse cx="0" cy="0" rx="48" rY="66" fill="#FF69FF" opacity="0.18"/>
+      <ellipse cx="0" cy="0" rx="40" rY="55" fill="url(#eye)"/>
+      <ellipse cx="2" cy="6" rx="18" rY="25" fill="url(#pupil)"/>
+      <ellipse cx="-10" cy="-16" rx="13" rY="17" fill="#FFFFFF" opacity="0.96" transform="rotate(-12)"/>
+      <ellipse cx="12" cy="14" rx="6.5" rY="8" fill="#FFFFFF" opacity="0.74" transform="rotate(10)"/>
+      <ellipse cx="-3" cy="22" rx="4" rY="5" fill="#FFFFFF" opacity="0.48"/>
+    </g>
+
+    <!-- Blush/Cheeks -->
+    <ellipse cx="-78" cy="48" rx="26" rY="15" fill="#FF69B4" opacity="0.28"/>
+    <ellipse cx="78" cy="48" rx="26" rY="15" fill="#FF69B4" opacity="0.28"/>
+
+    <!-- Small smile -->
+    <path d="M-22,78 Q0,96 22,78" fill="none" stroke="#E85A9A" stroke-width="4" stroke-linecap="round" opacity="0.62"/>
+
+    <!-- === HAIR FRONT (bangs + side hair) === -->
+    <!-- Left bang -->
+    <path d="M-105,-55 C-88,-98 -42,-118 -8,-82 C-22,-52 -52,-38 -105,-55 Z" 
+          fill="url(#hair)" opacity="0.82"/>
+    <!-- Right bang -->
+    <path d="M105,-55 C88,-98 42,-118 8,-82 C22,-52 52,-38 105,-55 Z" 
+          fill="url(#hair)" opacity="0.82"/>
+    <!-- Center bang -->
+    <path d="M-48,-68 C-32,-115 32,-115 48,-68 C32,-42 -32,-42 -48,-68 Z" 
+          fill="url(#hair)" opacity="0.78"/>
+
+    <!-- Side hair (long strands) -->
+    <ellipse cx="-95" cy="65" rx="30" rY="82" fill="url(#hair)" opacity="0.65" transform="rotate(6)"/>
+    <ellipse cx="95" cy="65" rx="30" rY="82" fill="url(#hair)" opacity="0.65" transform="rotate(-6)"/>
+
+    <!-- Hair shine highlights -->
+    <ellipse cx="-55" cy="-58" rx="24" rY="36" fill="#FFFFFF" opacity="0.13" transform="rotate(-16)"/>
+    <ellipse cx="60" cy="-55" rx="17" rY="26" fill="#FFFFFF" opacity="0.11" transform="rotate(12)"/>
+
+    <!-- === STAR ACCESSORY (10% - Brand Identity) === -->
+    <g transform="translate(138, -85)" filter="url(#starGlow)">
+      <!-- Outer star -->
+      <polygon points="0,-22 6,-7 23,-7 10,3 14,20 0,11 -14,20 -10,3 -23,-7 -6,-7" 
+               fill="#FFEE66" opacity="0.95"/>
+      <!-- Inner bright star -->
+      <polygon points="0,-13 3,-4 13,-4 6,2 8,12 0,6 -8,12 -6,2 -13,-4 -3,-4" 
+               fill="#FFFFFF" opacity="0.92"/>
+      <!-- Center dot -->
+      <circle cx="0" cy="2" r="3" fill="#FFFFFF" opacity="0.8"/>
+    </g>
+
+  </g> <!-- end character group -->
+
+  <!-- ==================== LAYER 4: Subtle Foreground Accent ==================== -->
+  <!-- Very faint bottom gradient for depth -->
+  <rect x="0" y="820" width="1024" height="204" rx="180" 
+        fill="url(#bg)" opacity="0.3"/>
+</svg>
