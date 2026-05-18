@@ -1,4 +1,4 @@
-import { promptAction, AppStorage } from '@kit.ArkUI';
+import { promptAction } from '@kit.ArkUI';
 import { ChatViewModel } from '../viewmodel/ChatViewModel';
 import { ThemeManager, ThemeMode } from '../utils/ThemeManager';
 import { MessageBubble } from '../components/MessageBubble';
@@ -9,19 +9,9 @@ import { CharacterAnimation } from '../components/CharacterAnimation';
 import { ExpressionManager } from '../utils/ExpressionManager';
 import { BodyActionManager } from '../utils/BodyActionManager';
 import { LifecycleManager } from '../core/LifecycleManager';
+import { safeGetAppStorageNumber } from '../utils/AppStorageHelper';
 
-// 特性开关：启用 LifecycleManager
 const ENABLE_LIFECYCLE_MANAGER = true;
-
-// 安全的 AppStorage 访问函数
-function safeGetAppStorage<T>(key: string, defaultValue: T): T {
-  try {
-    const value = AppStorage.get(key);
-    return value !== undefined && value !== null ? value as T : defaultValue;
-  } catch (e) {
-    return defaultValue;
-  }
-}
 
 const chatViewModel = new ChatViewModel();
 const expressionManager = ExpressionManager.getInstance();
@@ -255,7 +245,7 @@ struct Index {
     console.log('Index 页面：开始初始化');
     
     // 先获取 safeAreaTop，避免在 build 中直接访问
-    this.safeAreaTop = safeGetAppStorage('safeAreaTop', 0);
+    this.safeAreaTop = safeGetAppStorageNumber('safeAreaTop', 0);
     
     try {
       await ThemeManager.init();

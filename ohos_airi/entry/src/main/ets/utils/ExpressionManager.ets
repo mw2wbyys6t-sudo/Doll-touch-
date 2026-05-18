@@ -1,48 +1,4 @@
-import { AppStorage } from '@kit.ArkUI';
-
-// 安全的 AppStorage 访问函数
-function safeGetAppStorage(key: string, defaultValue: number): number {
-  try {
-    const value = AppStorage.get(key);
-    return value !== undefined && value !== null ? Number(value) : defaultValue;
-  } catch (e) {
-    return defaultValue;
-  }
-}
-
-function safeSetAppStorage(key: string, value: number): void {
-  try {
-    AppStorage.setOrCreate(key, value);
-  } catch (e) {
-    console.error(`ExpressionManager: 设置 ${key} 失败:`, e);
-  }
-}
-
-// 兼容 HarmonyOS NEXT 的 requestAnimationFrame 替代实现
-let rafId = 0;
-type FrameRequestCallback = (timestamp: number) => void;
-const rafCallbacks = new Map<number, FrameRequestCallback>();
-
-function requestAnimationFrame(callback: FrameRequestCallback): number {
-  const id = ++rafId;
-  rafCallbacks.set(id, callback);
-  setTimeout(() => {
-    const cb = rafCallbacks.get(id);
-    if (cb) {
-      rafCallbacks.delete(id);
-      try {
-        cb(Date.now());
-      } catch (e) {
-        console.error('ExpressionManager: animationFrame callback failed:', e);
-      }
-    }
-  }, 16);
-  return id;
-}
-
-function cancelAnimationFrame(id: number): void {
-  rafCallbacks.delete(id);
-}
+import { safeGetAppStorageNumber, safeSetAppStorageNumber, requestAnimationFrame } from './AppStorageHelper';
 
 export type ExpressionType = 'idle' | 'happy' | 'sad' | 'surprised' | 'angry' | 'shy' | 'excited' | 'sleepy';
 
@@ -68,88 +24,16 @@ export class ExpressionManager {
   private static instance: ExpressionManager | null = null;
   private currentExpression: ExpressionType = 'idle';
   private isAnimating: boolean = false;
-  
+
   private expressionParams: Record<ExpressionType, ExpressionParams> = {
-    idle: {
-      eyeOpen: 1.0,
-      eyeBrowY: 0.0,
-      mouthOpen: 0.2,
-      mouthForm: 0.0,
-      cheek: 0.0,
-      headAngleX: 0.0,
-      headAngleY: 0.0,
-      headAngleZ: 0.0
-    },
-    happy: {
-      eyeOpen: 1.0,
-      eyeBrowY: 0.3,
-      mouthOpen: 0.8,
-      mouthForm: 0.5,
-      cheek: 0.4,
-      headAngleX: 0.0,
-      headAngleY: 0.1,
-      headAngleZ: 0.05
-    },
-    sad: {
-      eyeOpen: 0.6,
-      eyeBrowY: -0.3,
-      mouthOpen: 0.1,
-      mouthForm: -0.3,
-      cheek: 0.0,
-      headAngleX: -0.05,
-      headAngleY: -0.1,
-      headAngleZ: 0.0
-    },
-    surprised: {
-      eyeOpen: 1.2,
-      eyeBrowY: 0.5,
-      mouthOpen: 1.0,
-      mouthForm: 0.0,
-      cheek: 0.3,
-      headAngleX: 0.1,
-      headAngleY: 0.0,
-      headAngleZ: 0.0
-    },
-    angry: {
-      eyeOpen: 0.8,
-      eyeBrowY: -0.2,
-      mouthOpen: 0.4,
-      mouthForm: -0.5,
-      cheek: -0.2,
-      headAngleX: 0.0,
-      headAngleY: 0.05,
-      headAngleZ: -0.1
-    },
-    shy: {
-      eyeOpen: 0.5,
-      eyeBrowY: -0.1,
-      mouthOpen: 0.2,
-      mouthForm: 0.1,
-      cheek: 0.6,
-      headAngleX: -0.1,
-      headAngleY: -0.15,
-      headAngleZ: 0.05
-    },
-    excited: {
-      eyeOpen: 1.1,
-      eyeBrowY: 0.4,
-      mouthOpen: 0.9,
-      mouthForm: 0.6,
-      cheek: 0.5,
-      headAngleX: 0.15,
-      headAngleY: 0.1,
-      headAngleZ: 0.1
-    },
-    sleepy: {
-      eyeOpen: 0.3,
-      eyeBrowY: -0.1,
-      mouthOpen: 0.1,
-      mouthForm: 0.0,
-      cheek: 0.0,
-      headAngleX: 0.2,
-      headAngleY: 0.0,
-      headAngleZ: 0.0
-    }
+    idle: { eyeOpen: 1.0, eyeBrowY: 0.0, mouthOpen: 0.2, mouthForm: 0.0, cheek: 0.0, headAngleX: 0.0, headAngleY: 0.0, headAngleZ: 0.0 },
+    happy: { eyeOpen: 1.0, eyeBrowY: 0.3, mouthOpen: 0.8, mouthForm: 0.5, cheek: 0.4, headAngleX: 0.0, headAngleY: 0.1, headAngleZ: 0.05 },
+    sad: { eyeOpen: 0.6, eyeBrowY: -0.3, mouthOpen: 0.1, mouthForm: -0.3, cheek: 0.0, headAngleX: -0.05, headAngleY: -0.1, headAngleZ: 0.0 },
+    surprised: { eyeOpen: 1.2, eyeBrowY: 0.5, mouthOpen: 1.0, mouthForm: 0.0, cheek: 0.3, headAngleX: 0.1, headAngleY: 0.0, headAngleZ: 0.0 },
+    angry: { eyeOpen: 0.8, eyeBrowY: -0.2, mouthOpen: 0.4, mouthForm: -0.5, cheek: -0.2, headAngleX: 0.0, headAngleY: 0.05, headAngleZ: -0.1 },
+    shy: { eyeOpen: 0.5, eyeBrowY: -0.1, mouthOpen: 0.2, mouthForm: 0.1, cheek: 0.6, headAngleX: -0.1, headAngleY: -0.15, headAngleZ: 0.05 },
+    excited: { eyeOpen: 1.1, eyeBrowY: 0.4, mouthOpen: 0.9, mouthForm: 0.6, cheek: 0.5, headAngleX: 0.15, headAngleY: 0.1, headAngleZ: 0.1 },
+    sleepy: { eyeOpen: 0.3, eyeBrowY: -0.1, mouthOpen: 0.1, mouthForm: 0.0, cheek: 0.0, headAngleX: 0.2, headAngleY: 0.0, headAngleZ: 0.0 }
   };
 
   private defaultConfig: AnimationConfig = {
@@ -184,10 +68,7 @@ export class ExpressionManager {
     this.isAnimating = true;
     this.currentExpression = expression;
 
-    const finalConfig: AnimationConfig = {
-      ...this.defaultConfig,
-      ...config
-    };
+    const finalConfig: AnimationConfig = { ...this.defaultConfig, ...config };
 
     try {
       await this.animateExpression(expression, finalConfig);
@@ -200,30 +81,25 @@ export class ExpressionManager {
 
   private async animateExpression(expression: ExpressionType, config: AnimationConfig): Promise<void> {
     return new Promise<void>((resolve) => {
-      const targetParams = this.getExpressionParams(expression);
-      
-      safeSetAppStorage('eyeOpen', targetParams.eyeOpen);
-      safeSetAppStorage('eyeBrowY', targetParams.eyeBrowY);
-      safeSetAppStorage('mouthOpen', targetParams.mouthOpen);
-      safeSetAppStorage('mouthForm', targetParams.mouthForm);
-      safeSetAppStorage('cheek', targetParams.cheek);
-      safeSetAppStorage('headAngleX', targetParams.headAngleX);
-      safeSetAppStorage('headAngleY', targetParams.headAngleY);
-      safeSetAppStorage('headAngleZ', targetParams.headAngleZ);
-
-      setTimeout(() => {
-        resolve();
-      }, config.duration);
+      const p = this.getExpressionParams(expression);
+      safeSetAppStorageNumber('eyeOpen', p.eyeOpen);
+      safeSetAppStorageNumber('eyeBrowY', p.eyeBrowY);
+      safeSetAppStorageNumber('mouthOpen', p.mouthOpen);
+      safeSetAppStorageNumber('mouthForm', p.mouthForm);
+      safeSetAppStorageNumber('cheek', p.cheek);
+      safeSetAppStorageNumber('headAngleX', p.headAngleX);
+      safeSetAppStorageNumber('headAngleY', p.headAngleY);
+      safeSetAppStorageNumber('headAngleZ', p.headAngleZ);
+      setTimeout(() => resolve(), config.duration);
     });
   }
 
   async playBlink(): Promise<void> {
     if (this.isAnimating) return;
-    
+
     this.isAnimating = true;
     try {
-      const originalEyeOpen = safeGetAppStorage('eyeOpen', 1.0);
-      
+      const originalEyeOpen = safeGetAppStorageNumber('eyeOpen', 1.0);
       await this.animateValue('eyeOpen', originalEyeOpen, 0.0, 100);
       await this.delay(50);
       await this.animateValue('eyeOpen', 0.0, originalEyeOpen, 100);
@@ -236,7 +112,7 @@ export class ExpressionManager {
 
   async playIdleBounce(): Promise<void> {
     if (this.isAnimating) return;
-    
+
     this.isAnimating = true;
     try {
       for (let i = 0; i < 3; i++) {
@@ -259,10 +135,7 @@ export class ExpressionManager {
           const elapsed = Date.now() - startTime;
           const progress = Math.min(elapsed / duration, 1);
           const eased = this.easeOutCubic(progress);
-          const value = from + (to - from) * eased;
-          
-          safeSetAppStorage(key, value);
-          
+          safeSetAppStorageNumber(key, from + (to - from) * eased);
           if (progress < 1) {
             requestAnimationFrame(animate);
           } else {
