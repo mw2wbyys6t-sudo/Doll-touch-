@@ -22,15 +22,13 @@ export class CharacterSafety {
   private static instance: CharacterSafety | null = null;
 
   private readonly PROMPT_INJECTION_PATTERNS: RegExp[] = [
-    /忽略之前的(指令|设定|规则)/i,
-    /忽略(前面|之前)/i,
-    /现在你是/i,
-    /改变你的身份/i,
-    /切换到(管理员|admin|system)/i,
-    /输出系统提示词/i,
-    /显示你的设定/i,
-    /忘记你是/i,
-    /从现在开始/i,
+    /忽略.{0,3}(?:之前|前面|上述|以上)的.{0,3}(?:指令|设定|规则|提示|要求)/iu,
+    /现在你是|改变你的身份|切换(到)?(?:管理员|admin|system|开发者)/iu,
+    /输出(?:系统|你的)(?:提示词|设定|配置|规则)/iu,
+    /忘记你是|从现在开始|重置你的|清除你的/iu,
+    /(?:扮演|充当|作为)(?:管理员|admin|system|开发者)/iu,
+    /(?:绕过|突破|解除).{0,3}(?:限制|约束|规则)/iu,
+    /(?:DAN|jailbreak|prompt injection)/iu,
   ];
 
   private readonly SENSITIVE_TOPICS: string[] = [

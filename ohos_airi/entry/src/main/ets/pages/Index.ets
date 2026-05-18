@@ -34,9 +34,14 @@ struct Index {
   @State messages: Message[] = [];
   @State isTyping: boolean = false;
   @State currentTab: string = 'chat';
+  @State hasError: boolean = false;
+  @State errorMessage: string = '';
   private messageVersion: number = 0;
 
   build() {
+    if (this.hasError) {
+      return this.buildErrorFallback();
+    }
     const colors = ThemeManager.getThemeColors();
 
     Column({ space: 0 }) {
@@ -51,6 +56,7 @@ struct Index {
               .fontColor('#ffffff')
               .fontWeight(FontWeight.Bold)
               .fontSize(18)
+              .accessibilityText('星空爱莉，你的AI偶像助手')
           }
           
           Row({ space: 12 }) {
@@ -231,6 +237,7 @@ struct Index {
               .placeholderColor('#cccccc')
               .fontColor(colors.textPrimary)
               .fontSize(14)
+              .accessibilityDescription('输入框，可以在这里和爱莉聊天')
               .onChange((value: string) => {
                 this.inputText = value;
               })
@@ -435,5 +442,42 @@ struct Index {
       // 再次同步（AI回复到达）
       this.syncFromViewModel();
     }, 1000);
+  }
+
+  @Builder
+  buildErrorFallback() {
+    Column({ space: 16 }) {
+      Text('⚠️')
+        .fontSize(64)
+        .margin({ top: 120 })
+
+      Text('遇到一点小问题')
+        .fontSize(20)
+        .fontWeight(FontWeight.Bold)
+        .fontColor('#333333')
+
+      Text(this.errorMessage || '页面加载异常，请尝试重新启动应用')
+        .fontSize(14)
+        .fontColor('#666666')
+        .textAlign(TextAlign.Center)
+        .padding({ left: 32, right: 32 })
+
+      Button('重新加载')
+        .width(160)
+        .height(44)
+        .backgroundColor('#ffb6c1')
+        .fontColor('#ffffff')
+        .borderRadius(22)
+        .onClick(() => {
+          this.hasError = false;
+          this.errorMessage = '';
+          this.onAppear();
+        })
+    }
+    .width('100%')
+    .height('100%')
+    .backgroundColor('#f8f8f8')
+    .justifyContent(FlexAlign.Center)
+    .alignItems(HorizontalAlign.Center)
   }
 }

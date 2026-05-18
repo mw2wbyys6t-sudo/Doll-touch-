@@ -96,7 +96,10 @@ export class ChatService {
     const emotion = this.analyzeEmotion(content);
     await this.fsm.triggerEmotion(emotion, 0.9);
 
-    const response = await this.generateResponse(content, emotion);
+    // 安全: 清理用户输入，防止注入攻击
+    const sanitizedInput = this.sanitizeInput(content);
+
+    const response = await this.generateResponse(sanitizedInput, emotion);
 
     this.store.dispatch({ type: 'SET_THINKING', payload: false });
     await this.sendAssistantMessage(response, emotion);
@@ -243,6 +246,31 @@ export class ChatService {
       params,
       true
     ));
+  }
+
+  private sanitizeInput(input: string): string {
+    if (!input || input.length === 0) return '';
+
+    let sanitized = input;
+
+    // 移除控制字符和零宽字符
+    sanitized = sanitized.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
+    sanitized = sanitized.replace(/[\u200B-\u200D\uFEFF]/g, '');
+
+    // 限制长度
+    const MAX_INPUT_LENGTH = 1000;
+    if (sanitized.length > MAX_INPUT_LENGTH) {
+      sanitized = sanitized.substring(0, MAX_INPUT_LENGTH);
+    }
+
+    // 规范化空白字符
+    sanitized = sanitized.replace(/\s+/g, ' ').trim();
+
+    // 防止脚本注入：移除潜在的 HTML/JS 标签
+    sanitized = sanitized.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+    sanitized = sanitized.replace(/<[^>]+>/g, '');
+
+    return sanitized;
   }
 
   clearChat(): void {

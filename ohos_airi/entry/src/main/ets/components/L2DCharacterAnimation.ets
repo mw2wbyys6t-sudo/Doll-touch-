@@ -17,6 +17,9 @@ export struct L2DCharacterAnimation {
   @State prevFrame: string = 'airi_idle';
   @State isTransitioning: boolean = false;
   @State imageLoadError: boolean = false;
+  @State retryCount: number = 0;
+  private readonly MAX_RETRIES: number = 3;
+  private retryTimer: number = -1;
 
   private frameMap: Record<string, string> = {
     'idle': 'airi_idle',
@@ -40,6 +43,20 @@ export struct L2DCharacterAnimation {
     if (this.expressionWatcherTimer !== -1) {
       clearInterval(this.expressionWatcherTimer);
       this.expressionWatcherTimer = -1;
+    }
+    if (this.retryTimer !== -1) {
+      clearTimeout(this.retryTimer);
+      this.retryTimer = -1;
+    }
+  }
+
+  private scheduleRetry(): void {
+    if (this.retryCount < this.MAX_RETRIES) {
+      this.retryCount++;
+      this.retryTimer = setTimeout(() => {
+        this.imageLoadError = false;
+        this.retryTimer = -1;
+      }, 1000 * this.retryCount);
     }
   }
 
@@ -134,6 +151,7 @@ export struct L2DCharacterAnimation {
           easing: 'easeOutCubic'
         })
         .onError(() => {
+          this.scheduleRetry();
           this.imageLoadError = true;
         })
     } else if (frameName === 'airi_happy') {
@@ -156,6 +174,7 @@ export struct L2DCharacterAnimation {
           easing: 'easeOutCubic'
         })
         .onError(() => {
+          this.scheduleRetry();
           this.imageLoadError = true;
         })
     } else if (frameName === 'airi_shy') {
@@ -178,6 +197,7 @@ export struct L2DCharacterAnimation {
           easing: 'easeOutCubic'
         })
         .onError(() => {
+          this.scheduleRetry();
           this.imageLoadError = true;
         })
     } else if (frameName === 'airi_excited') {
@@ -200,6 +220,7 @@ export struct L2DCharacterAnimation {
           easing: 'easeOutCubic'
         })
         .onError(() => {
+          this.scheduleRetry();
           this.imageLoadError = true;
         })
     } else if (frameName === 'airi_surprised') {
@@ -222,6 +243,7 @@ export struct L2DCharacterAnimation {
           easing: 'easeOutCubic'
         })
         .onError(() => {
+          this.scheduleRetry();
           this.imageLoadError = true;
         })
     } else if (frameName === 'airi_sing') {
@@ -244,6 +266,7 @@ export struct L2DCharacterAnimation {
           easing: 'easeOutCubic'
         })
         .onError(() => {
+          this.scheduleRetry();
           this.imageLoadError = true;
         })
     }
