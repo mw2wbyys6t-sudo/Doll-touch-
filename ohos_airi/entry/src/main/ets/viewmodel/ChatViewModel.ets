@@ -12,6 +12,7 @@ export class ChatViewModel {
   currentTab: string = 'chat';
   currentEmotion: string = 'neutral';
   thinkingActive: boolean = false;
+  private isProcessing: boolean = false;
   
   private memoryManager: MemoryManager;
   private emotionUnderstanding: EmotionUnderstanding;
@@ -154,23 +155,24 @@ export class ChatViewModel {
     return responses[Math.floor(Math.random() * responses.length)];
   }
 
-  async handleAction(action: string): Promise<void> {
-    const actions: Record<string, { title: string; message: string }> = {
-      write: { title: '写文案', message: '好的！どんな文案を書きますか？ブログ、SNS、詩...何でもお任せください！📝' },
-      schedule: { title: '日程管理', message: 'スケジュールを管理しましょう！何を予定しますか？追加，确认、リマインダー...何でもできますよ～ 📅' },
-      image: { title: '生成图片', message: '画像生成をしましょう！どんな画像を作りたいですか？詳しく教えてください～ 🖼️' },
-      music: { title: '音乐推荐', message: '音楽を探しましょう！好きなジャンルやアーティストはいますか？私がおすすめします！🎵' }
-    };
-    
-    const actionData = actions[action];
-    if (actionData) {
-      await this.sendMessage(`我想${actionData.title}`);
+  async handleAction(actionType: string): Promise<void> {
+    if (this.isProcessing) return;
+    this.isProcessing = true;
+
+    try {
+      const actions: Record<string, { title: string; message: string }> = {
+        write: { title: '写文案', message: '好的！どんな文案を書きますか？ブログ、SNS、詩...何でもお任せください！📝' },
+        schedule: { title: '日程管理', message: 'スケジュールを管理しましょう！何を予定しますか？追加，确认、リマインダー...何でもできますよ～ 📅' },
+        image: { title: '生成图片', message: '画像生成をしましょう！どんな画像を作りたいですか？詳しく教えてください～ 🖼️' },
+        music: { title: '音乐推荐', message: '音楽を探しましょう！好きなジャンルやアーティストはいますか？私がおすすめします！🎵' }
+      };
       
-      setTimeout(async () => {
-        const aiMessage = MessageModel.createMessage(actionData.message, 'ai');
-        this.messages.push(aiMessage);
-        await this.saveMessages();
-      }, 2000);
+      const actionData = actions[actionType];
+      if (!actionData) return;
+
+      await this.sendMessage(`我想${actionData.title}`);
+    } finally {
+      this.isProcessing = false;
     }
   }
 

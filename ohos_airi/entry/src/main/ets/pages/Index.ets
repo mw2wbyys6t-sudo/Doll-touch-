@@ -80,42 +80,60 @@ struct Index {
         })
         
         if (this.showThemeMenu) {
-          Column({ space: 8 }) {
-            Text('浅色模式')
-              .fontSize(14)
-              .fontColor('#333333')
-              .width('100%')
-              .padding({ top: 8, bottom: 8 })
-              .onClick(() => this.setTheme('light'))
-            
-            Divider()
-              .strokeWidth(0.5)
-              .color('#f0f0f0')
-            
-            Text('深色模式')
-              .fontSize(14)
-              .fontColor('#333333')
-              .width('100%')
-              .padding({ top: 8, bottom: 8 })
-              .onClick(() => this.setTheme('dark'))
-            
-            Divider()
-              .strokeWidth(0.5)
-              .color('#f0f0f0')
-            
-            Text('跟随系统')
-              .fontSize(14)
-              .fontColor('#333333')
-              .width('100%')
-              .padding({ top: 8, bottom: 8 })
-              .onClick(() => this.setTheme('system'))
+          Column() {
+            Column({ space: 8 }) {
+              Text('浅色模式')
+                .fontSize(14)
+                .fontColor('#333333')
+                .width('100%')
+                .padding({ top: 8, bottom: 8 })
+                .onClick(() => {
+                  this.setTheme('light');
+                  this.showThemeMenu = false;
+                })
+              
+              Divider()
+                .strokeWidth(0.5)
+                .color('#f0f0f0')
+              
+              Text('深色模式')
+                .fontSize(14)
+                .fontColor('#333333')
+                .width('100%')
+                .padding({ top: 8, bottom: 8 })
+                .onClick(() => {
+                  this.setTheme('dark');
+                  this.showThemeMenu = false;
+                })
+              
+              Divider()
+                .strokeWidth(0.5)
+                .color('#f0f0f0')
+              
+              Text('跟随系统')
+                .fontSize(14)
+                .fontColor('#333333')
+                .width('100%')
+                .padding({ top: 8, bottom: 8 })
+                .onClick(() => {
+                  this.setTheme('system');
+                  this.showThemeMenu = false;
+                })
+            }
+            .width(140)
+            .backgroundColor('#ffffff')
+            .borderRadius(12)
+            .padding(8)
+            .position({ right: 16, top: px2vp(this.safeAreaTop) + 60 })
+            .shadow({ radius: 12, color: 'rgba(0,0,0,0.2)', offsetY: 4 })
           }
-          .width(140)
-          .backgroundColor('#ffffff')
-          .borderRadius(12)
-          .padding(8)
-          .position({ right: 16, top: px2vp(this.safeAreaTop) + 60 })
-          .shadow({ radius: 12, color: 'rgba(0,0,0,0.2)', offsetY: 4 })
+          .width('100%')
+          .height('100%')
+          .position({ x: 0, y: 0 })
+          .zIndex(100)
+          .onClick(() => {
+            this.showThemeMenu = false;
+          })
         }
       }
       .width('100%')
@@ -153,25 +171,38 @@ struct Index {
             ActionBtn({
               icon: '📝',
               label: '写文案',
-              onClick: () => chatViewModel.handleAction('write')
+              onClick: async () => {
+                await chatViewModel.handleAction('write');
+                this.syncFromViewModel();
+                setTimeout(() => this.scroller.scrollTo({ yOffset: 99999 }), 100);
+              }
             })
-            
             ActionBtn({
               icon: '📅',
               label: '日程',
-              onClick: () => chatViewModel.handleAction('schedule')
+              onClick: async () => {
+                await chatViewModel.handleAction('schedule');
+                this.syncFromViewModel();
+                setTimeout(() => this.scroller.scrollTo({ yOffset: 99999 }), 100);
+              }
             })
-            
             ActionBtn({
               icon: '🖼️',
               label: '图片',
-              onClick: () => chatViewModel.handleAction('image')
+              onClick: async () => {
+                await chatViewModel.handleAction('image');
+                this.syncFromViewModel();
+                setTimeout(() => this.scroller.scrollTo({ yOffset: 99999 }), 100);
+              }
             })
-            
             ActionBtn({
               icon: '🎵',
               label: '音乐',
-              onClick: () => chatViewModel.handleAction('music')
+              onClick: async () => {
+                await chatViewModel.handleAction('music');
+                this.syncFromViewModel();
+                setTimeout(() => this.scroller.scrollTo({ yOffset: 99999 }), 100);
+              }
             })
           }
           .width('100%')

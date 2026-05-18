@@ -178,6 +178,25 @@ export class EmotionUnderstanding {
     return 'stable';
   }
 
+  getEmotionColor(emotion: EmotionType): string {
+    const colorMap: Record<EmotionType, string> = {
+      [EmotionType.HAPPY]: '#FFD700',
+      [EmotionType.SAD]: '#4169E1',
+      [EmotionType.ANGRY]: '#FF4500',
+      [EmotionType.FEARFUL]: '#800080',
+      [EmotionType.SURPRISED]: '#FF69B4',
+      [EmotionType.NEUTRAL]: '#9B64DC',
+      [EmotionType.EXCITED]: '#FF8C00',
+      [EmotionType.ANXIOUS]: '#20B2AA',
+      [EmotionType.SHY]: '#FFB6C1',
+      [EmotionType.EMBARRASSED]: '#DDA0DD',
+      [EmotionType.TIRED]: '#708090',
+      [EmotionType.CONFUSED]: '#DAA520',
+      [EmotionType.IDLE]: '#9B64DC'
+    };
+    return colorMap[emotion] || '#9B64DC';
+  }
+
   getEmotionalState(): EmotionalState {
     return { ...this.emotionalState };
   }

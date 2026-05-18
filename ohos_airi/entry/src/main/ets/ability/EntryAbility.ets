@@ -35,8 +35,19 @@ export default class EntryAbility extends UIAbility {
     // 先初始化 AppStorage
     initAppStorage();
     
-    PreferencesUtil.init(this.context);
-    NotificationManager.init(this.context);
+    try {
+      PreferencesUtil.init(this.context);
+      hilog.info(0x0000, 'AiriAI', 'PreferencesUtil 初始化成功');
+    } catch (error) {
+      hilog.error(0x0000, 'AiriAI', 'PreferencesUtil 初始化失败：%{public}s', JSON.stringify(error));
+    }
+
+    try {
+      NotificationManager.init(this.context);
+      hilog.info(0x0000, 'AiriAI', 'NotificationManager 初始化成功');
+    } catch (error) {
+      hilog.error(0x0000, 'AiriAI', 'NotificationManager 初始化失败：%{public}s', JSON.stringify(error));
+    }
     
     // 并行接入 LifecycleManager - 初始化核心模块
     if (ENABLE_LIFECYCLE_MANAGER) {
