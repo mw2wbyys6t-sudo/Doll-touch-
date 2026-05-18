@@ -10,6 +10,7 @@ import { ExpressionManager } from '../utils/ExpressionManager';
 import { BodyActionManager } from '../utils/BodyActionManager';
 import { LifecycleManager } from '../core/LifecycleManager';
 import { safeGetAppStorageNumber } from '../utils/AppStorageHelper';
+import { Message } from '../model/MessageModel';
 
 const ENABLE_LIFECYCLE_MANAGER = true;
 
@@ -24,11 +25,15 @@ struct Index {
   scroller: Scroller = new Scroller();
   inputController: TextInputController = new TextInputController();
   isEmojiOpen: boolean = false;
-  
+
   @State inputText: string = '';
   @State showThemeMenu: boolean = false;
   @State currentTheme: ThemeMode = 'light';
   @State safeAreaTop: number = 0;
+  @State messages: Message[] = [];
+  @State isTyping: boolean = false;
+  @State currentTab: string = 'chat';
+  private messageVersion: number = 0;
 
   build() {
     const colors = ThemeManager.getThemeColors();
@@ -128,11 +133,11 @@ struct Index {
           
           Scroll(this.scroller) {
             Column({ space: 16 }) {
-              ForEach(chatViewModel.messages, (msg) => {
+              ForEach(this.messages, (msg: Message, index: number) => {
                 MessageBubble({ message: msg })
               })
-              
-              if (chatViewModel.isTyping) {
+
+              if (this.isTyping) {
                 TypingIndicator()
               }
             }
@@ -227,8 +232,8 @@ struct Index {
       .flexGrow(1)
 
       BottomNav({
-        currentTab: chatViewModel.currentTab,
-        onTabChange: (tab: string) => chatViewModel.switchTab(tab)
+        currentTab: this.currentTab,
+        onTabChange: (tab: string) => this.handleTabChange(tab)
       })
     }
     .width('100%')
@@ -243,26 +248,30 @@ struct Index {
 
   async onAppear(): Promise<void> {
     console.log('Index 页面：开始初始化');
-    
+
     // 先获取 safeAreaTop，避免在 build 中直接访问
     this.safeAreaTop = safeGetAppStorageNumber('safeAreaTop', 0);
-    
+
     try {
       await ThemeManager.init();
       await chatViewModel.init();
       this.currentTheme = ThemeManager.getCurrentTheme();
+
+      // 同步 chatViewModel 状态到本地 @State
+      this.syncFromViewModel();
+
       console.log('Index 页面：基础模块初始化完成');
     } catch (error) {
       console.error('Index 页面：基础模块初始化失败:', error);
     }
-    
+
     // 并行接入 LifecycleManager - 注册页面生命周期
     if (ENABLE_LIFECYCLE_MANAGER) {
       try {
-        // 通知 LifecycleManager 页面出现
         lifecycleManager.onAppear('Index', () => {
           console.log('Index 页面 onAppear 回调');
           lifecycleManager.markUserActivity();
+          this.syncFromViewModel();
         }, () => {
           console.log('Index 页面 onDisappear 回调');
         });
@@ -271,7 +280,7 @@ struct Index {
         console.error('LifecycleManager 注册页面失败:', error);
       }
     }
-    
+
     // 延迟启动动画，避免竞态条件
     setTimeout(() => {
       try {
@@ -281,7 +290,7 @@ struct Index {
         console.error('Index 页面：动画启动失败:', error);
       }
     }, 300);
-    
+
     // 延迟启动眨眼定时器
     setTimeout(() => {
       try {
@@ -297,14 +306,26 @@ struct Index {
         console.error('Index 页面：眨眼定时器启动失败:', error);
       }
     }, 500);
-    
+
     // 保存监听器引用以便清理
     this.themeListener = () => {
       this.currentTheme = ThemeManager.getCurrentTheme();
     };
     ThemeManager.addListener(this.themeListener);
-    
+
     console.log('Index 页面：初始化完成');
+  }
+
+  private syncFromViewModel(): void {
+    this.messages = [...chatViewModel.messages];
+    this.isTyping = chatViewModel.isTyping;
+    this.currentTab = chatViewModel.currentTab;
+    this.messageVersion++;
+  }
+
+  private handleTabChange(tab: string): void {
+    this.currentTab = tab;
+    chatViewModel.switchTab(tab);
   }
 
   aboutToDisappear(): void {
@@ -363,19 +384,24 @@ struct Index {
 
   async sendMessage(value: string): Promise<void> {
     if (!value.trim()) return;
-    
+
     await expressionManager.playExpression('excited');
     await chatViewModel.sendMessage(value);
-    
+
     this.inputText = '';
     this.inputController.clear();
-    
+
+    // 同步状态到UI
+    this.syncFromViewModel();
+
     setTimeout(() => {
       this.scroller.scrollTo({ yOffset: 99999 });
     }, 100);
 
     setTimeout(async () => {
       await expressionManager.playExpression('happy');
+      // 再次同步（AI回复到达）
+      this.syncFromViewModel();
     }, 1000);
   }
 }

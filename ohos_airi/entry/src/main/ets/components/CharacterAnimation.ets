@@ -16,23 +16,33 @@ export struct CharacterAnimation {
   @StorageProp('hairSwing') hairSwing: number = 0.0;
   @StorageProp('clothingSwing') clothingSwing: number = 0.0;
 
+  @State imageLoadError: boolean = false;
+
   build() {
     Stack({ alignContent: Alignment.Center }) {
-      Image('https://neeko-copilot.bytedance.net/api/text_to_image?prompt=anime%20girl%20idol%20character%20Hoshizora%20Airi%20starry%20sky%20theme%20pink%20purple%20gradient%20hair%20cute%20idol%20outfit%20mic%20cheerful%20pose%20anime%20style%20full%20body&image_size=portrait_4_3')
-        .width(200)
-        .height(350)
-        .objectFit(ImageFit.Contain)
-        .transform({
-          rotateX: this.bodyAngleX * 15,
-          rotateY: this.bodyAngleY * 15,
-          rotateZ: this.bodyAngleZ * 15,
-          scaleX: 1 + this.bodyAngleY * 0.1,
-          scaleY: 1 + this.bodyAngleX * 0.05
-        })
-        .animation({
-          duration: 200,
-          easing: 'easeOutCubic'
-        });
+      if (this.imageLoadError) {
+        this.buildFallbackAvatar()
+      } else {
+        Image($rawfile('character_airi.png'))
+          .width(200)
+          .height(350)
+          .objectFit(ImageFit.Contain)
+          .transform({
+            rotateX: this.bodyAngleX * 15,
+            rotateY: this.bodyAngleY * 15,
+            rotateZ: this.bodyAngleZ * 15,
+            scaleX: 1 + this.bodyAngleY * 0.1,
+            scaleY: 1 + this.bodyAngleX * 0.05
+          })
+          .animation({
+            duration: 200,
+            easing: 'easeOutCubic'
+          })
+          .onError(() => {
+            this.imageLoadError = true;
+            console.error('CharacterAnimation: 图片加载失败，使用备用头像');
+          })
+      }
 
       this.buildFaceOverlay();
       this.buildGlowEffect();
@@ -41,6 +51,32 @@ export struct CharacterAnimation {
     .height('100%')
     .justifyContent(FlexAlign.Center)
     .backgroundColor(Color.Transparent);
+  }
+
+  buildFallbackAvatar() {
+    Column({ space: 8 }) {
+      Text('🌸')
+        .fontSize(80)
+      Text('星空愛莉')
+        .fontColor('#9B64DC')
+        .fontSize(16)
+        .fontWeight(FontWeight.Bold)
+    }
+    .width(200)
+    .height(350)
+    .justifyContent(FlexAlign.Center)
+    .alignItems(HorizontalAlign.Center)
+    .backgroundColor('#FFF5F8')
+    .borderRadius(20)
+    .transform({
+      rotateX: this.bodyAngleX * 15,
+      rotateY: this.bodyAngleY * 15,
+      rotateZ: this.bodyAngleZ * 15,
+    })
+    .animation({
+      duration: 200,
+      easing: 'easeOutCubic'
+    });
   }
 
   buildFaceOverlay() {
