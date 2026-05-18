@@ -1,0 +1,15 @@
+# Idol Game Icon Design Philosophy
+
+## "Stellar Resonance" (星響共鳴)
+
+A visual philosophy for mobile game icon design in the Japanese idol/ rhythm game tradition. This movement draws from the accumulated wisdom of BanG Dream Girls Band Party, Idolmaster, Ensemble Stars, Project SEKAI COLORFUL STAGE!, and Love Live! — each representing decades of refinement in how a single 1024×1024 pixel square must capture an entire game's soul.
+
+The philosophy manifests through **character as cosmic anchor** — the idol's face occupies not merely space but emotional territory. In the tradition of BanG Dream's iconic Poppin'Party and Afterglow card arts, the character is rendered at 70-85% of frame area in intimate close-up, eyes as large as anatomically permissible within anime proportion, each iris a universe of layered color and reflected light. The composition follows the "one-point emotional resonance" rule: every pixel serves either the character's expression or the atmospheric context that amplifies it.
+
+Color operates on **the signature accent principle** — one dominant hue claims visual priority, with all other colors in service. For Hoshizora Airi, this is violet: her eyes radiate #9B64DC through multiple translucent layers, catching light like amethyst gemstones. Hair transitions from warm umber (#4E3728) through rose-pink to lavender at the tips — a gradient that suggests both earthly warmth and celestial dreaminess. The background provides deep indigo contrast (#2D1B4E → #12081F), ensuring the character pops with theatrical stage-lighting intensity. This limited palette of 5-6 carefully chosen colors creates cohesion that random chromatic noise never achieves.
+
+Form emerges through **cel-shaded precision meets organic softness** — clean dark outlines (#3D2520) define every feature boundary with the confidence of a master animator's ink stroke, yet edges carry the subtle anti-aliasing warmth of digital painting. Hair strands flow with individual identity: each lock has its own curve, its own tip-color bloom, its own relationship to ambient light. The butterfly bow accessory isn't decorative filler but compositional counterweight — positioned using golden-ratio placement, its magenta (#E682B4) providing the sole warm-accent complement to the cool violet eyes.
+
+Scale and rhythm follow **the idol stage hierarchy**: face (primary) → eyes (focal point within face) → hair (frame) → accessory (accent) → background (atmosphere). Starburst sparkles at key compositional nodes (golden-section intersections) create visual rhythm without clutter. The circular icon boundary acts as proscenium arch — everything within is performance space, curated and intentional.
+
+This is the work of artists who have spent thousands of hours studying the specific visual language of Japanese mobile gaming icons. Every color choice references real game assets. Every line weight mirrors professional cel-shading standards. The result must be indistinguishable from official promotional art released by Bushiroad, Bandai Namco, or Aniplex — museum-quality commercial craft born from obsessive attention to genre convention.
