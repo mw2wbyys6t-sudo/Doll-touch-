@@ -1,8 +1,26 @@
-import { BusinessError } from '@kit.BasicServicesKit';
 import { AppStorage } from '@kit.ArkUI';
+
+// 安全的 AppStorage 访问函数
+function safeGetAppStorage(key: string, defaultValue: number): number {
+  try {
+    const value = AppStorage.get(key);
+    return value !== undefined && value !== null ? Number(value) : defaultValue;
+  } catch (e) {
+    return defaultValue;
+  }
+}
+
+function safeSetAppStorage(key: string, value: number): void {
+  try {
+    AppStorage.setOrCreate(key, value);
+  } catch (e) {
+    console.error(`ExpressionManager: 设置 ${key} 失败:`, e);
+  }
+}
 
 // 兼容 HarmonyOS NEXT 的 requestAnimationFrame 替代实现
 let rafId = 0;
+type FrameRequestCallback = (timestamp: number) => void;
 const rafCallbacks = new Map<number, FrameRequestCallback>();
 
 function requestAnimationFrame(callback: FrameRequestCallback): number {
@@ -12,7 +30,11 @@ function requestAnimationFrame(callback: FrameRequestCallback): number {
     const cb = rafCallbacks.get(id);
     if (cb) {
       rafCallbacks.delete(id);
-      cb(Date.now());
+      try {
+        cb(Date.now());
+      } catch (e) {
+        console.error('ExpressionManager: animationFrame callback failed:', e);
+      }
     }
   }, 16);
   return id;
@@ -180,14 +202,14 @@ export class ExpressionManager {
     return new Promise<void>((resolve) => {
       const targetParams = this.getExpressionParams(expression);
       
-      AppStorage.setOrCreate('eyeOpen', targetParams.eyeOpen);
-      AppStorage.setOrCreate('eyeBrowY', targetParams.eyeBrowY);
-      AppStorage.setOrCreate('mouthOpen', targetParams.mouthOpen);
-      AppStorage.setOrCreate('mouthForm', targetParams.mouthForm);
-      AppStorage.setOrCreate('cheek', targetParams.cheek);
-      AppStorage.setOrCreate('headAngleX', targetParams.headAngleX);
-      AppStorage.setOrCreate('headAngleY', targetParams.headAngleY);
-      AppStorage.setOrCreate('headAngleZ', targetParams.headAngleZ);
+      safeSetAppStorage('eyeOpen', targetParams.eyeOpen);
+      safeSetAppStorage('eyeBrowY', targetParams.eyeBrowY);
+      safeSetAppStorage('mouthOpen', targetParams.mouthOpen);
+      safeSetAppStorage('mouthForm', targetParams.mouthForm);
+      safeSetAppStorage('cheek', targetParams.cheek);
+      safeSetAppStorage('headAngleX', targetParams.headAngleX);
+      safeSetAppStorage('headAngleY', targetParams.headAngleY);
+      safeSetAppStorage('headAngleZ', targetParams.headAngleZ);
 
       setTimeout(() => {
         resolve();
@@ -200,11 +222,13 @@ export class ExpressionManager {
     
     this.isAnimating = true;
     try {
-      const originalEyeOpen = AppStorage.get('eyeOpen', 1.0);
+      const originalEyeOpen = safeGetAppStorage('eyeOpen', 1.0);
       
       await this.animateValue('eyeOpen', originalEyeOpen, 0.0, 100);
       await this.delay(50);
       await this.animateValue('eyeOpen', 0.0, originalEyeOpen, 100);
+    } catch (error) {
+      console.error('ExpressionManager: playBlink failed:', error);
     } finally {
       this.isAnimating = false;
     }
@@ -220,6 +244,8 @@ export class ExpressionManager {
         await this.animateValue('headAngleY', 0.05, -0.05, 300);
         await this.animateValue('headAngleY', -0.05, 0, 200);
       }
+    } catch (error) {
+      console.error('ExpressionManager: playIdleBounce failed:', error);
     } finally {
       this.isAnimating = false;
     }
@@ -229,16 +255,21 @@ export class ExpressionManager {
     return new Promise<void>((resolve) => {
       const startTime = Date.now();
       const animate = () => {
-        const elapsed = Date.now() - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        const eased = this.easeOutCubic(progress);
-        const value = from + (to - from) * eased;
-        
-        AppStorage.setOrCreate(key, value);
-        
-        if (progress < 1) {
-          requestAnimationFrame(animate);
-        } else {
+        try {
+          const elapsed = Date.now() - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          const eased = this.easeOutCubic(progress);
+          const value = from + (to - from) * eased;
+          
+          safeSetAppStorage(key, value);
+          
+          if (progress < 1) {
+            requestAnimationFrame(animate);
+          } else {
+            resolve();
+          }
+        } catch (error) {
+          console.error(`ExpressionManager: animateValue ${key} failed:`, error);
           resolve();
         }
       };

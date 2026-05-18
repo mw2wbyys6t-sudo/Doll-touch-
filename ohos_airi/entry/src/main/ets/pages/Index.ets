@@ -1,4 +1,4 @@
-import { promptAction } from '@kit.ArkUI';
+import { promptAction, AppStorage } from '@kit.ArkUI';
 import { ChatViewModel } from '../viewmodel/ChatViewModel';
 import { ThemeManager, ThemeMode } from '../utils/ThemeManager';
 import { MessageBubble } from '../components/MessageBubble';
@@ -12,6 +12,16 @@ import { LifecycleManager } from '../core/LifecycleManager';
 
 // 特性开关：启用 LifecycleManager
 const ENABLE_LIFECYCLE_MANAGER = true;
+
+// 安全的 AppStorage 访问函数
+function safeGetAppStorage<T>(key: string, defaultValue: T): T {
+  try {
+    const value = AppStorage.get(key);
+    return value !== undefined && value !== null ? value as T : defaultValue;
+  } catch (e) {
+    return defaultValue;
+  }
+}
 
 const chatViewModel = new ChatViewModel();
 const expressionManager = ExpressionManager.getInstance();
@@ -28,6 +38,7 @@ struct Index {
   @State inputText: string = '';
   @State showThemeMenu: boolean = false;
   @State currentTheme: ThemeMode = 'light';
+  @State safeAreaTop: number = 0;
 
   build() {
     const colors = ThemeManager.getThemeColors();
@@ -67,7 +78,7 @@ struct Index {
         }
         .width('100%')
         .padding({
-          top: px2vp(AppStorage.get<number>('safeAreaTop') || 0) + 24,
+          top: px2vp(this.safeAreaTop) + 24,
           left: 16,
           right: 16,
           bottom: 16
@@ -108,7 +119,7 @@ struct Index {
           .backgroundColor('#ffffff')
           .borderRadius(12)
           .padding(8)
-          .position({ right: 16, top: px2vp(AppStorage.get<number>('safeAreaTop') || 0) + 60 })
+          .position({ right: 16, top: px2vp(this.safeAreaTop) + 60 })
           .shadow({ radius: 12, color: 'rgba(0,0,0,0.2)', offsetY: 4 })
         }
       }
@@ -241,9 +252,19 @@ struct Index {
   private themeListener: (() => void) | null = null;
 
   async onAppear(): Promise<void> {
-    await ThemeManager.init();
-    await chatViewModel.init();
-    this.currentTheme = ThemeManager.getCurrentTheme();
+    console.log('Index 页面：开始初始化');
+    
+    // 先获取 safeAreaTop，避免在 build 中直接访问
+    this.safeAreaTop = safeGetAppStorage('safeAreaTop', 0);
+    
+    try {
+      await ThemeManager.init();
+      await chatViewModel.init();
+      this.currentTheme = ThemeManager.getCurrentTheme();
+      console.log('Index 页面：基础模块初始化完成');
+    } catch (error) {
+      console.error('Index 页面：基础模块初始化失败:', error);
+    }
     
     // 并行接入 LifecycleManager - 注册页面生命周期
     if (ENABLE_LIFECYCLE_MANAGER) {
@@ -261,18 +282,39 @@ struct Index {
       }
     }
     
-    // 原有业务逻辑保持不变
-    bodyActionManager.startIdleAnimation();
+    // 延迟启动动画，避免竞态条件
+    setTimeout(() => {
+      try {
+        bodyActionManager.startIdleAnimation();
+        console.log('Index 页面：动画启动完成');
+      } catch (error) {
+        console.error('Index 页面：动画启动失败:', error);
+      }
+    }, 300);
     
-    // 修复定时器泄漏 - 保存 timerId 以便清理
-    this.blinkTimerId = setInterval(async () => {
-      await expressionManager.playBlink();
-    }, 3000 + Math.random() * 2000) as unknown as number;
+    // 延迟启动眨眼定时器
+    setTimeout(() => {
+      try {
+        this.blinkTimerId = setInterval(async () => {
+          try {
+            await expressionManager.playBlink();
+          } catch (error) {
+            console.error('Index 页面：眨眼动画失败:', error);
+          }
+        }, 3000 + Math.random() * 2000) as unknown as number;
+        console.log('Index 页面：眨眼定时器启动完成');
+      } catch (error) {
+        console.error('Index 页面：眨眼定时器启动失败:', error);
+      }
+    }, 500);
     
     // 保存监听器引用以便清理
-    ThemeManager.addListener(() => {
+    this.themeListener = () => {
       this.currentTheme = ThemeManager.getCurrentTheme();
-    });
+    };
+    ThemeManager.addListener(this.themeListener);
+    
+    console.log('Index 页面：初始化完成');
   }
 
   aboutToDisappear(): void {

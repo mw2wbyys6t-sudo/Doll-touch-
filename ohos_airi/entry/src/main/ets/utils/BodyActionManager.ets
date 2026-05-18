@@ -1,5 +1,23 @@
 import { AppStorage } from '@kit.ArkUI';
 
+// 安全的 AppStorage 访问函数
+function safeGetAppStorage(key: string, defaultValue: number): number {
+  try {
+    const value = AppStorage.get(key);
+    return value !== undefined && value !== null ? Number(value) : defaultValue;
+  } catch (e) {
+    return defaultValue;
+  }
+}
+
+function safeSetAppStorage(key: string, value: number): void {
+  try {
+    AppStorage.setOrCreate(key, value);
+  } catch (e) {
+    console.error(`BodyActionManager: 设置 ${key} 失败:`, e);
+  }
+}
+
 // 兼容 HarmonyOS NEXT 的 requestAnimationFrame 替代实现
 let rafId = 0;
 type FrameRequestCallback = (timestamp: number) => void;
@@ -12,7 +30,11 @@ function requestAnimationFrame(callback: FrameRequestCallback): number {
     const cb = rafCallbacks.get(id);
     if (cb) {
       rafCallbacks.delete(id);
-      cb(Date.now());
+      try {
+        cb(Date.now());
+      } catch (e) {
+        console.error('BodyActionManager: animationFrame callback failed:', e);
+      }
     }
   }, 16);
   return id;
@@ -182,7 +204,7 @@ export class BodyActionManager {
     
     const params = Object.keys(targetParams) as (keyof BodyParams)[];
     params.forEach(key => {
-      AppStorage.setOrCreate(key, targetParams[key]);
+      safeSetAppStorage(key, targetParams[key]);
     });
 
     return new Promise(resolve => {
@@ -197,20 +219,26 @@ export class BodyActionManager {
 
     let time = 0;
     this.animationTimer = setInterval(() => {
-      time += 0.05;
-      
-      const sway = Math.sin(time) * 0.02;
-      const hairSwing = Math.sin(time * 1.5) * 0.05;
-      const clothingSwing = Math.sin(time * 0.8) * 0.03;
-      
-      AppStorage.setOrCreate('bodyAngleY', sway);
-      AppStorage.setOrCreate('hairSwing', hairSwing);
-      AppStorage.setOrCreate('clothingSwing', clothingSwing);
-      
-      const armSwing = Math.sin(time * 2) * 0.05;
-      AppStorage.setOrCreate('armLeftAngleX', armSwing);
-      AppStorage.setOrCreate('armRightAngleX', -armSwing);
+      try {
+        time += 0.05;
+        
+        const sway = Math.sin(time) * 0.02;
+        const hairSwing = Math.sin(time * 1.5) * 0.05;
+        const clothingSwing = Math.sin(time * 0.8) * 0.03;
+        
+        safeSetAppStorage('bodyAngleY', sway);
+        safeSetAppStorage('hairSwing', hairSwing);
+        safeSetAppStorage('clothingSwing', clothingSwing);
+        
+        const armSwing = Math.sin(time * 2) * 0.05;
+        safeSetAppStorage('armLeftAngleX', armSwing);
+        safeSetAppStorage('armRightAngleX', -armSwing);
+      } catch (error) {
+        console.error('BodyActionManager: idle animation failed:', error);
+      }
     }, 50) as unknown as number;
+    
+    console.log('BodyActionManager: idle animation started');
   }
 
   stopCurrentAction(): void {
@@ -219,6 +247,7 @@ export class BodyActionManager {
       this.animationTimer = null;
     }
     this.isAnimating = false;
+    console.log('BodyActionManager: action stopped');
   }
 
   async playWave(): Promise<void> {
@@ -233,17 +262,22 @@ export class BodyActionManager {
 
   private async animateWaveCycle(): Promise<void> {
     return new Promise(resolve => {
-      const startAngle = AppStorage.get('armRightAngleX', 0.6);
+      const startAngle = safeGetAppStorage('armRightAngleX', 0.6);
       let time = 0;
       
       const animate = () => {
-        time += 0.1;
-        const angle = startAngle * Math.sin(time * 10);
-        AppStorage.setOrCreate('armRightAngleX', angle);
-        
-        if (time < 0.6) {
-          requestAnimationFrame(animate);
-        } else {
+        try {
+          time += 0.1;
+          const angle = startAngle * Math.sin(time * 10);
+          safeSetAppStorage('armRightAngleX', angle);
+          
+          if (time < 0.6) {
+            requestAnimationFrame(animate);
+          } else {
+            resolve();
+          }
+        } catch (error) {
+          console.error('BodyActionManager: animateWaveCycle failed:', error);
           resolve();
         }
       };
@@ -257,25 +291,30 @@ export class BodyActionManager {
     const startTime = Date.now();
     return new Promise(resolve => {
       const animate = () => {
-        const elapsed = Date.now() - startTime;
-        
-        if (elapsed < duration) {
-          const time = elapsed / 1000;
+        try {
+          const elapsed = Date.now() - startTime;
           
-          AppStorage.setOrCreate('bodyAngleX', Math.sin(time * 3) * 0.1);
-          AppStorage.setOrCreate('bodyAngleY', Math.cos(time * 4) * 0.1);
-          AppStorage.setOrCreate('bodyAngleZ', Math.sin(time * 2) * 0.05);
-          
-          AppStorage.setOrCreate('armLeftAngleX', Math.sin(time * 5) * 0.4);
-          AppStorage.setOrCreate('armRightAngleX', Math.cos(time * 5) * 0.4);
-          AppStorage.setOrCreate('armLeftAngleY', Math.cos(time * 3) * 0.4);
-          AppStorage.setOrCreate('armRightAngleY', Math.sin(time * 3) * 0.4);
-          
-          AppStorage.setOrCreate('hairSwing', Math.sin(time * 6) * 0.3);
-          AppStorage.setOrCreate('clothingSwing', Math.sin(time * 4) * 0.2);
-          
-          requestAnimationFrame(animate);
-        } else {
+          if (elapsed < duration) {
+            const time = elapsed / 1000;
+            
+            safeSetAppStorage('bodyAngleX', Math.sin(time * 3) * 0.1);
+            safeSetAppStorage('bodyAngleY', Math.cos(time * 4) * 0.1);
+            safeSetAppStorage('bodyAngleZ', Math.sin(time * 2) * 0.05);
+            
+            safeSetAppStorage('armLeftAngleX', Math.sin(time * 5) * 0.4);
+            safeSetAppStorage('armRightAngleX', Math.cos(time * 5) * 0.4);
+            safeSetAppStorage('armLeftAngleY', Math.cos(time * 3) * 0.4);
+            safeSetAppStorage('armRightAngleY', Math.sin(time * 3) * 0.4);
+            
+            safeSetAppStorage('hairSwing', Math.sin(time * 6) * 0.3);
+            safeSetAppStorage('clothingSwing', Math.sin(time * 4) * 0.2);
+            
+            requestAnimationFrame(animate);
+          } else {
+            resolve();
+          }
+        } catch (error) {
+          console.error('BodyActionManager: playDance failed:', error);
           resolve();
         }
       };
