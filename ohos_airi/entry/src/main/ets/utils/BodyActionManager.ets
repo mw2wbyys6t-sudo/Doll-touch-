@@ -20,8 +20,8 @@ export class BodyActionManager {
   private static instance: BodyActionManager | null = null;
   private currentAction: BodyActionType = 'idle_sway';
   private isAnimating: boolean = false;
-  private animationTimer: number | null = null;
-  private returnToIdleTimer: number | null = null;
+  private animationTimer: number = -1;
+  private returnToIdleTimer: number = -1;
 
   private bodyParams: Record<BodyActionType, BodyParams> = {
     idle_sway: { bodyAngleX: 0.0, bodyAngleY: 0.0, bodyAngleZ: 0.0, armLeftAngleX: 0.0, armLeftAngleY: 0.0, armRightAngleX: 0.0, armRightAngleY: 0.0, legAngleX: 0.0, legAngleY: 0.0, hairSwing: 0.0, clothingSwing: 0.0 },
@@ -75,17 +75,17 @@ export class BodyActionManager {
   private scheduleReturnToIdle(delay: number): void {
     this.clearReturnToIdleTimer();
     this.returnToIdleTimer = setTimeout(() => {
-      this.returnToIdleTimer = null;
+      this.returnToIdleTimer = -1;
       if (!this.isAnimating) {
         this.playAction('idle_sway', 300);
       }
-    }, delay) as unknown as number;
+    }, delay);
   }
 
   private clearReturnToIdleTimer(): void {
-    if (this.returnToIdleTimer !== null) {
+    if (this.returnToIdleTimer !== -1) {
       clearTimeout(this.returnToIdleTimer);
-      this.returnToIdleTimer = null;
+      this.returnToIdleTimer = -1;
     }
   }
 
@@ -120,13 +120,13 @@ export class BodyActionManager {
       } catch (error) {
         console.error('BodyActionManager: idle animation failed:', error);
       }
-    }, 50) as unknown as number;
+    }, 50);
   }
 
   stopCurrentAction(): void {
-    if (this.animationTimer) {
+    if (this.animationTimer !== -1) {
       clearInterval(this.animationTimer);
-      this.animationTimer = null;
+      this.animationTimer = -1;
     }
     this.isAnimating = false;
   }

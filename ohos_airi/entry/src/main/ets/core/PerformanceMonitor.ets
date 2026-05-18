@@ -52,8 +52,8 @@ export class PerformanceMonitor {
   private alerts: Alert[] = [];
   private frameCount: number = 0;
   private lastFrameTime: number = Date.now();
-  private animationFrame: number | null = null;
-  private monitoringTimer: number | null = null;
+  private animationFrame: number = -1;
+  private monitoringTimer: number = -1;
   private alertListeners: Array<(alert: Alert) => void> = [];
 
   private readonly FPS_WARNING_THRESHOLD = 30;
@@ -108,14 +108,14 @@ export class PerformanceMonitor {
   }
 
   private startResourceMonitor(): void {
-    if (this.monitoringTimer) {
+    if (this.monitoringTimer !== -1) {
       clearInterval(this.monitoringTimer);
     }
 
     this.monitoringTimer = setInterval(() => {
       this.collectMetrics();
       this.checkForWarnings();
-    }, 5000) as unknown as number;
+    }, 5000);
   }
 
   private collectMetrics(): void {
@@ -192,14 +192,14 @@ export class PerformanceMonitor {
   stop(): void {
     console.log('PerformanceMonitor 停止');
 
-    if (this.animationFrame) {
+    if (this.animationFrame !== -1) {
       cancelAnimationFrame(this.animationFrame);
-      this.animationFrame = null;
+      this.animationFrame = -1;
     }
 
-    if (this.monitoringTimer) {
+    if (this.monitoringTimer !== -1) {
       clearInterval(this.monitoringTimer);
-      this.monitoringTimer = null;
+      this.monitoringTimer = -1;
     }
   }
 

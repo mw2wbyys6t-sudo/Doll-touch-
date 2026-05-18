@@ -81,7 +81,7 @@ export class DebugPanelViewModel {
   private subscriberIds: string[] = [];
 
   // FPS 定时器
-  private fpsTimerId: number | null = null;
+  private fpsTimerId: number = -1;
 
   // 更新间隔
   private updateInterval: number = 500;
@@ -241,7 +241,7 @@ export class DebugPanelViewModel {
    * 开始更新
    */
   public startUpdates(): void {
-    if (this.fpsTimerId !== null) {
+    if (this.fpsTimerId !== -1) {
       return;
     }
 
@@ -260,9 +260,9 @@ export class DebugPanelViewModel {
    * 停止更新
    */
   public stopUpdates(): void {
-    if (this.fpsTimerId !== null) {
+    if (this.fpsTimerId !== -1) {
       clearInterval(this.fpsTimerId);
-      this.fpsTimerId = null;
+      this.fpsTimerId = -1;
     }
 
     console.info('[DebugPanel] 停止更新');
@@ -377,7 +377,7 @@ export class DebugPanelViewModel {
    */
   public setUpdateInterval(interval: number): void {
     this.updateInterval = interval;
-    if (this._isVisible && this.fpsTimerId !== null) {
+    if (this._isVisible && this.fpsTimerId !== -1) {
       this.stopUpdates();
       this.startUpdates();
     }

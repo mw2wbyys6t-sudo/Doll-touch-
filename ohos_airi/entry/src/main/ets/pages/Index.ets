@@ -332,7 +332,7 @@ struct Index {
           } catch (error) {
             console.error('Index 页面：眨眼动画失败:', error);
           }
-        }, 3000 + Math.random() * 2000) as unknown as number;
+        }, 3000 + Math.random() * 2000);
         console.log('Index 页面：眨眼定时器启动完成');
       } catch (error) {
         console.error('Index 页面：眨眼定时器启动失败:', error);
