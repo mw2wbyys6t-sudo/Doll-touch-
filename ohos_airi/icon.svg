@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a0a3e;stop-opacity:1" />
+      <stop offset="25%" style="stop-color:#2d1b69;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#4a2c8a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FF6B9D;stop-opacity:1" />
+    </linearGradient>
+    
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0" />
+    </radialGradient>
+    
+    <linearGradient id="hairGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFB6C1;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FF69B4;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FF1493;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="faceGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFE4E1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFDAB9;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="eyeGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8A2BE2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FF69B4;stop-opacity:1" />
+    </linearGradient>
+    
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="#000000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1024" height="1024" fill="url(#bgGrad)"/>
+  
+  <!-- Glow -->
+  <circle cx="512" cy="512" r="300" fill="url(#glow)"/>
+  
+  <!-- Stars -->
+  <g fill="#ffffff">
+    <circle cx="100" cy="150" r="3" opacity="0.8"/>
+    <circle cx="200" cy="80" r="2" opacity="0.6"/>
+    <circle cx="350" cy="120" r="4" opacity="0.9"/>
+    <circle cx="450" cy="60" r="2" opacity="0.7"/>
+    <circle cx="600" cy="100" r="3" opacity="0.8"/>
+    <circle cx="750" cy="70" r="4" opacity="0.9"/>
+    <circle cx="850" cy="140" r="2" opacity="0.6"/>
+    <circle cx="150" cy="250" r="3" opacity="0.7"/>
+    <circle cx="280" cy="300" r="2" opacity="0.8"/>
+    <circle cx="400" cy="280" r="4" opacity="0.6"/>
+    <circle cx="550" cy="250" r="3" opacity="0.9"/>
+    <circle cx="680" cy="300" r="2" opacity="0.7"/>
+    <circle cx="800" cy="250" r="4" opacity="0.8"/>
+    <circle cx="900" cy="300" r="2" opacity="0.6"/>
+    <circle cx="120" cy="400" r="3" opacity="0.8"/>
+    <circle cx="250" cy="450" r="2" opacity="0.7"/>
+    <circle cx="750" cy="420" r="3" opacity="0.8"/>
+    <circle cx="880" cy="480" r="2" opacity="0.6"/>
+    <circle cx="180" cy="600" r="4" opacity="0.9"/>
+    <circle cx="300" cy="650" r="2" opacity="0.7"/>
+    <circle cx="420" cy="620" r="3" opacity="0.8"/>
+    <circle cx="580" cy="680" r="2" opacity="0.6"/>
+    <circle cx="700" cy="640" r="4" opacity="0.9"/>
+    <circle cx="850" cy="600" r="3" opacity="0.7"/>
+    <circle cx="950" cy="650" r="2" opacity="0.8"/>
+    <circle cx="100" cy="750" r="3" opacity="0.6"/>
+    <circle cx="220" cy="800" r="2" opacity="0.9"/>
+    <circle cx="350" cy="780" r="4" opacity="0.7"/>
+    <circle cx="480" cy="750" r="2" opacity="0.8"/>
+    <circle cx="620" cy="800" r="3" opacity="0.6"/>
+    <circle cx="780" cy="780" r="2" opacity="0.9"/>
+    <circle cx="900" cy="750" r="4" opacity="0.7"/>
+    <circle cx="980" cy="800" r="2" opacity="0.8"/>
+    <circle cx="150" cy="850" r="3" opacity="0.8"/>
+    <circle cx="300" cy="900" r="2" opacity="0.6"/>
+    <circle cx="450" cy="880" r="4" opacity="0.9"/>
+    <circle cx="600" cy="920" r="2" opacity="0.7"/>
+    <circle cx="750" cy="850" r="3" opacity="0.8"/>
+    <circle cx="850" cy="900" r="2" opacity="0.6"/>
+    <circle cx="950" cy="850" r="4" opacity="0.9"/>
+  </g>
+  
+  <!-- Sparkles -->
+  <g fill="#ffffff" opacity="0.8">
+    <path d="M200,200 L205,190 L210,200 L205,210 Z"/>
+    <path d="M350,150 L355,140 L360,150 L355,160 Z"/>
+    <path d="M650,180 L655,170 L660,180 L655,190 Z"/>
+    <path d="M800,250 L805,240 L810,250 L805,260 Z"/>
+    <path d="M250,350 L255,340 L260,350 L255,360 Z"/>
+    <path d="M750,400 L755,390 L760,400 L755,410 Z"/>
+    <path d="M300,600 L305,590 L310,600 L305,610 Z"/>
+    <path d="M700,550 L705,540 L710,550 L705,560 Z"/>
+    <path d="M450,700 L455,690 L460,700 L455,710 Z"/>
+    <path d="M600,750 L605,740 L610,750 L605,760 Z"/>
+  </g>
+  
+  <!-- Anime Girl Head -->
+  <g filter="url(#shadow)">
+    <!-- Hair Back -->
+    <ellipse cx="512" cy="400" rx="250" ry="200" fill="url(#hairGrad)"/>
+    <ellipse cx="512" cy="450" rx="200" ry="150" fill="url(#hairGrad)"/>
+    <path d="M312,400 C312,300 350,250 400,220 C450,190 500,180 512,180 C524,180 574,190 624,220 C674,250 712,300 712,400 L712,500 C712,520 700,540 680,550 C660,560 640,560 624,550 C608,540 600,520 600,500 L600,400 C600,350 580,320 512,320 C444,320 424,350 424,400 L424,500 C424,520 416,540 400,550 C384,560 364,560 344,550 C324,540 312,520 312,500 Z" fill="url(#hairGrad)"/>
+    
+    <!-- Face -->
+    <ellipse cx="512" cy="400" rx="100" ry="120" fill="url(#faceGrad)"/>
+    
+    <!-- Eyes -->
+    <ellipse cx="470" cy="420" rx="25" ry="35" fill="url(#eyeGrad1)"/>
+    <ellipse cx="554" cy="420" rx="25" ry="35" fill="url(#eyeGrad1)"/>
+    
+    <!-- Eye Shine -->
+    <ellipse cx="462" cy="405" rx="8" ry="8" fill="#ffffff"/>
+    <ellipse cx="546" cy="405" rx="8" ry="8" fill="#ffffff"/>
+    <ellipse cx="475" cy="410" rx="4" ry="4" fill="#ffffff"/>
+    <ellipse cx="559" cy="410" rx="4" ry="4" fill="#ffffff"/>
+    
+    <!-- Cheeks -->
+    <ellipse cx="430" cy="450" rx="18" ry="12" fill="#FFB6C1" opacity="0.6"/>
+    <ellipse cx="594" cy="450" rx="18" ry="12" fill="#FFB6C1" opacity="0.6"/>
+    
+    <!-- Mouth -->
+    <path d="M500,470 C500,480 524,480 524,470 C524,465 500,465 500,470 Z" fill="#FF69B4"/>
+  </g>
+  
+  <!-- Rounded corners mask -->
+  <rect x="0" y="0" width="1024" height="1024" rx="204" ry="204" fill="none" stroke="#ffffff" stroke-width="2" opacity="0"/>
+</svg>
