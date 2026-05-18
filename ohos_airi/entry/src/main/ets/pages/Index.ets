@@ -6,6 +6,7 @@ import { TypingIndicator } from '../components/TypingIndicator';
 import { ActionBtn } from '../components/ActionBtn';
 import { BottomNav } from '../components/BottomNav';
 import { CharacterAnimation } from '../components/CharacterAnimation';
+import { L2DCharacterAnimation } from '../components/L2DCharacterAnimation';
 import { ExpressionManager } from '../utils/ExpressionManager';
 import { BodyActionManager } from '../utils/BodyActionManager';
 import { LifecycleManager } from '../core/LifecycleManager';
@@ -141,9 +142,9 @@ struct Index {
 
       Stack({ alignContent: Alignment.TopCenter }) {
         Column({ space: 16 }) {
-          CharacterAnimation()
-            .width(200)
-            .height(280)
+          L2DCharacterAnimation()
+            .width(220)
+            .height(380)
             .margin({ top: -60 })
             .onClick(() => {
               this.handleCharacterClick();
