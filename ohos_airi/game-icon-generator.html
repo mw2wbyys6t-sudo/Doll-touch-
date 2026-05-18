@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>星空爱莉 - Game Icon Generator</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body {
+    background: #0a0a0f;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: #fff;
+  }
+  
+  .container {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 20px;
+  }
+  
+  .canvas-wrapper {
+    position: relative;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 
+      0 0 60px rgba(255, 45, 149, 0.3),
+      0 20px 60px rgba(0, 0, 0, 0.5);
+  }
+  
+  .controls {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 24px;
+    width: 320px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .controls h2 {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #FF2D95;
+    margin-bottom: 20px;
+  }
+  
+  .control-group {
+    margin-bottom: 16px;
+  }
+  
+  .control-group label {
+    display: block;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 6px;
+  }
+  
+  .control-group input[type="range"] {
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    appearance: none;
+    background: linear-gradient(90deg, #0D0015, #FF2D95);
+    cursor: pointer;
+  }
+  
+  .control-group input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #00F0FF;
+    box-shadow: 0 0 10px #00F0FF;
+  }
+  
+  .value-display {
+    font-size: 11px;
+    color: #00F0FF;
+    float: right;
+    margin-top: -22px;
+  }
+  
+  .btn-group {
+    display: flex;
+    gap: 8px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+  }
+  
+  button {
+    flex: 1;
+    min-width: 80px;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  .btn-primary {
+    background: linear-gradient(135deg, #FF2D95, #FF6B9D);
+    color: white;
+    box-shadow: 0 4px 15px rgba(255, 45, 149, 0.4);
+  }
+  
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(255, 45, 149, 0.6);
+  }
+  
+  .btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
+  
+  .seed-display {
+    text-align: center;
+    font-size: 32px;
+    font-weight: bold;
+    color: #00F0FF;
+    text-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
+    margin-bottom: 16px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="canvas-wrapper" id="canvas-container"></div>
+  
+  <div class="controls">
+    <h2>Icon Parameters</h2>
+    
+    <div class="seed-display" id="seedDisplay">88888</div>
+    
+    <div class="btn-group" style="margin-top: 0; margin-bottom: 20px;">
+      <button class="btn-secondary" onclick="prevSeed()">← Prev</button>
+      <button class="btn-secondary" onclick="randomSeed()">Random</button>
+      <button class="btn-secondary" onclick="nextSeed()">Next →</button>
+    </div>
+    
+    <div class="control-group">
+      <label>Glow Intensity</label>
+      <input type="range" id="glowIntensity" min="0" max="100" value="70" oninput="updateParam('glowIntensity', this.value)">
+      <span class="value-display" id="glowIntensity-value">70</span>
+    </div>
+    
+    <div class="control-group">
+      <label>Star Density</label>
+      <input type="range" id="starDensity" min="20" max="200" value="80" oninput="updateParam('starDensity', this.value)">
+      <span class="value-display" id="starDensity-value">80</span>
+    </div>
+    
+    <div class="control-group">
+      <label>Particle Count</label>
+      <input type="range" id="particleCount" min="30" max="300" value="150" oninput="updateParam('particleCount', this.value)">
+      <span class="value-display" id="particleCount-value">150</span>
+    </div>
+    
+    <div class="control-group">
+      <label>Hue Shift</label>
+      <input type="range" id="hueShift" min="0" max="360" value="330" oninput="updateParam('hueShift', this.value)">
+      <span class="value-display" id="hueShift-value">330°</span>
+    </div>
+    
+    <div class="control-group">
+      <label>Energy Rings</label>
+      <input type="range" id="energyRings" min="1" max="6" value="3" oninput="updateParam('energyRings', this.value)">
+      <span class="value-display" id="energyRings-value">3</span>
+    </div>
+    
+    <div class="control-group">
+      <label>Core Size</label>
+      <input type="range" id="coreSize" min="50" max="250" value="140" oninput="updateParam('coreSize', this.value)">
+      <span class="value-display" id="coreSize-value">140</span>
+    </div>
+    
+    <div class="btn-group">
+      <button class="btn-primary" onclick="downloadIcon()">Download PNG</button>
+      <button class="btn-secondary" onclick="resetParams()">Reset</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentSeed = 88888;
+let params = {
+  glowIntensity: 70,
+  starDensity: 80,
+  particleCount: 150,
+  hueShift: 330,
+  energyRings: 3,
+  coreSize: 140
+};
+
+let stars = [];
+let particles = [];
+let pg;
+
+function setup() {
+  let canvas = createCanvas(1024, 1024);
+  canvas.parent('canvas-container');
+  pixelDensity(1);
+  colorMode(HSB, 360, 100, 100, 100);
+  
+  pg = createGraphics(1024, 1024);
+  pg.colorMode(HSB, 360, 100, 100, 100);
+  
+  generateIcon();
+}
+
+function generateIcon() {
+  randomSeed(currentSeed);
+  noiseSeed(currentSeed);
+  
+  // Generate stars
+  stars = [];
+  for (let i = 0; i < params.starDensity * 3; i++) {
+    stars.push({
+      x: random(width),
+      y: random(height),
+      size: random(1, 4),
+      brightness: random(60, 100),
+      twinkleSpeed: random(0.02, 0.08)
+    });
+  }
+  
+  // Generate particles
+  particles = [];
+  let centerX = width / 2;
+  let centerY = height / 2;
+  
+  for (let i = 0; i < params.particleCount; i++) {
+    let angle = random(TWO_PI);
+    let dist = random(params.coreSize, width / 2 + 100);
+    particles.push({
+      x: centerX + cos(angle) * dist,
+      y: centerY + sin(angle) * dist,
+      vx: random(-0.5, 0.5),
+      vy: random(-0.5, 0.5),
+      size: random(2, 8),
+      hue: (params.hueShift + random(-30, 30)) % 360,
+      alpha: random(40, 90),
+      life: random(100, 255)
+    });
+  }
+  
+  drawIcon();
+}
+
+function drawIcon() {
+  pg.background(0, 0, 3, 100);
+  
+  let cx = pg.width / 2;
+  let cy = pg.height / 2;
+  let baseHue = params.hueShift;
+  
+  // === LAYER 1: Deep Space Background Gradient ===
+  for (let r = pg.width; r > 0; r -= 2) {
+    let inter = map(r, 0, pg.width, 0, 1);
+    let h = baseHue + inter * 20;
+    let s = map(r, 0, pg.width, 80, 40);
+    let b = map(r, 0, pg.width, 15, 3);
+    pg.noStroke();
+    pg.fill(h % 360, s, b, 100);
+    pg.ellipse(cx, cy, r * 2, r * 2);
+  }
+  
+  // === LAYER 2: Nebula Clouds ===
+  pg.noStroke();
+  for (let i = 0; i < 8; i++) {
+    let nx = noise(i * 100) * pg.width;
+    let ny = noise(i * 100 + 500) * pg.height;
+    let nr = noise(i * 100 + 1000) * 350 + 150;
+    
+    for (let r = nr; r > 0; r -= 8) {
+      let alpha = map(r, 0, nr, 0, 15) * (params.glowIntensity / 100);
+      pg.fill((baseHue + 30 + i * 10) % 360, 70, 85, alpha);
+      pg.ellipse(nx, ny, r * 2.2, r * 2.2);
+    }
+  }
+  
+  // === LAYER 3: Energy Rings (Game Icon Style) ===
+  for (let ring = 0; ring < params.energyRings; ring++) {
+    let ringRadius = params.coreSize + 80 + ring * 70;
+    let ringAlpha = map(ring, 0, params.energyRings, 35, 12) * (params.glowIntensity / 100);
+    
+    pg.noFill();
+    for (let w = 20; w > 0; w -= 2) {
+      let alpha = ringAlpha * map(w, 0, 20, 1, 0.3);
+      pg.stroke((baseHue + ring * 25) % 360, 80, 95, alpha);
+      pg.strokeWeight(w);
+      
+      push();
+      translate(cx, cy);
+      rotate(frameCount * 0.002 * (ring % 2 === 0 ? 1 : -1));
+      pg.ellipse(0, 0, ringRadius * 2, ringRadius * 2);
+      pop();
+    }
+  }
+  
+  // === LAYER 4: Core Glow Sphere ===
+  for (let r = params.coreSize + 60; r > 0; r -= 3) {
+    let inter = map(r, 0, params.coreSize + 60, 0, 1);
+    let alpha = map(inter, 0, 1, 55, 0) * (params.glowIntensity / 100);
+    pg.noStroke();
+    pg.fill(baseHue, 75, 98, alpha);
+    pg.ellipse(cx, cy, r * 2, r * 2);
+  }
+  
+  // Inner bright core
+  for (let r = params.coreSize * 0.6; r > 0; r -= 2) {
+    let alpha = map(r, 0, params.coreSize * 0.6, 90, 0);
+    pg.fill((baseHue + 180) % 360, 30, 100, alpha);
+    pg.ellipse(cx, cy, r * 2, r * 2);
+  }
+  
+  // === LAYER 5: Anime Girl Silhouette (Stylized) ===
+  drawCharacterSilhouette(pg, cx, cy - 20, params.coreSize * 0.9, baseHue);
+  
+  // === LAYER 6: Stars Field ===
+  for (let star of stars) {
+    let twinkle = sin(frameCount * star.twinkleSpeed) * 30 + star.brightness;
+    pg.noStroke();
+    pg.fill(45, 10, 100, twinkle);
+    pg.ellipse(star.x, star.y, star.size, star.size);
+    
+    if (star.size > 2.5) {
+      pg.fill(45, 5, 100, twinkle * 0.5);
+      pg.ellipse(star.x, star.y, star.size * 3, star.size * 3);
+    }
+  }
+  
+  // === LAYER 7: Floating Particles/Sparks ===
+  for (let p of particles) {
+    p.x += p.vx;
+    p.y += p.vy;
+    
+    let d = dist(p.x, p.y, cx, cy);
+    if (d > width / 2 + 50 || d < params.coreSize * 0.5) {
+      let angle = atan2(p.y - cy, p.x - cx);
+      p.x = cx + cos(angle) * (params.coreSize + random(50, 200));
+      p.y = cy + sin(angle) * (params.coreSize + random(50, 200));
+    }
+    
+    pg.noStroke();
+    pg.fill(p.hue, 85, 100, p.alpha * (params.glowIntensity / 100));
+    pg.ellipse(p.x, p.y, p.size, p.size);
+    
+    if (p.size > 4) {
+      pg.fill(p.hue, 60, 100, p.alpha * 0.3);
+      pg.ellipse(p.x, p.y, p.size * 2.5, p.size * 2.5);
+    }
+  }
+  
+  // === LAYER 8: Light Rays (Game Icon Signature Element) ===
+  pg.blendMode(ADD);
+  let rayCount = 12;
+  for (let i = 0; i < rayCount; i++) {
+    let angle = (TWO_PI / rayCount) * i + frameCount * 0.001;
+    let rayLength = params.coreSize + 180 + sin(frameCount * 0.02 + i) * 30;
+    
+    let grad = pg.drawingContext.createLinearGradient(
+      cx, cy,
+      cx + cos(angle) * rayLength,
+      cy + sin(angle) * rayLength
+    );
+    grad.addColorStop(0, `hsla(${baseHue}, 80%, 70%, ${0.15 * params.glowIntensity / 100})`);
+    grad.addColorStop(1, `hsla(${baseHue}, 80%, 70%, 0)`);
+    
+    pg.drawingContext.fillStyle = grad;
+    
+    pg.push();
+    translate(cx, cy);
+    rotate(angle);
+    pg.beginShape();
+    pg.vertex(0, 0);
+    pg.vertex(rayLength, -15 - i * 2);
+    pg.vertex(rayLength, 15 + i * 2);
+    pg.endShape(CLOSE);
+    pop();
+  }
+  pg.blendMode(BLEND);
+  
+  // === LAYER 9: Decorative Border Frame ===
+  drawDecorativeBorder(pg, cx, cy, baseHue);
+  
+  image(pg, 0, 0);
+}
+
+function drawCharacterSilhouette(g, x, y, size, hue) {
+  g.push();
+  g.translate(x, y);
+  
+  // Hair back layer - flowing
+  g.noStroke();
+  for (let i = 0; i < 5; i++) {
+    let hairAlpha = 25 - i * 4;
+    g.fill((hue + 340) % 360, 65, 92, hairAlpha);
+    let offset = i * 15;
+    g.ellipse(0, -size * 0.1, size * (1.1 + i * 0.08), size * (1.05 + i * 0.06));
+  }
+  
+  // Face shape
+  g.fill((hue + 330) % 360, 25, 97, 85);
+  g.ellipse(0, size * 0.02, size * 0.52, size * 0.62);
+  
+  // Eyes - large anime style with glow
+  let eyeSpacing = size * 0.16;
+  let eyeY = -size * 0.04;
+  let eyeW = size * 0.13;
+  let eyeH = size * 0.19;
+  
+  // Eye glow
+  for (let e = 0; e < 2; e++) {
+    let ex = (e === 0 ? -eyeSpacing : eyeSpacing);
+    
+    // Eye outer glow
+    g.fill((hue + 270) % 360, 80, 95, 30);
+    g.ellipse(ex, eyeY, eyeW * 1.8, eyeH * 1.8);
+    
+    // Eye main gradient
+    for (let r = eyeH; r > 0; r -= 1) {
+      let inter = map(r, 0, eyeH, 0, 1);
+      let eh = (hue + 260 + inter * 40) % 360;
+      g.fill(eh, 85, 95, 90);
+      g.ellipse(ex, eyeY, eyeW * (r / eyeH), r);
+    }
+    
+    // Pupil
+    g.fill(260, 70, 15, 95);
+    g.ellipse(ex, eyeY + 2, eyeW * 0.42, eyeH * 0.48);
+    
+    // Highlight 1 - main
+    g.fill(0, 0, 100, 95);
+    g.ellipse(ex - eyeW * 0.18, eyeY - eyeH * 0.18, eyeW * 0.28, eyeH * 0.26);
+    
+    // Highlight 2 - secondary
+    g.fill(0, 0, 100, 70);
+    g.ellipse(ex + eyeW * 0.12, eyeY + eyeH * 0.18, eyeW * 0.14, eyeH * 0.13);
+  }
+  
+  // Blush/Cheeks
+  g.fill((hue + 340) % 360, 55, 88, 28);
+  g.ellipse(-eyeSpacing - size * 0.03, eyeY + size * 0.14, size * 0.09, size * 0.06);
+  g.ellipse(eyeSpacing + size * 0.03, eyeY + size * 0.14, size * 0.09, size * 0.06);
+  
+  // Small smile
+  g.noFill();
+  g.stroke((hue + 330) % 360, 50, 75, 60);
+  g.strokeWeight(size * 0.018);
+  g.arc(0, eyeY + size * 0.2, size * 0.1, size * 0.07, 0.1, PI - 0.1);
+  
+  // Hair front strands
+  g.noStroke();
+  g.fill((hue + 345) % 360, 58, 93, 75);
+  
+  // Left bang
+  g.beginShape();
+  g.vertex(-size * 0.28, -size * 0.22);
+  g.bezierVertex(-size * 0.22, -size * 0.38, -size * 0.08, -size * 0.42, -size * 0.02, -size * 0.28);
+  g.bezierVertex(-size * 0.06, -size * 0.18, -size * 0.15, -size * 0.12, -size * 0.28, -size * 0.22);
+  g.endShape(CLOSE);
+  
+  // Right bang
+  g.beginShape();
+  g.vertex(size * 0.28, -size * 0.22);
+  g.bezierVertex(size * 0.22, -size * 0.38, size * 0.08, -size * 0.42, size * 0.02, -size * 0.28);
+  g.bezierVertex(size * 0.06, -size * 0.18, size * 0.15, -size * 0.12, size * 0.28, -size * 0.22);
+  g.endShape(CLOSE);
+  
+  // Center bang
+  g.beginShape();
+  g.vertex(-size * 0.06, -size * 0.28);
+  g.bezierVertex(-size * 0.02, -size * 0.48, size * 0.02, -size * 0.48, size * 0.06, -size * 0.28);
+  g.bezierVertex(size * 0.02, -size * 0.2, -size * 0.02, -size * 0.2, -size * 0.06, -size * 0.28);
+  g.endShape(CLOSE);
+  
+  // Side hair
+  g.fill((hue + 342) % 360, 56, 91, 68);
+  g.ellipse(-size * 0.32, size * 0.05, size * 0.14, size * 0.35);
+  g.ellipse(size * 0.32, size * 0.05, size * 0.14, size * 0.35);
+  
+  // Hair shine highlights
+  g.fill(0, 0, 100, 18);
+  g.ellipse(-size * 0.15, -size * 0.18, size * 0.12, size * 0.18);
+  g.ellipse(size * 0.18, -size * 0.15, size * 0.08, size * 0.14);
+  
+  // Star accessory in hair
+  let starAngle = frameCount * 0.01;
+  g.push();
+  g.translate(size * 0.22, -size * 0.26);
+  g.rotate(starAngle);
+  g.fill(45, 70, 100, 85);
+  drawStar(g, 0, 0, size * 0.055, size * 0.115, 5);
+  g.fill(0, 0, 100, 40);
+  drawStar(g, 0, 0, size * 0.08, size * 0.16, 5);
+  g.pop();
+  
+  g.pop();
+}
+
+function drawStar(g, x, y, radius1, radius2, npoints) {
+  let angle = TWO_PI / npoints;
+  let halfAngle = angle / 2.0;
+  g.beginShape();
+  for (let a = -PI / 2; a < TWO_PI - PI / 2; a += angle) {
+    let sx = x + cos(a) * radius2;
+    let sy = y + sin(a) * radius2;
+    g.vertex(sx, sy);
+    sx = x + cos(a + halfAngle) * radius1;
+    sy = y + sin(a + halfAngle) * radius1;
+    g.vertex(sx, sy);
+  }
+  g.endShape(CLOSE);
+}
+
+function drawDecorativeBorder(g, cx, cy, hue) {
+  let borderWidth = 512;
+  let cornerRadius = 180;
+  
+  // Outer glow ring
+  g.noFill();
+  for (let i = 0; i < 3; i++) {
+    g.stroke((hue + i * 20) % 360, 70, 90, 8 - i * 2);
+    g.strokeWeight(3 - i);
+    g.rect(cx - borderWidth + 8 - i * 2, cy - borderWidth + 8 - i * 2, 
+            (borderWidth - 8 + i * 2) * 2, (borderWidth - 8 + i * 2) * 2, cornerRadius - i * 10);
+  }
+  
+  // Corner accents
+  let accentLen = 50;
+  let accentDist = 496;
+  let corners = [
+    { x: cx - accentDist, y: cy - accentDist, a: 0 },
+    { x: cx + accentDist, y: cy - accentDist, a: PI / 2 },
+    { x: cx + accentDist, y: cy + accentDist, a: PI },
+    { x: cx - accentDist, y: cy + accentDist, a: PI * 1.5 }
+  ];
+  
+  for (let c of corners) {
+    g.push();
+    g.translate(c.x, c.y);
+    g.rotate(c.a);
+    g.stroke(hue, 70, 95, 50);
+    g.strokeWeight(3);
+    g.line(0, 0, accentLen, 0);
+    g.line(0, 0, 0, accentLen);
+    
+    g.stroke(45, 80, 100, 70);
+    g.strokeWeight(1.5);
+    g.line(0, 0, accentLen * 0.7, 0);
+    g.line(0, 0, 0, accentLen * 0.7);
+    g.pop();
+  }
+}
+
+function draw() {
+  drawIcon();
+}
+
+function updateParam(name, value) {
+  params[name] = parseFloat(value);
+  document.getElementById(name + '-value').textContent = 
+    name === 'hueShift' ? value + '°' : value;
+  generateIcon();
+}
+
+function setSeed(newSeed) {
+  currentSeed = newSeed;
+  document.getElementById('seedDisplay').textContent = currentSeed;
+  generateIcon();
+}
+
+function prevSeed() { setSeed(currentSeed - 1); }
+function nextSeed() { setSeed(currentSeed + 1); }
+function randomSeed() { setSeed(floor(random(100000))); }
+
+function resetParams() {
+  params = {
+    glowIntensity: 70,
+    starDensity: 80,
+    particleCount: 150,
+    hueShift: 330,
+    energyRings: 3,
+    coreSize: 140
+  };
+  
+  document.getElementById('glowIntensity').value = 70;
+  document.getElementById('starDensity').value = 80;
+  document.getElementById('particleCount').value = 150;
+  document.getElementById('hueShift').value = 330;
+  document.getElementById('energyRings').value = 3;
+  document.getElementById('coreSize').value = 140;
+  
+  document.getElementById('glowIntensity-value').textContent = '70';
+  document.getElementById('starDensity-value').textContent = '80';
+  document.getElementById('particleCount-value').textContent = '150';
+  document.getElementById('hueShift-value').textContent = '330°';
+  document.getElementById('energyRings-value').textContent = '3';
+  document.getElementById('coreSize-value').textContent = '140';
+  
+  generateIcon();
+}
+
+function downloadIcon() {
+  saveCanvas(pg, 'hoshizora_airi_icon', 'png');
+}
+</script>
+</body>
+</html>

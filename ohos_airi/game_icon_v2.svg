@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bgGrad" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#2a1045"/>
+      <stop offset="40%" stop-color="#1a0830"/>
+      <stop offset="70%" stop-color="#100520"/>
+      <stop offset="100%" stop-color="#05000a"/>
+    </radialGradient>
+    
+    <radialGradient id="coreGlow" cx="512" cy="492" r="220">
+      <stop offset="0%" stop-color="#FF2D95" stop-opacity="0.55"/>
+      <stop offset="60%" stop-color="#C41E7A" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#6B1042" stop-opacity="0"/>
+    </radialGradient>
+    
+    <radialGradient id="innerCore" cx="502" cy="482" r="100">
+      <stop offset="0%" stop-color="#E0F7FF" stop-opacity="0.95"/>
+      <stop offset="40%" stop-color="#B8E8F5" stop-opacity="0.72"/>
+      <stop offset="80%" stop-color="#7BAFD4" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#4A7A9D" stop-opacity="0"/>
+    </radialGradient>
+    
+    <linearGradient id="hairGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFB6D5"/>
+      <stop offset="40%" stop-color="#FF69B4"/>
+      <stop offset="80%" stop-color="#FF1493"/>
+      <stop offset="100%" stop-color="#DB1179"/>
+    </linearGradient>
+    
+    <linearGradient id="faceGrad" x1="30%" y1="20%" x2="70%" y2="85%">
+      <stop offset="0%" stop-color="#FFF0F3"/>
+      <stop offset="70%" stop-color="#FFE4E8"/>
+      <stop offset="100%" stop-color="#F5D0D8"/>
+    </linearGradient>
+    
+    <radialGradient id="eyeGrad" cx="45%" cy="42%" r="55%">
+      <stop offset="0%" stop-color="#E066FF"/>
+      <stop offset="35%" stop-color="#D94EFF"/>
+      <stop offset="70%" stop-color="#B829FF"/>
+      <stop offset="100%" stop-color="#8A1FE0"/>
+    </radialGradient>
+    
+    <radialGradient id="eyeGlow" cx="47%" cy="420" r="38">
+      <stop offset="0%" stop-color="#FF69FF" stop-opacity="0.32"/>
+      <stop offset="60%" stop-color="#D94EFF" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#8A1FE0" stop-opacity="0"/>
+    </radialGradient>
+    
+    <radialGradient id="pupilGrad" cx="48%" cy="44%" r="45%">
+      <stop offset="0%" stop-color="#2D0A3D"/>
+      <stop offset="70%" stop-color="#1A0528"/>
+      <stop offset="100%" stop-color="#0F021A"/>
+    </radialGradient>
+    
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="12" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    
+    <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="25"/>
+    </filter>
+    
+    <filter id="starGlow">
+      <feGaussianBlur stdDeviation="2"/>
+    </filter>
+
+    <!-- Ring gradients -->
+    <linearGradient id="ring1Grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF2D95" stop-opacity="0.35"/>
+      <stop offset="50%" stop-color="#FF6BB6" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#FF2D95" stop-opacity="0.15"/>
+    </linearGradient>
+    <linearGradient id="ring2Grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#C41EE0" stop-opacity="0.25"/>
+      <stop offset="50%" stop-color="#E066FF" stop-opacity="0.16"/>
+      <stop offset="100%" stop-color="#C41EE0" stop-opacity="0.10"/>
+    </linearGradient>
+    <linearGradient id="ring3Grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00F0FF" stop-opacity="0.14"/>
+      <stop offset="50%" stop-color="#66FAFF" stop-opacity="0.09"/>
+      <stop offset="100%" stop-color="#00F0FF" stop-opacity="0.05"/>
+    </linearGradient>
+
+    <!-- Light ray gradient -->
+    <linearGradient id="rayGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FF2D95" stop-opacity="0.18"/>
+      <stop offset="40%" stop-color="#FF6BB6" stop-opacity="0.09"/>
+      <stop offset="100%" stop-color="#FF2D95" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- LAYER 1: Deep Space Background -->
+  <rect width="1024" height="1024" fill="url(#bgGrad)"/>
+  
+  <!-- Nebula clouds -->
+  <ellipse cx="250" cy="280" rx="180" ry="140" fill="#FF2D95" opacity="0.07" filter="url(#softGlow)"/>
+  <ellipse cx="800" cy="350" rx="220" ry="160" fill="#C41EE0" opacity="0.06" filter="url(#softGlow)"/>
+  <ellipse cx="400" cy="720" rx="200" ry="150" fill="#FF69B4" opacity="0.05" filter="url(#softGlow)"/>
+  <ellipse cx="700" cy="650" rx="170" ry="130" fill="#00F0FF" opacity="0.04" filter="url(#softGlow)"/>
+  <ellipse cx="150" cy="600" rx="150" ry="120" fill="#E066FF" opacity="0.05" filter="url(#softGlow)"/>
+  <ellipse cx="850" cy="750" rx="190" ry="145" fill="#FF2D95" opacity="0.04" filter="url(#softGlow)"/>
+
+  <!-- LAYER 3: Energy Rings (GAME ICON SIGNATURE) -->
+  <g transform="rotate(8, 512, 512)">
+    <circle cx="512" cy="512" r="290" fill="none" stroke="url(#ring1Grad)" stroke-width="18"/>
+    <circle cx="512" cy="512" r="290" fill="none" stroke="#FF69FF" stroke-width="2" stroke-dasharray="12 24" opacity="0.25"/>
+  </g>
+  
+  <g transform="rotate(-6, 512, 512)">
+    <circle cx="512" cy="512" r="360" fill="none" stroke="url(#ring2Grad)" stroke-width="13"/>
+    <circle cx="512" cy="512" r="360" fill="none" stroke="#D94EFF" stroke-width="2" stroke-dasharray="8 20" opacity="0.2"/>
+  </g>
+  
+  <g transform="rotate(4, 512, 512)">
+    <circle cx="512" cy="512" r="430" fill="none" stroke="url(#ring3Grad)" stroke-width="9"/>
+    <circle cx="512" cy="512" r="430" fill="none" stroke="#66FAFF" stroke-width="1.5" stroke-dasharray="6 16" opacity="0.15"/>
+  </g>
+
+  <!-- LAYER 4: Core Glow Sphere -->
+  <circle cx="512" cy="492" r="220" fill="url(#coreGlow)" filter="url(#softGlow)"/>
+  <circle cx="502" cy="482" r="100" fill="url(#innerCore)"/>
+  
+  <!-- Core bright center -->
+  <circle cx="500" cy="480" r="45" fill="#FFFFFF" opacity="0.28"/>
+  <circle cx="498" cy="478" r="22" fill="#E8FAFF" opacity="0.45"/>
+
+  <!-- LAYER 5: Anime Girl Character -->
+  <g filter="url(#glow)">
+    <!-- Hair back layers -->
+    <ellipse cx="512" cy="380" rx="175" ry="165" fill="url(#hairGrad)" opacity="0.26"/>
+    <ellipse cx="512" cy="390" rx="185" ry="172" fill="url(#hairGrad)" opacity="0.22"/>
+    <ellipse cx="512" cy="398" rx="195" ry="178" fill="url(#hairGrad)" opacity="0.17"/>
+    <ellipse cx="512" cy="405" rx="205" ry="184" fill="url(#hairGrad)" opacity="0.12"/>
+    <ellipse cx="512" cy="412" rx="215" ry="190" fill="url(#hairGrad)" opacity="0.07"/>
+    
+    <!-- Face shape -->
+    <ellipse cx="512" cy="440" rx="95" rY="118" fill="url(#faceGrad)"/>
+    
+    <!-- Eyes - Left -->
+    <g transform="translate(456, 424)">
+      <ellipse cx="0" cy="0" rx="34" rY="48" fill="url(#eyeGlow)"/>
+      <ellipse cx="0" cy="0" rx="27" rY="38" fill="url(#eyeGrad)"/>
+      <ellipse cx="0" cy="4" rx="12" rY="17" fill="url(#pupilGrad)"/>
+      <!-- Eye highlights -->
+      <ellipse cx="-6" cy="-9" rx="9" rY="11" fill="#FFFFFF" opacity="0.96" transform="rotate(-15)"/>
+      <ellipse cx="6" cy="9" rx="4.5" rY="5" fill="#FFFFFF" opacity="0.72" transform="rotate(12)"/>
+      <ellipse cx="-2" cy="13" rx="2.5" rY="3" fill="#FFFFFF" opacity="0.5"/>
+    </g>
+    
+    <!-- Eyes - Right -->
+    <g transform="translate(568, 424)">
+      <ellipse cx="0" cy="0" rx="34" rY="48" fill="url(#eyeGlow)"/>
+      <ellipse cx="0" cy="0" rx="27" rY="38" fill="url(#eyeGrad)"/>
+      <ellipse cx="0" cy="4" rx="12" rY="17" fill="url(#pupilGrad)"/>
+      <!-- Eye highlights -->
+      <ellipse cx="-6" cy="-9" rx="9" rY="11" fill="#FFFFFF" opacity="0.96" transform="rotate(-15)"/>
+      <ellipse cx="6" cy="9" rx="4.5" rY="5" fill="#FFFFFF" opacity="0.72" transform="rotate(12)"/>
+      <ellipse cx="-2" cy="13" rx="2.5" rY="3" fill="#FFFFFF" opacity="0.5"/>
+    </g>
+    
+    <!-- Blush/Cheeks -->
+    <ellipse cx="462" cy="465" rx="18" rY="11" fill="#FF69B4" opacity="0.30"/>
+    <ellipse cx="562" cy="465" rx="18" rY="11" fill="#FF69B4" opacity="0.30"/>
+    
+    <!-- Smile -->
+    <path d="M502,482 Q512,492 522,482" fill="none" stroke="#D94E9A" stroke-width="2.5" stroke-linecap="round" opacity="0.58"/>
+    
+    <!-- Hair front bangs -->
+    <path d="M425,395 C436,365 468,352 498,380 C488,400 465,408 425,395 Z" fill="url(#hairGrad)" opacity="0.78"/>
+    <path d="M599,395 C588,365 556,352 526,380 C536,400 559,408 599,395 Z" fill="url(#hairGrad)" opacity="0.78"/>
+    <path d="M450,382 C462,348 498,340 518,372 C510,395 482,398 450,382 Z" fill="url(#hairGrad)" opacity="0.76"/>
+    
+    <!-- Side hair -->
+    <ellipse cx="438" cy="475" rx="22" rY="56" fill="url(#hairGrad)" opacity="0.68" transform="rotate(5, 438, 475)"/>
+    <ellipse cx="586" cy="475" rx="22" rY="56" fill="url(#hairGrad)" opacity="0.68" transform="rotate(-5, 586, 475)"/>
+    
+    <!-- Hair shine highlights -->
+    <ellipse cx="465" cy="370" rx="18" rY="28" fill="#FFFFFF" opacity="0.14" transform="rotate(-18)"/>
+    <ellipse cx="560" cy="372" rx="12" rY="20" fill="#FFFFFF" opacity="0.12" transform="rotate(14)"/>
+    
+    <!-- Star accessory in hair -->
+    <g transform="translate(742, 356)" filter="url(#starGlow)">
+      <polygon points="0,-14 4,-4 15,-4 6,3 9,14 0,7 -9,14 -6,3 -15,-4 -4,-4" fill="#FFEE88"/>
+      <polygon points="0,-8 2,-2 8,-2 4,2 6,8 0,4 -6,8 -4,2 -8,-2 -2,-2" fill="#FFFFFF"/>
+    </g>
+  </g>
+
+  <!-- LAYER 6: Stars field -->
+  <g fill="#FFFFFF">
+    <!-- Bright stars with cross sparkle -->
+    <g opacity="0.95"><circle cx="120" cy="150" r="3.5"/><line x1="112" y1="150" x2="128" y2="150" stroke="#fff" stroke-width="1" opacity="0.7"/><line x1="120" y1="142" x2="120" y2="158" stroke="#fff" stroke-width="1" opacity="0.7"/></g>
+    <g opacity="0.90"><circle cx="850" cy="100" r="3.2"/><line x1="843" y1="100" x2="857" y2="100" stroke="#fff" stroke-width="1" opacity="0.65"/><line x1="850" y1="93" x2="850" y2="107" stroke="#fff" stroke-width="1" opacity="0.65"/></g>
+    <g opacity="0.92"><circle cx="300" cy="80" r="3.8"/><line x1="291" y1="80" x2="309" y2="80" stroke="#fff" stroke-width="1" opacity="0.7"/><line x1="300" y1="71" x2="300" y2="89" stroke="#fff" stroke-width="1" opacity="0.7"/></g>
+    <g opacity="0.88"><circle cx="750" cy="200" r="3.0"/><line x1="743" y1="200" x2="757" y2="200" stroke="#fff" stroke-width="1" opacity="0.6"/><line x1="750" y1="193" x2="750" y2="207" stroke="#fff" stroke-width="1" opacity="0.6"/></g>
+    <g opacity="0.91"><circle cx="180" cy="320" r="3.3"/><line x1="172" y1="320" x2="188" y2="320" stroke="#fff" stroke-width="1" opacity="0.67"/><line x1="180" y1="312" x2="180" y2="328" stroke="#fff" stroke-width="1" opacity="0.67"/></g>
+    <g opacity="0.87"><circle cx="900" cy="380" r="2.9"/><line x1="893" y1="380" x2="907" y2="380" stroke="#fff" stroke-width="1" opacity="0.58"/><line x1="900" y1="373" x2="900" y2="387" stroke="#fff" stroke-width="1" opacity="0.58"/></g>
+    <g opacity="0.89"><circle cx="100" cy="550" r="3.4"/><line x1="92" y1="550" x2="108" y2="550" stroke="#fff" stroke-width="1" opacity="0.68"/><line x1="100" y1="542" x2="100" y2="558" stroke="#fff" stroke-width="1" opacity="0.68"/></g>
+    <g opacity="0.86"><circle cx="920" cy="600" r="3.1"/><line x1="912" y1="600" x2="928" y2="600" stroke="#fff" stroke-width="1" opacity="0.62"/><line x1="920" y1="592" x2="920" y2="608" stroke="#fff" stroke-width="1" opacity="0.62"/></g>
+    <g opacity="0.93"><circle cx="130" cy="780" r="3.6"/><line x1="121" y1="780" x2="139" y2="780" stroke="#fff" stroke-width="1" opacity="0.72"/><line x1="130" y1="771" x2="130" y2="789" stroke="#fff" stroke-width="1" opacity="0.72"/></g>
+    <g opacity="0.84"><circle cx="880" cy="820" r="2.8"/><line x1="873" y1="820" x2="887" y2="820" stroke="#fff" stroke-width="1" opacity="0.55"/><line x1="880" y1="813" x2="880" y2="827" stroke="#fff" stroke-width="1" opacity="0.55"/></g>
+    <g opacity="0.88"><circle cx="250" cy="900" r="3.2"/><line x1="242" y1="900" x2="258" y2="900" stroke="#fff" stroke-width="1" opacity="0.65"/><line x1="250" y1="892" x2="250" y2="908" stroke="#fff" stroke-width="1" opacity="0.65"/></g>
+    <g opacity="0.85"><circle cx="780" cy="920" r="3.0"/><line x1="772" y1="920" x2="788" y2="920" stroke="#fff" stroke-width="1" opacity="0.6"/><line x1="780" y1="912" x2="780" y2="928" stroke="#fff" stroke-width="1" opacity="0.6"/></g>
+    
+    <!-- Small dim stars -->
+    <circle cx="70" cy="240" r="1.5" opacity="0.55"/>
+    <circle cx="210" cy="180" r="1.8" opacity="0.62"/>
+    <circle cx="380" cy="110" r="1.3" opacity="0.48"/>
+    <circle cx="480" cy="60" r="1.6" opacity="0.57"/>
+    <circle cx="620" cy="130" r="1.4" opacity="0.52"/>
+    <circle cx="720" cy="70" r="1.9" opacity="0.64"/>
+    <circle cx="950" cy="170" r="1.5" opacity="0.54"/>
+    <circle cx="970" cy="290" r="1.7" opacity="0.60"/>
+    <circle cx="60" cy="420" r="1.4" opacity="0.50"/>
+    <circle cx="230" cy="460" r="1.6" opacity="0.58"/>
+    <circle cx="330" cy="520" r="1.3" opacity="0.46"/>
+    <circle cx="680" cy="480" r="1.8" opacity="0.63"/>
+    <circle cx="820" cy="520" r="1.5" opacity="0.55"/>
+    <circle cx="960" cy="480" r="1.4" opacity="0.51"/>
+    <circle cx="50" cy="660" r="1.7" opacity="0.60"/>
+    <circle cx="200" cy="700" r="1.3" opacity="0.45"/>
+    <circle cx="350" cy="680" r="1.9" opacity="0.65"/>
+    <circle cx="580" cy="720" r="1.5" opacity="0.56"/>
+    <circle cx="720" cy="690" r="1.4" opacity="0.50"/>
+    <circle cx="950" cy="730" r="1.8" opacity="0.61"/>
+    <circle cx="80" cy="850" r="1.6" opacity="0.58"/>
+    <circle cx="280" cy="820" r="1.4" opacity="0.52"/>
+    <circle cx="450" cy="860" r="1.9" opacity="0.64"/>
+    <circle cx="620" cy="840" r="1.5" opacity="0.55"/>
+    <circle cx="820" cy="880" r="1.3" opacity="0.47"/>
+    <circle cx="970" cy="850" r="1.7" opacity="0.59"/>
+    <circle cx="150" cy="960" r="1.5" opacity="0.54"/>
+    <circle cx="400" cy="950" r="1.8" opacity="0.62"/>
+    <circle cx="550" cy="980" r="1.4" opacity="0.50"/>
+    <circle cx="700" cy="960" r="1.6" opacity="0.57"/>
+    <circle cx="880" cy="980" r="1.3" opacity="0.46"/>
+    <circle cx="980" cy="960" r="1.9" opacity="0.65"/>
+  </g>
+
+  <!-- LAYER 7: Floating Particles/Sparks -->
+  <g>
+    <!-- Pink particles -->
+    <circle cx="280" cy="260" r="5" fill="#FF2D95" opacity="0.55" filter="url(#starGlow)"/>
+    <circle cx="760" cy="240" r="4" fill="#FF69B4" opacity="0.48"/>
+    <circle cx="200" cy="500" r="6" fill="#FF1493" opacity="0.42" filter="url(#starGlow)"/>
+    <circle cx="840" cy="480" r="4.5" fill="#FF2D95" opacity="0.50"/>
+    <circle cx="260" cy="700" r="5" fill="#FF69B4" opacity="0.38"/>
+    <circle cx="780" cy="720" r="5.5" fill="#FF1493" opacity="0.45" filter="url(#starGlow)"/>
+    <circle cx="340" cy="820" r="4" fill="#FF2D95" opacity="0.52"/>
+    <circle cx="690" cy="800" r="6" fill="#FF69B4" opacity="0.40"/>
+    
+    <!-- Cyan particles -->
+    <circle cx="320" cy="180" r="3.5" fill="#00F0FF" opacity="0.42"/>
+    <circle cx="700" cy="160" r="4" fill="#66FAFF" opacity="0.38" filter="url(#starGlow)"/>
+    <circle cx="160" cy="380" r="4.5" fill="#00F0FF" opacity="0.35"/>
+    <circle cx="880" cy="340" r="3.5" fill="#66FAFF" opacity="0.45"/>
+    <circle cx="180" cy="620" r="5" fill="#00F0FF" opacity="0.32" filter="url(#starGlow)"/>
+    <circle cx="860" cy="660" r="4" fill="#66FAFF" opacity="0.40"/>
+    <circle cx="300" cy="880" r="4.5" fill="#00F0FF" opacity="0.36"/>
+    <circle cx="740" cy="900" r="3.5" fill="#66FAFF" opacity="0.44" filter="url(#starGlow)"/>
+    
+    <!-- Purple particles -->
+    <circle cx="240" cy="120" r="3" fill="#C41EE0" opacity="0.38"/>
+    <circle cx="790" cy="130" r="3.5" fill="#E066FF" opacity="0.42"/>
+    <circle cx="130" cy="480" r="4" fill="#C41EE0" opacity="0.35" filter="url(#starGlow)"/>
+    <circle cx="910" cy="440" r="3" fill="#E066FF" opacity="0.38"/>
+    <circle cx="220" cy="780" r="3.5" fill="#C41EE0" opacity="0.42"/>
+    <circle cx="830" cy="810" r="4" fill="#E066FF" opacity="0.35" filter="url(#starGlow)"/>
+    <circle cx="380" cy="940" r="3" fill="#C41EE0" opacity="0.40"/>
+    <circle cx="660" cy="930" r="3.5" fill="#E066FF" opacity="0.38"/>
+  </g>
+
+  <!-- LAYER 8: Light Rays -->
+  <g opacity="0.85">
+    <polygon points="512,492 920,380 920,410" fill="url(#rayGrad)"/>
+    <polygon points="512,492 880,200 855,215" fill="url(#rayGrad)"/>
+    <polygon points="512,492 720,100 700,122" fill="url(#rayGrad)"/>
+    <polygon points="512,492 500,60 490,85" fill="url(#rayGrad)"/>
+    <polygon points="512,492 280,100 260,125" fill="url(#rayGrad)"/>
+    <polygon points="512,492 140,200 120,218" fill="url(#rayGrad)"/>
+    <polygon points="512,492 100,380 100,410" fill="url(#rayGrad)"/>
+    <polygon points="512,492 104,560 104,590" fill="url(#rayGrad)"/>
+    <polygon points="512,492 140,720 120,742" fill="url(#rayGrad)"/>
+    <polygon points="512,492 280,880 260,905" fill="url(#rayGrad)"/>
+    <polygon points="512,492 500,960 490,985" fill="url(#rayGrad)"/>
+    <polygon points="512,492 720,880 700,905" fill="url(#rayGrad)"/>
+    <polygon points="512,492 880,720 860,742" fill="url(#rayGrad)"/>
+    <polygon points="512,492 920,560 920,590" fill="url(#rayGrad)"/>
+    <polygon points="512,492 820,140 800,162" fill="url(#rayGrad)"/>
+    <polygon points="512,492 200,140 180,162" fill="url(#rayGrad)"/>
+  </g>
+
+  <!-- LAYER 9: Decorative Border Frame -->
+  <rect x="24" y="24" width="976" height="976" rx="170" ry="170" 
+        fill="none" stroke="#FF2D95" stroke-width="2" opacity="0.10"/>
+  <rect x="30" y="30" width="964" height="964" rx="166" ry="166" 
+        fill="none" stroke="#C41EE0" stroke-width="1.5" opacity="0.075"/>
+  <rect x="36" y="36" width="952" height="952" rx="162" ry="162" 
+        fill="none" stroke="#00F0FF" stroke-width="1" opacity="0.05"/>
+
+  <!-- Corner accents -->
+  <g stroke-linecap="round">
+    <!-- Top-left -->
+    <g transform="translate(74, 74)">
+      <line x1="0" y1="0" x2="48" y2="0" stroke="#FF2D95" stroke-width="3" opacity="0.48"/>
+      <line x1="0" y1="0" x2="0" y2="48" stroke="#FF2D95" stroke-width="3" opacity="0.48"/>
+      <line x1="0" y1="0" x2="33" y2="0" stroke="#FFFFFF" stroke-width="1.5" opacity="0.72"/>
+      <line x1="0" y1="0" x2="0" y2="33" stroke="#FFFFFF" stroke-width="1.5" opacity="0.72"/>
+      <circle cx="0" cy="0" r="3" fill="#FFFFFF" opacity="0.85"/>
+    </g>
+    <!-- Top-right -->
+    <g transform="translate(950, 74)">
+      <line x1="0" y1="0" x2="-48" y2="0" stroke="#FF2D95" stroke-width="3" opacity="0.48"/>
+      <line x1="0" y1="0" x2="0" y2="48" stroke="#FF2D95" stroke-width="3" opacity="0.48"/>
+      <line x1="0" y1="0" x2="-33" y2="0" stroke="#FFFFFF" stroke-width="1.5" opacity="0.72"/>
+      <line x1="0" y1="0" x2="0" y2="33" stroke="#FFFFFF" stroke-width="1.5" opacity="0.72"/>
+      <circle cx="0" cy="0" r="3" fill="#FFFFFF" opacity="0.85"/>
+    </g>
+    <!-- Bottom-right -->
+    <g transform="translate(950, 950)">
+      <line x1="0" y1="0" x2="-48" y2="0" stroke="#FF2D95" stroke-width="3" opacity="0.48"/>
+      <line x1="0" y1="0" x2="0" y2="-48" stroke="#FF2D95" stroke-width="3" opacity="0.48"/>
+      <line x1="0" y1="0" x2="-33" y2="0" stroke="#FFFFFF" stroke-width="1.5" opacity="0.72"/>
+      <line x1="0" y1="0" x2="0" y2="-33" stroke="#FFFFFF" stroke-width="1.5" opacity="0.72"/>
+      <circle cx="0" cy="0" r="3" fill="#FFFFFF" opacity="0.85"/>
+    </g>
+    <!-- Bottom-left -->
+    <g transform="translate(74, 950)">
+      <line x1="0" y1="0" x2="48" y2="0" stroke="#FF2D95" stroke-width="3" opacity="0.48"/>
+      <line x1="0" y1="0" x2="0" y2="-48" stroke="#FF2D95" stroke-width="3" opacity="0.48"/>
+      <line x1="0" y1="0" x2="33" y2="0" stroke="#FFFFFF" stroke-width="1.5" opacity="0.72"/>
+      <line x1="0" y1="0" x2="0" y2="-33" stroke="#FFFFFF" stroke-width="1.5" opacity="0.72"/>
+      <circle cx="0" cy="0" r="3" fill="#FFFFFF" opacity="0.85"/>
+    </g>
+  </g>
+</svg>
