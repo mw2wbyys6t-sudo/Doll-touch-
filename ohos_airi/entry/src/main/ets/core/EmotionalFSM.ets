@@ -88,7 +88,7 @@ export class EmotionalFSM {
   private _transitions: TransitionConfig[] = [];
 
   // 状态持续时间监控定时器
-  private durationTimerId: number | null = null;
+  private durationTimerId: number = -1;
 
   // 事件分发器
   private dispatcher: Dispatcher;
@@ -461,7 +461,7 @@ export class EmotionalFSM {
    * 开始持续时间监控
    */
   private startDurationMonitor(): void {
-    if (this.durationTimerId !== null) {
+    if (this.durationTimerId !== -1) {
       clearInterval(this.durationTimerId);
     }
 
@@ -469,7 +469,7 @@ export class EmotionalFSM {
       if (this._stateEnterTime > 0) {
         this._stateDuration = Date.now() - this._stateEnterTime;
       }
-    }, 100) as unknown as number;
+    }, 100);
   }
 
   /**
@@ -498,9 +498,9 @@ export class EmotionalFSM {
    * 销毁（用于测试或完全清理）
    */
   public destroy(): void {
-    if (this.durationTimerId !== null) {
+    if (this.durationTimerId !== -1) {
       clearInterval(this.durationTimerId);
-      this.durationTimerId = null;
+      this.durationTimerId = -1;
     }
 
     this._activeLocks = [];

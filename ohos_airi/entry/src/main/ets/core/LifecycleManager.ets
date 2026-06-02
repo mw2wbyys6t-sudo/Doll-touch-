@@ -73,7 +73,7 @@ export class LifecycleManager {
   private idleTimeout: number = 5 * 60 * 1000; // 默认 5 分钟
 
   // 空闲定时器 ID
-  private idleTimerId: number | null = null;
+  private idleTimerId: number = -1;
 
   // 最后活动时间
   private lastActivityTime: number = Date.now();
@@ -91,7 +91,7 @@ export class LifecycleManager {
   private sleepTimeout: number = 30 * 60 * 1000; // 默认 30 分钟
 
   // 睡眠定时器 ID
-  private sleepTimerId: number | null = null;
+  private sleepTimerId: number = -1;
 
   // 调试模式
   private debugMode: boolean = false;
@@ -519,7 +519,7 @@ export class LifecycleManager {
 
     this.idleTimerId = setTimeout(() => {
       this.onIdleTimeout();
-    }, this.idleTimeout) as unknown as number;
+    }, this.idleTimeout);
 
     if (this.debugMode) {
       console.info(`[LifecycleManager] 空闲监控已启动, 超时: ${this.idleTimeout}ms`);
@@ -530,9 +530,9 @@ export class LifecycleManager {
    * 停止空闲监控
    */
   private stopIdleMonitor(): void {
-    if (this.idleTimerId !== null) {
+    if (this.idleTimerId !== -1) {
       clearTimeout(this.idleTimerId);
-      this.idleTimerId = null;
+      this.idleTimerId = -1;
     }
   }
 
@@ -540,7 +540,7 @@ export class LifecycleManager {
    * 重置空闲定时器
    */
   private resetIdleTimer(): void {
-    if (this.idleTimerId !== null) {
+    if (this.idleTimerId !== -1) {
       clearTimeout(this.idleTimerId);
       this.startIdleMonitor();
     }
@@ -575,7 +575,7 @@ export class LifecycleManager {
 
     this.sleepTimerId = setTimeout(() => {
       this.enterSleep();
-    }, this.sleepTimeout) as unknown as number;
+    }, this.sleepTimeout);
 
     if (this.debugMode) {
       console.info(`[LifecycleManager] 睡眠监控已启动, 超时: ${this.sleepTimeout}ms`);
@@ -586,9 +586,9 @@ export class LifecycleManager {
    * 停止睡眠监控
    */
   private stopSleepMonitor(): void {
-    if (this.sleepTimerId !== null) {
+    if (this.sleepTimerId !== -1) {
       clearTimeout(this.sleepTimerId);
-      this.sleepTimerId = null;
+      this.sleepTimerId = -1;
     }
   }
 
@@ -596,7 +596,7 @@ export class LifecycleManager {
    * 重置睡眠定时器
    */
   private resetSleepTimer(): void {
-    if (this.sleepTimerId !== null && !this._isUserActivityLocked) {
+    if (this.sleepTimerId !== -1 && !this._isUserActivityLocked) {
       clearTimeout(this.sleepTimerId);
       this.startSleepMonitor();
     }

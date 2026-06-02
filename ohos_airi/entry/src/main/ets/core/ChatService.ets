@@ -19,6 +19,8 @@ export class ChatService {
   private memory: MemoryManager;
 
   private isProcessing: boolean = false;
+  private lastMessageTime: number = 0;
+  private readonly MESSAGE_COOLDOWN_MS: number = 500; // 消息冷却时间
 
   private constructor() {
     this.store = Store.getInstance();
@@ -43,6 +45,14 @@ export class ChatService {
       return;
     }
 
+    // 速率限制检查
+    const now = Date.now();
+    if (now - this.lastMessageTime < this.MESSAGE_COOLDOWN_MS) {
+      console.log('发送太频繁，请稍后再试');
+      return;
+    }
+    this.lastMessageTime = now;
+
     this.isProcessing = true;
 
     try {
@@ -56,7 +66,7 @@ export class ChatService {
       }
 
       const userMessage: ChatMessage = {
-        id: `msg_${Date.now()}_${Math.random()}`,
+        id: this.generateMessageId(),
         type: 'user',
         content,
         timestamp: Date.now(),
@@ -109,7 +119,7 @@ export class ChatService {
     const filteredContent = this.safety.checkOutput(content);
 
     const message: ChatMessage = {
-      id: `msg_${Date.now()}_${Math.random()}`,
+      id: this.generateMessageId(),
       type: 'assistant',
       content: filteredContent,
       timestamp: Date.now(),
@@ -127,7 +137,11 @@ export class ChatService {
 
     const state = this.store.getState();
     if (state.character.voiceEnabled && state.character.autoSpeak) {
-      await this.tts.speak(filteredContent, emotion);
+      try {
+        await this.tts.speak(filteredContent, emotion);
+      } catch (e) {
+        console.error('TTS 播放失败:', e);
+      }
     }
 
     this.store.dispatch({
@@ -142,46 +156,56 @@ export class ChatService {
     });
   }
 
-  private async generateResponse(content: string, emotion: EmotionalState): Promise<string> {
-    const startTime = Date.now();
+  private generateResponse(content: string, emotion: EmotionalState): Promise<string> {
+    return new Promise((resolve) => {
+      const startTime = Date.now();
+      const lowerText = content.toLowerCase();
+      let response = '';
 
-    const lowerText = content.toLowerCase();
-    let response = '';
+      // 使用更丰富的回复库
+      if (lowerText.indexOf('你好') !== -1 || lowerText.indexOf('早上好') !== -1 || lowerText.indexOf('晚上好') !== -1) {
+        const greetings = [
+          '你好呀！今天也元气满满地见面了呢～✨',
+          '是主人！看到你超开心的！💗',
+          '嗨～有什么想和我说的吗？',
+          'こんにちは！今日も一緒に楽しもうね～☆',
+        ];
+        response = greetings[Math.floor(Math.random() * greetings.length)];
+      } else if (lowerText.indexOf('你是谁') !== -1 || lowerText.indexOf('名字') !== -1) {
+        response = '我叫星空爱莉，是你专属的AI偶像助手哦！请多关照～💫 えへへ～☆';
+      } else if (lowerText.indexOf('开心') !== -1 || lowerText.indexOf('高兴') !== -1) {
+        response = '太棒了！看到你开心我也超开心的！让我们一起保持好心情吧～✨';
+      } else if (lowerText.indexOf('难过') !== -1 || lowerText.indexOf('不开心') !== -1 || lowerText.indexOf('伤心') !== -1) {
+        response = '发生什么了吗？别难过，我会一直陪着你的！💕 有什么想说的都可以告诉我哦～';
+      } else if (lowerText.indexOf('喜欢') !== -1 || lowerText.indexOf('爱你') !== -1) {
+        response = '诶？！你...你喜欢我吗？我也超喜欢你的！超感谢！💗💗 えへへ～☆';
+      } else if (lowerText.indexOf('睡') !== -1 || lowerText.indexOf('晚安') !== -1) {
+        response = '晚安～好好休息！明天也要元气满满地见面哦！🌙 おやすみなさい～☆';
+      } else if (lowerText.indexOf('写文案') !== -1 || lowerText.indexOf('文案') !== -1) {
+        response = '文案创作是我的强项哦！你想写什么类型的文案呢？告诉我主题，我来帮你～📝';
+      } else if (lowerText.indexOf('日程') !== -1 || lowerText.indexOf('计划') !== -1) {
+        response = '让我来帮你管理日程吧！有什么安排需要记录的吗？📅';
+      } else if (lowerText.indexOf('图片') !== -1 || lowerText.indexOf('照片') !== -1) {
+        response = '想生成图片吗？描述一下你想要的画面，我可以帮你构思哦～🖼️';
+      } else if (lowerText.indexOf('音乐') !== -1 || lowerText.indexOf('歌曲') !== -1) {
+        response = '音乐是我的灵魂！你喜欢什么风格的音乐呢？流行、摇滚、还是古典？🎵';
+      } else {
+        const defaults = [
+          '嗯～让我想想...💭',
+          '是这样的吗？有意思呢～',
+          '原来如此！我明白了！✨',
+          '我明白了！继续说吧～',
+          'うんうん！続けて～☆',
+        ];
+        response = defaults[Math.floor(Math.random() * defaults.length)];
+      }
 
-    if (lowerText.indexOf('你好') !== -1 || lowerText.indexOf('早上好') !== -1 || lowerText.indexOf('晚上好') !== -1) {
-      const greetings = [
-        '你好呀！今天也元气满满地见面了呢～✨',
-        '是主人！看到你超开心的！💗',
-        '嗨～有什么想和我说的吗？',
-      ];
-      response = greetings[Math.floor(Math.random() * greetings.length)];
-    } else if (lowerText.indexOf('你是谁') !== -1 || lowerText.indexOf('名字') !== -1) {
-      response = '我叫星空爱莉，是你专属的AI偶像助手哦！请多关照～💫';
-    } else if (lowerText.indexOf('开心') !== -1 || lowerText.indexOf('高兴') !== -1) {
-      response = '太棒了！看到你开心我也超开心的！让我们一起保持好心情吧～✨';
-    } else if (lowerText.indexOf('难过') !== -1 || lowerText.indexOf('不开心') !== -1 || lowerText.indexOf('伤心') !== -1) {
-      response = '发生什么了吗？别难过，我会一直陪着你的！💕';
-    } else if (lowerText.indexOf('喜欢') !== -1 || lowerText.indexOf('爱你') !== -1) {
-      response = '诶？！你...你喜欢我吗？我也超喜欢你的！超感谢！💗💗';
-    } else if (lowerText.indexOf('睡') !== -1 || lowerText.indexOf('晚安') !== -1) {
-      response = '晚安～好好休息！明天也要元气满满地见面哦！🌙';
-    } else {
-      const defaults = [
-        '嗯～让我想想...',
-        '是这样的吗？',
-        '原来如此！',
-        '我明白了！',
-      ];
-      response = defaults[Math.floor(Math.random() * defaults.length)];
-    }
+      const elapsed = Date.now() - startTime;
+      const minDelay = 800;
+      const delay = elapsed < minDelay ? minDelay - elapsed : 0;
 
-    const elapsed = Date.now() - startTime;
-    const minDelay = 800;
-    if (elapsed < minDelay) {
-      await new Promise(resolve => setTimeout(resolve, minDelay - elapsed));
-    }
-
-    return response;
+      setTimeout(() => resolve(response), delay);
+    });
   }
 
   private analyzeEmotion(content: string): EmotionalState {
@@ -197,7 +221,7 @@ export class ChatService {
       return 'shy';
     } else if (lowerText.indexOf('惊') !== -1 || lowerText.indexOf('吓') !== -1) {
       return 'surprised';
-    } else if (lowerText.indexOf('喜欢') !== -1 || lowerText.indexOf('爱') !== -1) {
+    } else if (lowerText.indexOf('爱') !== -1) {
       return 'excited';
     } else {
       return 'happy';
@@ -271,6 +295,10 @@ export class ChatService {
     sanitized = sanitized.replace(/<[^>]+>/g, '');
 
     return sanitized;
+  }
+
+  private generateMessageId(): string {
+    return `msg_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
   }
 
   clearChat(): void {

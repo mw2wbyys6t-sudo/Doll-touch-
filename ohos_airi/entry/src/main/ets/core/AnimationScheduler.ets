@@ -274,9 +274,9 @@ export class AnimationScheduler {
   }
 
   private stopAnimation(): void {
-    if (this.playingAnimationFrame) {
+    if (this.playingAnimationFrame !== -1) {
       cancelAnimationFrame(this.playingAnimationFrame);
-      this.playingAnimationFrame = null;
+      this.playingAnimationFrame = -1;
     }
   }
 

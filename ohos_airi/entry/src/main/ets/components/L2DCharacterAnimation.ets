@@ -1,8 +1,14 @@
 /**
- * L2DCharacterAnimation - Live2D风格多帧角色动画组件
+ * L2DCharacterAnimation - Live2D风格多帧角色动画组件 (优化版)
  * 基于 Seedream AI 生成的6帧高质量角色图片实现平滑表情切换
+ * 优化点：消除重复代码、减少重渲染、优化内存使用
  */
 import { AppStorage } from '@kit.ArkUI';
+
+interface FrameConfig {
+  name: string;
+  file: string;
+}
 
 @Component
 export struct L2DCharacterAnimation {
@@ -14,14 +20,27 @@ export struct L2DCharacterAnimation {
 
   @State currentFrame: string = 'airi_idle';
   @State frameOpacity: number = 1.0;
-  @State prevFrame: string = 'airi_idle';
+  @State prevFrame: string = '';
   @State isTransitioning: boolean = false;
   @State imageLoadError: boolean = false;
   @State retryCount: number = 0;
+
   private readonly MAX_RETRIES: number = 3;
   private retryTimer: number = -1;
+  private expressionWatcherTimer: number = -1;
 
-  private frameMap: Record<string, string> = {
+  // 帧配置数组 - 消除重复代码
+  private static readonly FRAME_CONFIGS: FrameConfig[] = [
+    { name: 'airi_idle', file: 'airi_idle.png' },
+    { name: 'airi_happy', file: 'airi_happy.png' },
+    { name: 'airi_shy', file: 'airi_shy.png' },
+    { name: 'airi_excited', file: 'airi_excited.png' },
+    { name: 'airi_surprised', file: 'airi_surprised.png' },
+    { name: 'airi_sing', file: 'airi_sing.png' },
+  ];
+
+  // 表情到帧的映射
+  private readonly frameMap: Record<string, string> = {
     'idle': 'airi_idle',
     'happy': 'airi_happy',
     'sad': 'airi_shy',
@@ -33,13 +52,15 @@ export struct L2DCharacterAnimation {
     'sing': 'airi_sing',
   };
 
-  private expressionWatcherTimer: number = -1;
-
   aboutToAppear(): void {
     this.startExpressionWatcher();
   }
 
   aboutToDisappear(): void {
+    this.clearAllTimers();
+  }
+
+  private clearAllTimers(): void {
     if (this.expressionWatcherTimer !== -1) {
       clearInterval(this.expressionWatcherTimer);
       this.expressionWatcherTimer = -1;
@@ -69,7 +90,6 @@ export struct L2DCharacterAnimation {
         const cheek = AppStorage.get<number>('cheek');
 
         let expression = 'idle';
-
         if (mouthOpen && mouthOpen > 0.7) {
           expression = cheek && cheek > 0.4 ? 'excited' : 'happy';
         } else if (cheek && cheek > 0.5) {
@@ -83,6 +103,7 @@ export struct L2DCharacterAnimation {
           this.transitionTo(expression);
         }
       } catch (e) {
+        // 静默处理，避免崩溃
       }
     }, 300);
   }
@@ -94,14 +115,10 @@ export struct L2DCharacterAnimation {
     this.prevFrame = this.currentFrame;
     this.currentFrame = targetFrame;
     this.isTransitioning = true;
-
-    // 新图片先设为透明，让 ArkUI 开始加载
     this.frameOpacity = 0.0;
 
-    // 延迟淡入，给图片加载时间
     setTimeout(() => {
       this.frameOpacity = 1.0;
-      // 过渡完成后清理 prevFrame
       setTimeout(() => {
         this.isTransitioning = false;
         this.prevFrame = '';
@@ -114,10 +131,11 @@ export struct L2DCharacterAnimation {
       if (this.imageLoadError) {
         this.buildFallbackAvatar()
       } else {
-        this.buildCharacterImage(this.currentFrame, this.frameOpacity)
+        // 使用动态构建减少重复代码
+        this.buildFrame(this.currentFrame, this.frameOpacity)
 
-        if (this.isTransitioning) {
-          this.buildCharacterImage(this.prevFrame, 1.0 - this.frameOpacity)
+        if (this.isTransitioning && this.prevFrame) {
+          this.buildFrame(this.prevFrame, 1.0 - this.frameOpacity)
         }
       }
 
@@ -130,137 +148,15 @@ export struct L2DCharacterAnimation {
   }
 
   @Builder
-  buildCharacterImage(frameName: string, opacity: number) {
-    if (frameName === 'airi_idle') {
-      Image($rawfile('airi_idle.png'))
+  buildFrame(frameName: string, opacity: number) {
+    const config = L2DCharacterAnimation.FRAME_CONFIGS.find(f => f.name === frameName);
+    if (config) {
+      Image($rawfile(config.file))
         .width(220)
         .height(380)
         .objectFit(ImageFit.Contain)
         .opacity(opacity)
-        .transform({
-          rotateX: this.bodyAngleX * 15,
-          rotateY: this.bodyAngleY * 15,
-          rotateZ: this.bodyAngleZ * 15,
-          scaleX: 1 + this.bodyAngleY * 0.08 + this.hairSwing * 0.03,
-          scaleY: 1 + this.bodyAngleX * 0.04,
-          translateX: this.hairSwing * 5,
-          translateY: this.clothingSwing * 3
-        })
-        .animation({
-          duration: 200,
-          easing: 'easeOutCubic'
-        })
-        .onError(() => {
-          this.scheduleRetry();
-          this.imageLoadError = true;
-        })
-    } else if (frameName === 'airi_happy') {
-      Image($rawfile('airi_happy.png'))
-        .width(220)
-        .height(380)
-        .objectFit(ImageFit.Contain)
-        .opacity(opacity)
-        .transform({
-          rotateX: this.bodyAngleX * 15,
-          rotateY: this.bodyAngleY * 15,
-          rotateZ: this.bodyAngleZ * 15,
-          scaleX: 1 + this.bodyAngleY * 0.08 + this.hairSwing * 0.03,
-          scaleY: 1 + this.bodyAngleX * 0.04,
-          translateX: this.hairSwing * 5,
-          translateY: this.clothingSwing * 3
-        })
-        .animation({
-          duration: 200,
-          easing: 'easeOutCubic'
-        })
-        .onError(() => {
-          this.scheduleRetry();
-          this.imageLoadError = true;
-        })
-    } else if (frameName === 'airi_shy') {
-      Image($rawfile('airi_shy.png'))
-        .width(220)
-        .height(380)
-        .objectFit(ImageFit.Contain)
-        .opacity(opacity)
-        .transform({
-          rotateX: this.bodyAngleX * 15,
-          rotateY: this.bodyAngleY * 15,
-          rotateZ: this.bodyAngleZ * 15,
-          scaleX: 1 + this.bodyAngleY * 0.08 + this.hairSwing * 0.03,
-          scaleY: 1 + this.bodyAngleX * 0.04,
-          translateX: this.hairSwing * 5,
-          translateY: this.clothingSwing * 3
-        })
-        .animation({
-          duration: 200,
-          easing: 'easeOutCubic'
-        })
-        .onError(() => {
-          this.scheduleRetry();
-          this.imageLoadError = true;
-        })
-    } else if (frameName === 'airi_excited') {
-      Image($rawfile('airi_excited.png'))
-        .width(220)
-        .height(380)
-        .objectFit(ImageFit.Contain)
-        .opacity(opacity)
-        .transform({
-          rotateX: this.bodyAngleX * 15,
-          rotateY: this.bodyAngleY * 15,
-          rotateZ: this.bodyAngleZ * 15,
-          scaleX: 1 + this.bodyAngleY * 0.08 + this.hairSwing * 0.03,
-          scaleY: 1 + this.bodyAngleX * 0.04,
-          translateX: this.hairSwing * 5,
-          translateY: this.clothingSwing * 3
-        })
-        .animation({
-          duration: 200,
-          easing: 'easeOutCubic'
-        })
-        .onError(() => {
-          this.scheduleRetry();
-          this.imageLoadError = true;
-        })
-    } else if (frameName === 'airi_surprised') {
-      Image($rawfile('airi_surprised.png'))
-        .width(220)
-        .height(380)
-        .objectFit(ImageFit.Contain)
-        .opacity(opacity)
-        .transform({
-          rotateX: this.bodyAngleX * 15,
-          rotateY: this.bodyAngleY * 15,
-          rotateZ: this.bodyAngleZ * 15,
-          scaleX: 1 + this.bodyAngleY * 0.08 + this.hairSwing * 0.03,
-          scaleY: 1 + this.bodyAngleX * 0.04,
-          translateX: this.hairSwing * 5,
-          translateY: this.clothingSwing * 3
-        })
-        .animation({
-          duration: 200,
-          easing: 'easeOutCubic'
-        })
-        .onError(() => {
-          this.scheduleRetry();
-          this.imageLoadError = true;
-        })
-    } else if (frameName === 'airi_sing') {
-      Image($rawfile('airi_sing.png'))
-        .width(220)
-        .height(380)
-        .objectFit(ImageFit.Contain)
-        .opacity(opacity)
-        .transform({
-          rotateX: this.bodyAngleX * 15,
-          rotateY: this.bodyAngleY * 15,
-          rotateZ: this.bodyAngleZ * 15,
-          scaleX: 1 + this.bodyAngleY * 0.08 + this.hairSwing * 0.03,
-          scaleY: 1 + this.bodyAngleX * 0.04,
-          translateX: this.hairSwing * 5,
-          translateY: this.clothingSwing * 3
-        })
+        .transform(this.getTransform())
         .animation({
           duration: 200,
           easing: 'easeOutCubic'
@@ -272,6 +168,19 @@ export struct L2DCharacterAnimation {
     }
   }
 
+  private getTransform(): object {
+    return {
+      rotateX: this.bodyAngleX * 15,
+      rotateY: this.bodyAngleY * 15,
+      rotateZ: this.bodyAngleZ * 15,
+      scaleX: 1 + this.bodyAngleY * 0.08 + this.hairSwing * 0.03,
+      scaleY: 1 + this.bodyAngleX * 0.04,
+      translateX: this.hairSwing * 5,
+      translateY: this.clothingSwing * 3
+    };
+  }
+
+  @Builder
   buildFallbackAvatar() {
     Column({ space: 8 }) {
       Text('🌸')
@@ -298,6 +207,7 @@ export struct L2DCharacterAnimation {
     });
   }
 
+  @Builder
   buildGlowEffect() {
     Stack({ alignContent: Alignment.Center }) {
       Circle()
