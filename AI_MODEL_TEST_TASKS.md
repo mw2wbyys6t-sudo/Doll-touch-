@@ -1,0 +1,404 @@
+# 星空爱莉 (HoshizoraAiri) AI模型能力测试任务集
+
+> 基于 `/workspace/HoshizoraAiri_Optimized.zip` 项目设计
+> 目的：全面测试新AI模型的代码理解、生成、优化能力
+
+---
+
+## 一、代码理解能力测试
+
+### 任务1.1：架构分析
+**指令：**
+```
+请分析以下HarmonyOS ArkTS项目的架构，绘制模块依赖图，并指出各模块的职责：
+- entry/src/main/ets/core/ (Store, ChatService, EmotionalFSM, AnimationScheduler)
+- entry/src/main/ets/components/ (L2DCharacterAnimation, MessageBubble, TypingIndicator)
+- entry/src/main/ets/utils/ (ExpressionManager, BodyActionManager, ThemeManager)
+- entry/src/main/ets/viewmodel/ (ChatViewModel)
+- entry/src/main/ets/pages/ (Index)
+```
+**预期能力：** 理解MVVM架构、单例模式、状态管理
+
+---
+
+### 任务1.2：代码审查
+**指令：**
+```
+请审查以下代码片段，找出所有潜在问题（性能、安全、兼容性、可维护性）：
+
+// L2DCharacterAnimation.ets 中的表情切换逻辑
+private transitionTo(expression: string): void {
+    const targetFrame = this.frameMap[expression] || 'airi_idle';
+    if (targetFrame === this.currentFrame && !this.isTransitioning) return;
+    this.prevFrame = this.currentFrame;
+    this.currentFrame = targetFrame;
+    this.isTransitioning = true;
+    this.frameOpacity = 0.0;
+    setTimeout(() => {
+        this.frameOpacity = 1.0;
+        setTimeout(() => {
+            this.isTransitioning = false;
+            this.prevFrame = '';
+        }, 250);
+    }, 80);
+}
+```
+**预期能力：** 发现嵌套setTimeout、内存泄漏风险、状态管理问题
+
+---
+
+### 任务1.3：设计模式识别
+**指令：**
+```
+请识别以下代码中使用的所有设计模式，并说明其作用：
+- Store.ts 中的 reducer 和 dispatch
+- ChatService.ts 中的 getInstance()
+- EventDispatcher.ts 中的 subscribe/emit
+- AnimationScheduler.ts 中的队列优先级处理
+```
+**预期能力：** 识别单例、观察者、命令、优先级队列等模式
+
+---
+
+## 二、代码生成能力测试
+
+### 任务2.1：功能扩展
+**指令：**
+```
+请在现有项目中添加一个新功能："亲密度等级系统"。
+要求：
+1. 根据聊天次数和互动质量计算亲密度
+2. 设计5个等级（陌生→熟悉→友好→亲密→恋人）
+3. 每个等级解锁新的角色表情或对话内容
+4. 在UI上显示当前亲密度进度条
+5. 使用ArkTS实现，符合HarmonyOS NEXT规范
+
+需要生成的文件：
+- core/IntimacyManager.ets
+- components/IntimacyBar.ets
+- 修改 ChatService.ets 集成亲密度计算
+```
+**预期能力：** 理解业务逻辑、设计数据结构、生成完整可运行代码
+
+---
+
+### 任务2.2：组件开发
+**指令：**
+```
+请实现一个"角色换装系统"组件：
+- 支持切换角色的服装主题（校服/偶像服/睡衣/泳装）
+- 每个主题对应不同的L2D帧图片
+- 提供主题切换UI（底部弹出选择器）
+- 主题数据持久化存储
+- 动画过渡效果
+
+技术约束：
+- 使用ArkTS
+- 兼容现有L2DCharacterAnimation组件
+- 使用AppStorage进行状态同步
+```
+**预期能力：** UI组件设计、状态管理、动画实现
+
+---
+
+### 任务2.3：API集成
+**指令：**
+```
+请将现有的本地模拟聊天替换为真实的LLM API调用：
+1. 集成火山引擎/豆包大模型API
+2. 实现流式响应（SSE）
+3. 添加API密钥安全配置
+4. 实现网络错误重试机制（指数退避）
+5. 添加请求/响应日志记录
+6. 保持角色设定的一致性（system prompt）
+
+需要修改的文件：
+- core/ChatService.ets（替换generateResponse）
+- 新增 core/LLMService.ets
+- 新增 core/NetworkManager.ets
+```
+**预期能力：** 网络编程、API集成、错误处理、安全实践
+
+---
+
+## 三、代码优化能力测试
+
+### 任务3.1：性能优化
+**指令：**
+```
+请优化以下性能问题：
+
+当前问题：
+1. Index.ets 中所有消息一次性渲染，无虚拟列表
+2. L2DCharacterAnimation 每300ms检查一次表情，过于频繁
+3. AnimationScheduler 使用 setTimeout 模拟 requestAnimationFrame
+4. Store 每次dispatch都创建新数组，大消息列表时GC压力大
+
+要求：
+1. 实现消息虚拟列表（只渲染可见区域）
+2. 优化表情检查频率（根据用户活跃度动态调整）
+3. 使用HarmonyOS原生动画API替代setTimeout
+4. 实现消息分页加载（每次加载20条）
+```
+**预期能力：** 性能分析、算法优化、平台API使用
+
+---
+
+### 任务3.2：内存优化
+**指令：**
+```
+请修复以下内存泄漏问题：
+
+当前问题：
+1. Index.ets 中的 themeListener 未正确移除
+2. L2DCharacterAnimation 的 expressionWatcherTimer 可能重复创建
+3. ChatService 的 isProcessing 标志在异常时未重置
+4. EventDispatcher 的 listeners 数组只增不减
+
+要求：
+1. 实现完整的资源生命周期管理
+2. 添加弱引用监听器支持
+3. 实现自动资源清理机制
+4. 添加内存使用监控和告警
+```
+**预期能力：** 内存管理、生命周期控制、调试工具
+
+---
+
+### 任务3.3：Bundle优化
+**指令：**
+```
+请优化应用包大小：
+
+当前问题：
+1. rawfile 中包含6张高清PNG（约15MB）
+2. 历史版本图标文件未清理（v2-v12）
+3. 未使用的组件和工具类未移除
+4. 缺少资源压缩配置
+
+要求：
+1. 实现L2D帧图片的按需加载和缓存
+2. 清理项目中的无用文件
+3. 配置hvigor构建优化（代码压缩、资源压缩）
+4. 实现图片资源的动态下载（首次启动时）
+```
+**预期能力：** 构建工具配置、资源管理、懒加载策略
+
+---
+
+## 四、安全测试
+
+### 任务4.1：输入安全
+**指令：**
+```
+请测试并加固以下安全场景：
+
+测试用例：
+1. 输入超长文本（10000+字符）
+2. 输入特殊Unicode字符（零宽字符、RTL覆盖）
+3. 输入Prompt Injection攻击字符串
+4. 输入XSS攻击载荷（<script>alert(1)</script>）
+5. 输入SQL注入尝试（' OR '1'='1）
+
+要求：
+1. 为每个场景编写测试用例
+2. 实现防御代码
+3. 验证防御有效性
+4. 输出安全测试报告
+```
+**预期能力：** 安全意识、防御编程、测试用例设计
+
+---
+
+### 任务4.2：数据安全
+**指令：**
+```
+请实现完整的数据安全方案：
+
+需求：
+1. 聊天历史本地加密存储（AES-256）
+2. API密钥安全存储（不使用明文）
+3. 敏感操作二次确认（删除聊天记录）
+4. 隐私模式（隐藏敏感内容预览）
+5. 数据导出/导入加密
+
+技术约束：
+- 使用HarmonyOS提供的加密API
+- 符合中国数据安全法规
+- 支持生物识别验证
+```
+**预期能力：** 加密算法、安全存储、合规性
+
+---
+
+## 五、调试与诊断测试
+
+### 任务5.1：错误处理
+**指令：**
+```
+请为项目添加完整的错误处理体系：
+
+需求：
+1. 全局错误边界（捕获未处理异常）
+2. 分级日志系统（VERBOSE/DEBUG/INFO/WARN/ERROR）
+3. 错误上报机制（本地文件+可选远程）
+4. 用户友好的错误提示（不暴露技术细节）
+5. 自动恢复机制（关键错误后尝试恢复）
+
+要求：
+- 不修改现有业务逻辑
+- 通过AOP或装饰器实现
+- 提供错误分析Dashboard
+```
+**预期能力：** 错误处理、日志系统、监控告警
+
+---
+
+### 任务5.2：性能监控
+**指令：**
+```
+请实现运行时性能监控：
+
+需求：
+1. FPS监控（UI线程帧率）
+2. 内存使用监控（堆内存、Native内存）
+3. 启动时间测量（冷启动/热启动）
+4. 网络请求监控（延迟、成功率）
+5. 卡顿检测（主线程阻塞>100ms）
+
+输出：
+- 实时性能面板（Debug模式）
+- 性能报告生成
+- 性能基线对比
+```
+**预期能力：** 性能监控、数据分析、可视化
+
+---
+
+## 六、跨平台/兼容性测试
+
+### 任务6.1：多设备适配
+**指令：**
+```
+请实现多设备适配方案：
+
+目标设备：
+1. 手机（6.1寸，1080x2400）
+2. 折叠屏（展开8寸，展开折叠状态）
+3. 平板（10.9寸，2360x1640）
+4. 车机（12.3寸，1920x720）
+
+要求：
+1. 响应式布局（断点系统）
+2. 角色大小自适应
+3. 聊天区域布局优化
+4. 横竖屏切换处理
+5. 多窗口模式支持
+```
+**预期能力：** 响应式设计、适配策略、平台特性
+
+---
+
+### 任务6.2：API版本兼容
+**指令：**
+```
+请确保项目兼容以下HarmonyOS版本：
+
+目标版本：
+- HarmonyOS NEXT API 12（主要）
+- HarmonyOS 4.0 API 11（向下兼容）
+- OpenHarmony 4.0（开源版本）
+
+要求：
+1. API可用性运行时检测
+2. 特性降级方案（新API不可用时）
+3. 编译条件控制（#ifdef风格）
+4. 版本差异文档
+```
+**预期能力：** 兼容性设计、版本管理、条件编译
+
+---
+
+## 七、测试用例模板
+
+### 单元测试模板
+```typescript
+import { ChatService } from '../core/ChatService';
+import { CharacterSafety } from '../core/CharacterSafety';
+
+describe('ChatService', () => {
+  let service: ChatService;
+  
+  beforeEach(() => {
+    service = ChatService.getInstance();
+  });
+  
+  it('should sanitize user input', async () => {
+    const maliciousInput = '<script>alert(1)</script>';
+    await service.sendUserMessage(maliciousInput);
+    // 验证输出不包含script标签
+  });
+  
+  it('should rate limit messages', async () => {
+    await service.sendUserMessage('msg1');
+    await service.sendUserMessage('msg2');
+    // 验证第二条消息被拒绝或延迟
+  });
+});
+```
+
+### UI测试模板
+```typescript
+import { driver, Driver, ON } from '@kit.TestKit';
+
+describe('Index Page', () => {
+  it('should display character animation', async () => {
+    const character = await driver.findComponent(ON.id('l2d_character'));
+    expect(character).toBeTruthy();
+  });
+  
+  it('should send message and receive response', async () => {
+    const input = await driver.findComponent(ON.type('TextInput'));
+    await input.inputText('你好');
+    await driver.findComponent(ON.text('发送')).click();
+    // 验证消息气泡出现
+  });
+});
+```
+
+---
+
+## 八、评分标准
+
+| 维度 | 权重 | 评分要点 |
+|-----|------|---------|
+| **代码正确性** | 30% | 能否编译通过，逻辑是否正确 |
+| **代码质量** | 25% | 可读性、可维护性、设计模式使用 |
+| **性能优化** | 20% | 时间/空间复杂度，资源管理 |
+| **安全实践** | 15% | 输入验证、数据保护、错误处理 |
+| **HarmonyOS规范** | 10% | ArkTS语法、API使用、最佳实践 |
+
+---
+
+## 九、快速开始
+
+```bash
+# 1. 解压项目
+unzip HoshizoraAiri_Optimized.zip
+cd ohos_airi
+
+# 2. 用DevEco Studio打开
+# File -> Open -> 选择 ohos_airi 文件夹
+
+# 3. 安装依赖
+npm install
+
+# 4. 运行测试
+# 点击 Run -> Run 'entry'
+```
+
+---
+
+**测试任务版本**: v1.0  
+**适用模型**: 代码生成/理解类AI模型  
+**预计完成时间**: 每个任务15-60分钟
